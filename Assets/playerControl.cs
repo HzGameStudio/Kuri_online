@@ -15,7 +15,7 @@ public class playerControl : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            gameObject.GetComponent<Rigidbody2D>().gravityScale = gameObject.GetComponent<Rigidbody2D>().gravityScale * -1;
+            gameObject.GetComponent<Rigidbody2D>().gravityScale *= -1;
         }
     }
 }
