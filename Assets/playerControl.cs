@@ -13,9 +13,13 @@ public class playerControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.touchCount > 0)
         {
-            gameObject.GetComponent<Rigidbody2D>().gravityScale *= -1;
+            if (Input.GetTouch(0).phase == TouchPhase.Began)
+            {
+                gameObject.GetComponent<Rigidbody2D>().gravityScale *= -1;
+            }
         }
+        
     }
 }
