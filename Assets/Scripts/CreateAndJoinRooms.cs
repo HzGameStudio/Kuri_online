@@ -22,7 +22,7 @@ public class CreateAndJoinRooms : MonoBehaviourPunCallbacks
 
     public void OpenK()
     {
-        TouchScreenKeyboard.Open("", TouchScreenKeyboardType.Default);
+        TouchScreenKeyboard.Open("", TouchScreenKeyboardType.Default, false, false, true);
     }
 
     public override void OnJoinedRoom()
