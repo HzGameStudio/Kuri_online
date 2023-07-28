@@ -5,26 +5,36 @@ using Photon.Pun;
 
 public class playerControl : MonoBehaviour
 {
-    PhotonView view;
+    //0 = -1, 1 = 1
+    bool m_GravityDirection = false;
+
+    PhotonView m_view;
+
+    [PunRPC]
+    void SetGravity(bool GravityDirection)
+    {
+        m_GravityDirection = GravityDirection;
+        gameObject.GetComponent<Rigidbody2D>().gravityScale = m_GravityDirection ? 1 : -1;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        view = GetComponent<PhotonView>();
+        m_view = GetComponent<PhotonView>();
         GetComponent<Rigidbody2D>().freezeRotation = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        view = GetComponent<PhotonView>();
-        if (view.IsMine)  
+        if (m_view.IsMine)  
         {
             if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
             {
-                 gameObject.GetComponent<Rigidbody2D>().gravityScale *= -1;
+                m_GravityDirection = !m_GravityDirection;
+                gameObject.GetComponent<Rigidbody2D>().gravityScale = m_GravityDirection ? 1 : -1;
+                m_view.RPC("SetGravity", RpcTarget.All, m_GravityDirection);
             }
         }
-        
     }
 }

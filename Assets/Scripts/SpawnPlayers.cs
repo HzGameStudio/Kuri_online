@@ -5,14 +5,14 @@ using Photon.Pun;
 
 public class SpawnPlayers : MonoBehaviour
 {
-    public GameObject playerPrefab;
+    public GameObject m_playerPrefab;
 
-    public float minX;
-    public float maxX;
+    public float m_minX;
+    public float m_maxX;
 
     private void Start()
     {
-        Vector2 randomPosition = new Vector2(Random.Range(minX, maxX), 0);
-        PhotonNetwork.Instantiate(playerPrefab.name, randomPosition, Quaternion.identity);
+        Vector2 randomPosition = new Vector2(Random.Range(m_minX, m_maxX), 0);
+        PhotonNetwork.Instantiate(m_playerPrefab.name, randomPosition, Quaternion.identity);
     }
 }
