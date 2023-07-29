@@ -56,15 +56,20 @@ public class playerControl : MonoBehaviour
         {
             if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
             {
-                m_GravityDirection = !m_GravityDirection;
-                gameObject.GetComponent<Rigidbody2D>().gravityScale = m_GravityDirection ? 1 : -1;
-                m_view.RPC("SetGravity", RpcTarget.All, m_GravityDirection);
-                numberOfGravityChangeAvailable -= 1;
-                numberOfGravityChangeAvailable = (numberOfGravityChangeAvailable < 0) ? 0 : numberOfGravityChangeAvailable;
+                if(numberOfGravityChangeAvailable >0)
+                {
+                    m_GravityDirection = !m_GravityDirection;
+                    gameObject.GetComponent<Rigidbody2D>().gravityScale = m_GravityDirection ? 1 : -1;
+                    m_view.RPC("SetGravity", RpcTarget.All, m_GravityDirection);
+                    numberOfGravityChangeAvailable -= 1;
+                    numberOfGravityChangeAvailable = (numberOfGravityChangeAvailable < 0) ? 0 : numberOfGravityChangeAvailable;
+                }
+                
             }
 
             m_Camera.GetComponent<Transform>().position = gameObject.transform.position + new Vector3(0, 0, -10);
         }
+        //Debug.Log(numberOfGravityChangeAvailable);
     }
 
     private void FixedUpdate()
@@ -129,6 +134,7 @@ public class playerControl : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        //Debug.Log(collision.gameObject.tag);
         string[] flipTagList = { "simplePlatform" };
         if (findElement(flipTagList, collision.gameObject.tag))
         {
