@@ -41,6 +41,10 @@ public class playerControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //if(m_view.IsMine)
+        //{
+        //    m_Camera.gameObject.SetActive(true);
+        //}
         m_rigidBody2d = GetComponent<Rigidbody2D>();
         m_rigidBody2d.freezeRotation = true;
         m_boxCollider2D = gameObject.GetComponent<BoxCollider2D>();
@@ -54,6 +58,10 @@ public class playerControl : MonoBehaviour
     {
         if (m_view.IsMine)  
         {
+            if(m_Camera.gameObject.activeInHierarchy == false)
+            {
+                m_Camera.gameObject.SetActive(true);
+            }
             if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
             {
                 if(numberOfGravityChangeAvailable >0)
