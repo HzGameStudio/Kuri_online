@@ -326,7 +326,7 @@ MonoBehaviour:
   m_PositionModel:
     SynchronizeEnabled: 1
     TeleportEnabled: 1
-    TeleportIfDistanceGreaterThan: 3
+    TeleportIfDistanceGreaterThan: 1
     InterpolateOption: 2
     InterpolateMoveTowardsSpeed: 1
     InterpolateLerpSpeed: 1
@@ -357,10 +357,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Camera: {fileID: 2977546867474364798}
-  onGroundVelocity: 5
-  brakeVelocity: 0.005
-  maxVelocity: 10
-  force: 1
+  m_State: 0
 --- !u!114 &4533943858793480789
 MonoBehaviour:
   m_ObjectHideFlags: 0

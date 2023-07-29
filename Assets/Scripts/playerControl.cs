@@ -2,36 +2,61 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using System;
 
 public class playerControl : MonoBehaviour
 {
-    //0 = -1, 1 = 1
-    bool m_GravityDirection = false;
-    public Camera m_Camera;
-    public float onGroundVelocity = 5f;
-    public float brakeVelocity = 0.005f;
-    public float maxVelocity = 10f;
-
-    private float timeOfAcselerationOfPlatform = 1f;
-    private float currentAcseleration;
-
-    BoxCollider2D m_boxCollider2D;
-    Rigidbody2D m_rigidBody2d;
-
-
-    int numberOfGravityChangeAvailable = 1;
-    int maxNumberOfGravityChangeAvailable = 1;
-
-    public int force = 1;
-
-    PhotonView m_view;
-
-    [PunRPC]
-    void SetGravity(bool GravityDirection)
+    public enum KuraState
     {
-        m_GravityDirection = GravityDirection;
-        gameObject.GetComponent<Rigidbody2D>().gravityScale = m_GravityDirection ? 1 : -1;
+        //No speed, air
+        Fall,
+        //No\Normal speed, ground
+        Run,
+        //Too much speed, ground
+        FlapRun,
+        //Normal speed, air
+        Fly,
+        //Too much speed, air
+        Glide
     }
+
+    // *** Constants
+
+    // Objects
+
+    public Camera m_Camera;
+    BoxCollider2D m_BoxCollider2D;
+    Rigidbody2D m_RigidBody2d;
+    PhotonView m_View;
+
+    // Physics
+
+    public const float m_OnGroundVelocity = 5f;
+    public const float m_BrakeVelocity = 0.005f;
+    public const float m_MaxVelocity = 10f;
+    public const int force = 1;
+    public const float m_TimeOfAcselerationOfPlatform = 1f;
+
+    // Logic
+
+    string[] m_FlipTagList = { "simplePlatform" };
+
+    const int m_MaxNumberOfGravityChangeAvailable = 1;
+
+
+
+    // *** Active
+
+    // 0 = -1, 1 = 1
+    bool m_GravityDirection = false;
+
+    float m_CurrentAcseleration;
+
+    int m_NumberOfGravityChangeAvailable = 1;
+
+    public KuraState m_State = KuraState.Fall;
+
+
 
     //void SetVelocity(Vector2 velocity)
     //{
@@ -41,81 +66,55 @@ public class playerControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //if(m_view.IsMine)
-        //{
-        //    m_Camera.gameObject.SetActive(true);
-        //}
-        m_rigidBody2d = GetComponent<Rigidbody2D>();
-        m_rigidBody2d.freezeRotation = true;
-        m_boxCollider2D = gameObject.GetComponent<BoxCollider2D>();
-        m_view = GetComponent<PhotonView>();
-        m_rigidBody2d.freezeRotation = true;
-        //m_Camera.Set
+        m_RigidBody2d = GetComponent<Rigidbody2D>();
+        m_BoxCollider2D = gameObject.GetComponent<BoxCollider2D>();
+        m_View = GetComponent<PhotonView>();
+
+        m_RigidBody2d.freezeRotation = true;
+
+        if (m_View.IsMine)
+        {
+            if (m_Camera.gameObject.activeInHierarchy == false)
+            {
+                m_Camera.gameObject.SetActive(true);
+            }
+        }
+    }
+
+    [PunRPC]
+    void SetGravity(bool GravityDirection)
+    {
+        m_GravityDirection = GravityDirection;
+        gameObject.GetComponent<Rigidbody2D>().gravityScale = m_GravityDirection ? 1 : -1;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (m_view.IsMine)  
+        if (m_View.IsMine)  
         {
-            if(m_Camera.gameObject.activeInHierarchy == false)
-            {
-                m_Camera.gameObject.SetActive(true);
-            }
             if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
             {
-                if(numberOfGravityChangeAvailable >0)
+                if(m_NumberOfGravityChangeAvailable > 0)
                 {
                     m_GravityDirection = !m_GravityDirection;
-                    gameObject.GetComponent<Rigidbody2D>().gravityScale = m_GravityDirection ? 1 : -1;
-                    m_view.RPC("SetGravity", RpcTarget.All, m_GravityDirection);
-                    numberOfGravityChangeAvailable -= 1;
-                    numberOfGravityChangeAvailable = (numberOfGravityChangeAvailable < 0) ? 0 : numberOfGravityChangeAvailable;
+                    m_RigidBody2d.gravityScale = m_GravityDirection ? 1 : -1;
+                    m_View.RPC("SetGravity", RpcTarget.All, m_GravityDirection);
+
+                    m_NumberOfGravityChangeAvailable--;
                 }
                 
             }
 
             m_Camera.GetComponent<Transform>().position = gameObject.transform.position + new Vector3(0, 0, -10);
         }
-        //Debug.Log(numberOfGravityChangeAvailable);
+        //Debug.Log(m_NumberOfGravityChangeAvailable);
     }
-
-    private void FixedUpdate()
-    {
-        if (m_view.IsMine)
-        {
-            if (checkGround())
-            {
-                if (m_rigidBody2d.velocity.magnitude > onGroundVelocity)
-                {
-                    m_rigidBody2d.velocity -= Vector2.right * currentAcseleration;
-                }
-                else
-                {
-                    if (m_rigidBody2d.velocity.magnitude < maxVelocity)
-                    {
-                        m_rigidBody2d.velocity += Vector2.right * currentAcseleration;
-                    }
-                    else
-                    {
-                        m_rigidBody2d.velocity = Vector2.right * onGroundVelocity;
-                    }
-                }
-
-            }
-            else
-            {
-                m_rigidBody2d.AddForce(Vector2.right * force);
-            }
-            //m_view.RPC("SetVelocity", RpcTarget.All, m_rigidBody2d.velocity);
-        }
-    }
-
 
     private bool checkGround()
     {
         float extraBoxHeight = 0.1f;
-        RaycastHit2D[] raycasthit = Physics2D.BoxCastAll(m_boxCollider2D.bounds.center, new Vector2(m_boxCollider2D.bounds.size.x, m_boxCollider2D.bounds.size.y + extraBoxHeight), 0f, Vector2.zero, 0f);
+        RaycastHit2D[] raycasthit = Physics2D.BoxCastAll(m_BoxCollider2D.bounds.center, new Vector2(m_BoxCollider2D.bounds.size.y, m_BoxCollider2D.bounds.size.y + extraBoxHeight), 0f, Vector2.zero, 0f);
 
         for (int i = 0; i < raycasthit.Length; i++)
         {
@@ -126,32 +125,61 @@ public class playerControl : MonoBehaviour
                 return true;
             }
         }
-
         return false;
-
     }
 
-    private bool findElement(string[] arrey, string element)
+    private void FixedUpdate()
     {
-        for (int i = 0; i < arrey.Length; i++)
+        if (m_View.IsMine)
         {
-            if (element == arrey[i]) return true;
+            if (checkGround())
+            {
+                if (m_RigidBody2d.velocity.magnitude > m_OnGroundVelocity)
+                {
+                    m_RigidBody2d.velocity -= Vector2.right * m_CurrentAcseleration;
+                }
+                else
+                {
+                    if (m_RigidBody2d.velocity.magnitude < m_MaxVelocity)
+                    {
+                        m_RigidBody2d.velocity += Vector2.right * m_CurrentAcseleration;
+                    }
+                    else
+                    {
+                        m_RigidBody2d.velocity = Vector2.right * m_OnGroundVelocity;
+                    }
+                }
+
+            }
+            else
+            {
+                m_RigidBody2d.AddForce(Vector2.right * force);
+            }
+            //m_View.RPC("SetVelocity", RpcTarget.All, m_RigidBody2d.velocity);
         }
-        return false;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         //Debug.Log(collision.gameObject.tag);
-        string[] flipTagList = { "simplePlatform" };
-        if (findElement(flipTagList, collision.gameObject.tag))
+        if (Array.Exists(m_FlipTagList, element => element == collision.gameObject.tag))
         {
-            numberOfGravityChangeAvailable += 1;
-            numberOfGravityChangeAvailable = (numberOfGravityChangeAvailable > maxNumberOfGravityChangeAvailable) ? maxNumberOfGravityChangeAvailable : numberOfGravityChangeAvailable;
-
-
-
+            m_NumberOfGravityChangeAvailable += 1;
+            m_NumberOfGravityChangeAvailable = Math.Min(m_NumberOfGravityChangeAvailable, m_MaxNumberOfGravityChangeAvailable);
         }
-        currentAcseleration = Mathf.Abs(m_rigidBody2d.velocity.magnitude - onGroundVelocity) / 50f;
+        m_CurrentAcseleration = Mathf.Abs(m_RigidBody2d.velocity.magnitude - m_OnGroundVelocity) / 50f;
+
+        /*
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            Debug.DrawLine(new Vector3(contact.point.x, contact.point.y, transform.position.z), transform.position, Color.red, 2, false);
+        }
+        Debug.Break();
+        */
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        
     }
 }
