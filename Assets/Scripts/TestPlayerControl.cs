@@ -16,11 +16,15 @@ public class TestPlayerControl : MonoBehaviour
     public float brakeVelocity = 0.005f;
     public float maxVelocity = 10f;
 
+    private float timeOfAcselerationOfPlatform = 1f;
+    private float currentAcseleration;
+
     BoxCollider2D m_boxCollider2D;
     Rigidbody2D m_rigidBody2d;
 
 
     int numberOfGravityChangeAvailable = 1;
+    int maxNumberOfGravityChangeAvailable = 1;
     void Start()
     {
         m_rigidBody2d = GetComponent<Rigidbody2D>();
@@ -54,15 +58,20 @@ public class TestPlayerControl : MonoBehaviour
 
     private void FixedUpdate()
     {
+        Debug.Log(currentAcseleration);
         if (checkGround())
         {
             if (m_rigidBody2d.velocity.magnitude > onGroundVelocity)
             {
-                m_rigidBody2d.velocity -= Vector2.right * brakeVelocity;
+                m_rigidBody2d.velocity -= Vector2.right * currentAcseleration;
             }
             else
             {
                 if (m_rigidBody2d.velocity.magnitude < maxVelocity)
+                {
+                    m_rigidBody2d.velocity += Vector2.right * currentAcseleration;
+                }
+                else
                 {
                     m_rigidBody2d.velocity = Vector2.right * onGroundVelocity;
                 }
@@ -76,11 +85,11 @@ public class TestPlayerControl : MonoBehaviour
 
         //Debug.Log(numberOfGravityChangeAvailable);
         //Debug.Log(enteredFlipCollider);
-        if(checkForAdditionalFlip())
-        {
-            numberOfGravityChangeAvailable += 1;
-            numberOfGravityChangeAvailable = (numberOfGravityChangeAvailable > 1) ? 1 : numberOfGravityChangeAvailable;
-        }
+        //if(checkForAdditionalFlip())
+        //{
+        //    numberOfGravityChangeAvailable += 1;
+        //    numberOfGravityChangeAvailable = (numberOfGravityChangeAvailable > 1) ? 1 : numberOfGravityChangeAvailable;
+        //}
 
     }
     private bool checkGround()
@@ -142,5 +151,20 @@ public class TestPlayerControl : MonoBehaviour
         }
         return false;
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        string[] flipTagList = { "simplePlatform" };
+        if(findElement(flipTagList, collision.gameObject.tag))
+        {
+            numberOfGravityChangeAvailable += 1;
+            numberOfGravityChangeAvailable = (numberOfGravityChangeAvailable > maxNumberOfGravityChangeAvailable) ? maxNumberOfGravityChangeAvailable : numberOfGravityChangeAvailable;
+            
+            
+            
+        }
+        currentAcseleration = Mathf.Abs(m_rigidBody2d.velocity.magnitude - onGroundVelocity) / 50f;
+    }
+        
 }
 
