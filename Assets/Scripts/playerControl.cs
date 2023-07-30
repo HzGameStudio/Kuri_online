@@ -28,6 +28,7 @@ public class playerControl : MonoBehaviour
     BoxCollider2D m_BoxCollider2D;
     Rigidbody2D m_RigidBody2d;
     PhotonView m_View;
+    public Transform m_Transform;
 
     // Physics
 
@@ -100,7 +101,7 @@ public class playerControl : MonoBehaviour
                     m_GravityDirection = !m_GravityDirection;
                     m_RigidBody2d.gravityScale = m_GravityDirection ? 1 : -1;
                     m_View.RPC("SetGravity", RpcTarget.All, m_GravityDirection);
-
+                    m_Transform.localScale = new Vector3(m_Transform.localScale.x, m_Transform.localScale.y * -1, m_Transform.localScale.z);
                     m_NumberOfGravityChangeAvailable--;
                 }
                 
