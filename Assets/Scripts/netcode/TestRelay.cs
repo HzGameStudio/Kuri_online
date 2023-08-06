@@ -8,9 +8,17 @@ using Unity.Services.Core;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using System.Threading.Tasks;
 
-public class NewBehaviourScript1 : MonoBehaviour
+public class TestRelay : MonoBehaviour
 {
+    public static TestRelay Instance { get; private set; }
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     public const int m_MaxPlayers = 4;
 
     string m_LobbyCode = "Enter code";
@@ -56,11 +64,19 @@ public class NewBehaviourScript1 : MonoBehaviour
             Debug.Log("Joining relay with " +  joinCode);
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
+            Debug.Log("1");
+
             RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
+
+            Debug.Log("2");
 
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
+            Debug.Log("3");
+
             NetworkManager.Singleton.StartClient();
+
+            Debug.Log("4");
         }
         catch (RelayServiceException ex)
         {
