@@ -17,5 +17,4 @@ public class NetworkButtons : MonoBehaviour
 
         GUILayout.EndArea();
     }
-
 }

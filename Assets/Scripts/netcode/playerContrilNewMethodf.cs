@@ -144,7 +144,7 @@ public class playerContrilNewMethodf : NetworkBehaviour
         if (findElement(flipTagList, collision.gameObject.tag))
         {
             m_numberOfFlips += 1;
-            m_numberOfFlips = (m_numberOfFlips > m_numberOfFlips) ? maxNumberOfGravityChangeAvailable : m_numberOfFlips;
+            m_numberOfFlips = (m_numberOfFlips > maxNumberOfGravityChangeAvailable) ? maxNumberOfGravityChangeAvailable : m_numberOfFlips;
         
         
         
