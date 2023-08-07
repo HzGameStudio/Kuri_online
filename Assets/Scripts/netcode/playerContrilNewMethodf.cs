@@ -70,9 +70,15 @@ public class playerContrilNewMethodf : NetworkBehaviour
     int s_NFlips = 1;
 
     public KuraState s_State = KuraState.Fall;
-    
+
+    //
+    [SerializeField]
+    private gameData gameManagerGameData;
+    //
     void Start()
     {
+
+        gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<gameData>();
         s_RigidBody2d.freezeRotation = true;
 
         if (IsClient && IsOwner)
@@ -100,18 +106,26 @@ public class playerContrilNewMethodf : NetworkBehaviour
 
     private void UpdateServer()
     {
-        if(sk_Request)
+        if(gameManagerGameData.isGameRuning)
         {
-            sk_Request = false;
-
-            if (s_NFlips > 0)
+            if (sk_Request)
             {
-                s_GravityDirection *= -1;
-                s_RigidBody2d.gravityScale = s_GravityDirection;
+                sk_Request = false;
 
-                s_NFlips--;
+                if (s_NFlips > 0)
+                {
+                    s_GravityDirection *= -1;
+                    s_RigidBody2d.gravityScale = s_GravityDirection;
+
+                    s_NFlips--;
+                }
             }
         }
+        else
+        {
+            s_RigidBody2d.gravityScale = 0;
+        }
+        
     }
 
     private void UpdateClient()
@@ -138,28 +152,36 @@ public class playerContrilNewMethodf : NetworkBehaviour
 
     private void FixedUpdateServer()
     {
-        if (checkGround())
+        if(gameManagerGameData.isGameRuning)
         {
-            if (s_RigidBody2d.velocity.magnitude > s_OnGroundVelocity)
+            if (checkGround())
             {
-                s_RigidBody2d.velocity -= Vector2.right * s_CurrentAcseleration;
-            }
-            else
-            {
-                if (s_RigidBody2d.velocity.magnitude < s_MaxVelocity)
+                if (s_RigidBody2d.velocity.magnitude > s_OnGroundVelocity)
                 {
-                    s_RigidBody2d.velocity += Vector2.right * s_CurrentAcseleration;
+                    s_RigidBody2d.velocity -= Vector2.right * s_CurrentAcseleration;
                 }
                 else
                 {
-                    s_RigidBody2d.velocity = Vector2.right * s_OnGroundVelocity;
+                    if (s_RigidBody2d.velocity.magnitude < s_MaxVelocity)
+                    {
+                        s_RigidBody2d.velocity += Vector2.right * s_CurrentAcseleration;
+                    }
+                    else
+                    {
+                        s_RigidBody2d.velocity = Vector2.right * s_OnGroundVelocity;
+                    }
                 }
+            }
+            else
+            {
+                s_RigidBody2d.AddForce(Vector2.right * s_Force);
             }
         }
         else
         {
-            s_RigidBody2d.AddForce(Vector2.right * s_Force);
+            s_RigidBody2d.velocity = Vector2.zero;
         }
+        
     }
 
     private bool checkGround()

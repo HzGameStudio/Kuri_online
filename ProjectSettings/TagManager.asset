@@ -6,6 +6,9 @@ TagManager:
   tags:
   - simplePlatform
   - player
+  - Bullet
+  - gameManager
+  - finish
   layers:
   - Default
   - TransparentFX
