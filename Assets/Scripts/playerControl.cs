@@ -8,6 +8,8 @@ public class playerControl : MonoBehaviour
 {
     public enum KuraState
     {
+        //Kissing a wall, ground
+        Stand,
         //No speed, air
         Fall,
         //No\Normal speed, ground
@@ -150,7 +152,6 @@ public class playerControl : MonoBehaviour
                         m_RigidBody2d.velocity = Vector2.right * m_OnGroundVelocity;
                     }
                 }
-
             }
             else
             {

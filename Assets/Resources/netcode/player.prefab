@@ -361,9 +361,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 989c52490af508d408f5f31a55dcd53a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxNumberOfGravityChangeAvailable: 1
-  maxVelocity: 10
-  onGroundVelocity: 2
-  m_Camera: {fileID: 5694893905788086875}
-  m_boxCollider2D: {fileID: 2771624505157586718}
-  m_rigidBody2d: {fileID: 8296578570219098812}
+  k_Camera: {fileID: 5694893905788086875}
+  s_BoxCollider2D: {fileID: 2771624505157586718}
+  s_RigidBody2d: {fileID: 8296578570219098812}
+  s_State: 1

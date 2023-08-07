@@ -12,16 +12,11 @@ using System.Threading.Tasks;
 
 public class TestRelay : MonoBehaviour
 {
-    public static TestRelay Instance { get; private set; }
-
-    private void Awake()
-    {
-        Instance = this;
-    }
-
     public const int m_MaxPlayers = 4;
 
-    string m_LobbyCode = "Enter code";
+    string m_EnterLobbyCode = "Enter code";
+
+    string m_LobbyCode;
 
     private async void Start()
     {
@@ -45,7 +40,9 @@ public class TestRelay : MonoBehaviour
 
             Debug.Log(joinCode);
 
-            RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
+            m_LobbyCode = joinCode;
+
+            RelayServerData relayServerData = new RelayServerData(allocation, "udp");
 
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
@@ -66,7 +63,7 @@ public class TestRelay : MonoBehaviour
 
             Debug.Log("1");
 
-            RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
+            RelayServerData relayServerData = new RelayServerData(joinAllocation, "udp");
 
             Debug.Log("2");
 
@@ -91,8 +88,13 @@ public class TestRelay : MonoBehaviour
         if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
         {
             if (GUILayout.Button("Host")) CreateRelay();
-            m_LobbyCode = GUILayout.TextField(m_LobbyCode);
-            if (GUILayout.Button("Client")) JoinRelay(m_LobbyCode);
+            m_EnterLobbyCode = GUILayout.TextField(m_EnterLobbyCode);
+            if (GUILayout.Button("Client")) JoinRelay(m_EnterLobbyCode);
+        }
+
+        if (NetworkManager.Singleton.IsClient)
+        {
+            GUILayout.Label(m_LobbyCode);
         }
 
         GUILayout.EndArea();

@@ -6,42 +6,83 @@ using Unity.Netcode;
 using UnityEngine;
 public class playerContrilNewMethodf : NetworkBehaviour
 {
-    //server veriable
+    public enum KuraState
+    {
+        //Kissing a wall, ground
+        Stand,
+        //No speed, air
+        Fall,
+        //No\Normal speed, ground
+        Run,
+        //Too much speed, ground
+        FlapRun,
+        //Normal speed, air
+        Fly,
+        //Too much speed, air
+        Glide
+    }
 
-    private NetworkVariable<bool> m_request  = new NetworkVariable<bool>(false);
+    // *** Constants
 
-    //private NetworkVariable<float> m_numberOfFlips = new NetworkVariable<float>(1);
-
-    private float m_numberOfFlips = 1;
-    private float m_gravityDiretion = 1;
-
-    private float currentAcseleration;
-
-    [SerializeField]
-    private int maxNumberOfGravityChangeAvailable = 1;
-
-    [SerializeField]
-    private float maxVelocity = 10f;
-
-
-
-    [SerializeField]
-    private float onGroundVelocity= 2f;
-
-    //client veriablse;
-    private int oldGravityDirection = 1;
-
-    private float oldNumberOfFlips = 1;
+    // Objects
 
     [SerializeField]
-    private Camera m_Camera;
+    private Camera k_Camera;
 
     [SerializeField]
-    private BoxCollider2D m_boxCollider2D;
+    private BoxCollider2D s_BoxCollider2D;
 
     [SerializeField]
-    private Rigidbody2D m_rigidBody2d;
+    private Rigidbody2D s_RigidBody2d;
 
+    // Physics
+
+    [SerializeField]
+    private const float s_OnGroundVelocity = 5f;
+
+    [SerializeField]
+    private const float s_BrakeVelocity = 0.005f;
+
+    [SerializeField]
+    private const float s_MaxVelocity = 10f;
+
+    [SerializeField]
+    private const int s_Force = 1;
+
+    [SerializeField]
+    private const float s_TimeOfAcselerationOfPlatform = 1f;
+
+    // Logic
+
+    private string[] s_FlipTagList = { "simplePlatform", "player" };
+
+    [SerializeField]
+    private const int s_MaxFlips = 1;
+
+    // *** Active
+
+    private bool sk_Request = false;
+
+    private float s_GravityDirection = 1    ;
+
+    private float s_CurrentAcseleration;
+
+    int s_NFlips = 1;
+
+    public KuraState s_State = KuraState.Fall;
+    
+    void Start()
+    {
+        s_RigidBody2d.freezeRotation = true;
+
+        if (IsClient && IsOwner)
+        {
+            if (!k_Camera.gameObject.activeInHierarchy)
+            {
+                k_Camera.gameObject.SetActive(true);
+            }
+        }
+    }
 
     // Update is called once per frame
     void Update()
@@ -59,49 +100,72 @@ public class playerContrilNewMethodf : NetworkBehaviour
 
     private void UpdateServer()
     {
-        if(m_request.Value)
+        if(sk_Request)
         {
-            if(m_numberOfFlips > 0)
-            {
-                m_request.Value = false;
-                m_gravityDiretion *= -1;
-                gameObject.GetComponent<Rigidbody2D>().gravityScale = m_gravityDiretion;
+            sk_Request = false;
 
-                m_numberOfFlips -= 1;
-                m_numberOfFlips = (m_numberOfFlips < 0) ? 0 : m_numberOfFlips;
-            }else
+            if (s_NFlips > 0)
             {
-                m_request.Value = false;
+                s_GravityDirection *= -1;
+                s_RigidBody2d.gravityScale = s_GravityDirection;
+
+                s_NFlips--;
             }
-            
         }
-        
+    }
 
+    private void UpdateClient()
+    {
+        if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
+        {
+            UpdateClientPositionServerRpc(true);
+        }
+    }
+
+    [ServerRpc]
+    public void UpdateClientPositionServerRpc(bool request)
+    {
+        sk_Request = request;
+    }
+
+    private void FixedUpdate()
+    {
+        if (IsServer)
+        {
+            FixedUpdateServer();
+        }
+    }
+
+    private void FixedUpdateServer()
+    {
         if (checkGround())
         {
-            gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.right * onGroundVelocity;
-            if (m_rigidBody2d.velocity.magnitude > onGroundVelocity)
+            if (s_RigidBody2d.velocity.magnitude > s_OnGroundVelocity)
             {
-                m_rigidBody2d.velocity -= Vector2.right * currentAcseleration;
+                s_RigidBody2d.velocity -= Vector2.right * s_CurrentAcseleration;
             }
             else
             {
-                if (m_rigidBody2d.velocity.magnitude < maxVelocity)
+                if (s_RigidBody2d.velocity.magnitude < s_MaxVelocity)
                 {
-                    m_rigidBody2d.velocity += Vector2.right * currentAcseleration;
+                    s_RigidBody2d.velocity += Vector2.right * s_CurrentAcseleration;
                 }
                 else
                 {
-                    m_rigidBody2d.velocity = Vector2.right * onGroundVelocity;
+                    s_RigidBody2d.velocity = Vector2.right * s_OnGroundVelocity;
                 }
             }
+        }
+        else
+        {
+            s_RigidBody2d.AddForce(Vector2.right * s_Force);
         }
     }
 
     private bool checkGround()
     {
         float extraBoxHeight = 0.1f;
-        RaycastHit2D[] raycasthit = Physics2D.BoxCastAll(m_boxCollider2D.bounds.center, new Vector2(m_boxCollider2D.bounds.size.x, m_boxCollider2D.bounds.size.y + extraBoxHeight), 0f, Vector2.zero, 0f);
+        RaycastHit2D[] raycasthit = Physics2D.BoxCastAll(s_BoxCollider2D.bounds.center, new Vector2(s_BoxCollider2D.bounds.size.y, s_BoxCollider2D.bounds.size.y + extraBoxHeight), 0f, Vector2.zero, 0f);
 
         for (int i = 0; i < raycasthit.Length; i++)
         {
@@ -112,54 +176,26 @@ public class playerContrilNewMethodf : NetworkBehaviour
                 return true;
             }
         }
-
         return false;
-
-    }
-
-    private void UpdateClient()
-    {
-        if (IsOwner && !m_Camera.gameObject.activeInHierarchy)
-        {
-            m_Camera.gameObject.SetActive(true);
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            oldGravityDirection *= -1;
-            UpdateClientPositionServerRpsServerRpc(true);
-        }
-    }
-
-    [ServerRpc]
-    public void UpdateClientPositionServerRpsServerRpc(bool request)
-    {
-        m_request.Value = request;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!IsServer) return;
-        
-        string[] flipTagList = { "simplePlatform", "player" };
-        if (findElement(flipTagList, collision.gameObject.tag))
-        {
-            m_numberOfFlips += 1;
-            m_numberOfFlips = (m_numberOfFlips > maxNumberOfGravityChangeAvailable) ? maxNumberOfGravityChangeAvailable : m_numberOfFlips;
-        
-        
-        
-        }
-        currentAcseleration = Mathf.Abs(m_rigidBody2d.velocity.magnitude - onGroundVelocity) / 50f;
-        
 
-    }
-
-    private bool findElement(string[] arrey, string element)
-    {
-        for (int i = 0; i < arrey.Length; i++)
+        //Debug.Log(collision.gameObject.tag);
+        if (Array.Exists(s_FlipTagList, element => collision.gameObject.CompareTag(element)))
         {
-            if (element == arrey[i]) return true;
+            s_NFlips ++;
+            s_NFlips = Math.Min(s_NFlips, s_MaxFlips);
+            s_NFlips = (s_NFlips > s_MaxFlips) ? s_MaxFlips : s_NFlips;
         }
-        return false;
+        s_CurrentAcseleration = Mathf.Abs(s_RigidBody2d.velocity.magnitude - s_OnGroundVelocity) / 50f * s_TimeOfAcselerationOfPlatform;
+
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            Debug.DrawLine(new Vector3(contact.point.x, contact.point.y, transform.position.z), transform.position, Color.red, 2, false);
+        }
+        //Debug.Break();
     }
 }
