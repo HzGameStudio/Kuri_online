@@ -99,7 +99,10 @@ public class PlayerControl : NetworkBehaviour
         gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<gameData>();
         playerIDText = GameObject.FindGameObjectWithTag("playerID").GetComponent<TextMeshProUGUI>();
         winerText = GameObject.FindGameObjectWithTag("winerText").GetComponent<TextMeshProUGUI>();
-        winerText.gameObject.SetActive(false);
+        if (IsClient && IsOwner)
+        {
+            winerText.gameObject.SetActive(false);
+        }
 
         //Debug.Log(GameObject.FindGameObjectWithTag("playerID").GetComponent<Te>);
 
@@ -119,7 +122,10 @@ public class PlayerControl : NetworkBehaviour
             playerID = gameManagerGameData.numPlayersInGame;
         }
 
-        playerIDText.text = "player num" + playerID.ToString();
+        if (IsClient && IsOwner)
+        {
+            playerIDText.text = "player num" + playerID.ToString();
+        }
     }
 
     // Update is called once per frame
@@ -154,6 +160,8 @@ public class PlayerControl : NetworkBehaviour
                 }
             }
         }
+        // YARIK PLIS FIKS !!!! AND SEND DICK PICK IN DARK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        /*
         else
         {
             winerText.gameObject.SetActive(true);
@@ -161,6 +169,7 @@ public class PlayerControl : NetworkBehaviour
             s_RigidBody2d.gravityScale = 0;
             transform.position += new Vector3(3f, 0f, 0f);
         }
+        */
         
     }
 
