@@ -1,11 +1,30 @@
 using System;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using Unity.Netcode;
 using UnityEngine;
+using TMPro;
+using UnityEditor.Experimental.GraphView;
+
 public class playerContrilNewMethodf : NetworkBehaviour
 {
+    /////////////////////////////////////////////////////////////////////////////
+    public int playerID;
+
+    
+
+    [SerializeField]
+    private TextMeshProUGUI playerIDText;
+
+    [SerializeField]
+    private TextMeshProUGUI winerText;
+
+    public int placeInGame = -1;
+
+    /////////////////////////////////////////////////////////////////////////////
+
     public enum KuraState
     {
         //Kissing a wall, ground
@@ -79,6 +98,12 @@ public class playerContrilNewMethodf : NetworkBehaviour
     {
 
         gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<gameData>();
+        playerIDText = GameObject.FindGameObjectWithTag("playerID").GetComponent<TextMeshProUGUI>();
+        winerText = GameObject.FindGameObjectWithTag("winerText").GetComponent<TextMeshProUGUI>();
+        winerText.gameObject.SetActive(false);
+
+        //Debug.Log(GameObject.FindGameObjectWithTag("playerID").GetComponent<Te>);
+
         s_RigidBody2d.freezeRotation = true;
 
         if (IsClient && IsOwner)
@@ -88,6 +113,14 @@ public class playerContrilNewMethodf : NetworkBehaviour
                 k_Camera.gameObject.SetActive(true);
             }
         }
+
+        if(IsServer)
+        {
+            gameManagerGameData.CalcNumPlayersInGame();
+            playerID = gameManagerGameData.numPlayersInGame;
+        }
+
+        playerIDText.text = "player num" + playerID.ToString();
     }
 
     // Update is called once per frame
@@ -106,7 +139,8 @@ public class playerContrilNewMethodf : NetworkBehaviour
 
     private void UpdateServer()
     {
-        if(gameManagerGameData.isGameRuning)
+        //Debug.Log(nm.ConnectedClientsList.Count);
+        if (placeInGame == -1)
         {
             if (sk_Request)
             {
@@ -123,7 +157,10 @@ public class playerContrilNewMethodf : NetworkBehaviour
         }
         else
         {
+            winerText.gameObject.SetActive(true);
+            winerText.text = "You won " + placeInGame.ToString() + "place";
             s_RigidBody2d.gravityScale = 0;
+            transform.position += new Vector3(3f, 0f, 0f);
         }
         
     }
@@ -152,7 +189,7 @@ public class playerContrilNewMethodf : NetworkBehaviour
 
     private void FixedUpdateServer()
     {
-        if(gameManagerGameData.isGameRuning)
+        if(placeInGame == -1)
         {
             if (checkGround())
             {

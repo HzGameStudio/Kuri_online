@@ -9,6 +9,8 @@ TagManager:
   - Bullet
   - gameManager
   - finish
+  - playerID
+  - winerText
   layers:
   - Default
   - TransparentFX

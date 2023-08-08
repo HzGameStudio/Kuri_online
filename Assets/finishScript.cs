@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class finishScript : MonoBehaviour
@@ -19,7 +20,9 @@ public class finishScript : MonoBehaviour
         {
             //end of game someone won
             Debug.Log("finish of the game hz wich kura won");
-            gameManagerGameData.isGameRuning = false;
+            gameManagerGameData.numFinishedPlayers++;
+            collision.gameObject.GetComponent<playerContrilNewMethodf>().placeInGame = gameManagerGameData.numFinishedPlayers;
+            //gameManagerGameData.isGameRuning = false;
         }
     }
 
