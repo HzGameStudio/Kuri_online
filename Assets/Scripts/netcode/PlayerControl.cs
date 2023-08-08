@@ -6,9 +6,8 @@ using System.Globalization;
 using Unity.Netcode;
 using UnityEngine;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 
-public class playerContrilNewMethodf : NetworkBehaviour
+public class PlayerControl : NetworkBehaviour
 {
     /////////////////////////////////////////////////////////////////////////////
     public int playerID;

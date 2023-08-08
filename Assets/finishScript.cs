@@ -21,7 +21,7 @@ public class finishScript : MonoBehaviour
             //end of game someone won
             Debug.Log("finish of the game hz wich kura won");
             gameManagerGameData.numFinishedPlayers++;
-            collision.gameObject.GetComponent<playerContrilNewMethodf>().placeInGame = gameManagerGameData.numFinishedPlayers;
+            collision.gameObject.GetComponent<PlayerControl>().placeInGame = gameManagerGameData.numFinishedPlayers;
             //gameManagerGameData.isGameRuning = false;
         }
     }
