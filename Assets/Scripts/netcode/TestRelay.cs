@@ -16,13 +16,10 @@ public class TestRelay : MonoBehaviour
 
     private string m_EnterLobbyCode = "Enter code";
 
-    private string m_LobbyCode;
+    private string m_LobbyCode = "IF YOU SEE THIS THEN YOU'RE OFFLINE, YARIK FORGOT TO CHANGE UNITY TRANSFORM PROTOCOL TYPE !!!!!!!!!!!!!!!!!!!!!!!!!!! hi yarik :)";
 
     [SerializeField]
     private GameObject m_NetworkManager;
-
-    [SerializeField]
-    private GameObject m_NetworkManagerOffline;
 
     private async void Start()
     {
@@ -95,31 +92,26 @@ public class TestRelay : MonoBehaviour
         {
             if (GUILayout.Button("Host"))
             {
-                m_NetworkManager.SetActive(true);
-                m_NetworkManagerOffline.SetActive(false);
+                if (m_NetworkManager.GetComponent<UnityTransport>().Protocol == UnityTransport.ProtocolType.RelayUnityTransport)
+                    CreateRelay();
+                else
+                {
+                    AuthenticationService.Instance.SignOut();
 
-                CreateRelay();
+                    NetworkManager.Singleton.StartHost();
+                }
             }
             m_EnterLobbyCode = GUILayout.TextField(m_EnterLobbyCode);
             if (GUILayout.Button("Client"))
             {
-                m_NetworkManager.SetActive(true);
-                m_NetworkManagerOffline.SetActive(false);
+                if (m_NetworkManager.GetComponent<UnityTransport>().Protocol == UnityTransport.ProtocolType.RelayUnityTransport)
+                    JoinRelay(m_EnterLobbyCode);
+                else
+                {
+                    AuthenticationService.Instance.SignOut();
 
-                JoinRelay(m_EnterLobbyCode);
-            }
-
-            if (GUILayout.Button("Host - offline"))
-            {
-                AuthenticationService.Instance.SignOut();
-
-                NetworkManager.Singleton.StartHost();
-            }
-            if (GUILayout.Button("Client - offline"))
-            {
-                AuthenticationService.Instance.SignOut();
-
-                NetworkManager.Singleton.StartClient();
+                    NetworkManager.Singleton.StartClient();
+                }
             }
         }
 

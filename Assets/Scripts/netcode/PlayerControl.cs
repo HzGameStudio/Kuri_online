@@ -99,7 +99,6 @@ public class PlayerControl : NetworkBehaviour
     //
     void Start()
     {
-
         gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<gameData>();
         playerIDText = GameObject.FindGameObjectWithTag("playerID").GetComponent<TextMeshProUGUI>();
         winerText = GameObject.FindGameObjectWithTag("winerText").GetComponent<TextMeshProUGUI>();
