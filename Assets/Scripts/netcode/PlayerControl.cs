@@ -22,6 +22,10 @@ public class PlayerControl : NetworkBehaviour
 
     public int placeInGame = -1;
 
+    private bool wereTeleportedFromFinish = false;
+
+    [SerializeField]
+    private Vector2 rangeTeleportation = new Vector2(2, 10);
     /////////////////////////////////////////////////////////////////////////////
 
     public enum KuraState
@@ -160,25 +164,35 @@ public class PlayerControl : NetworkBehaviour
                 }
             }
         }
-        // YARIK PLIS FIKS !!!! AND SEND DICK PICK IN DARK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        /*
         else
         {
-            winerText.gameObject.SetActive(true);
-            winerText.text = "You won " + placeInGame.ToString() + "place";
             s_RigidBody2d.gravityScale = 0;
-            transform.position += new Vector3(3f, 0f, 0f);
+            if(!wereTeleportedFromFinish)
+            {
+                transform.position += new Vector3(UnityEngine.Random.Range(rangeTeleportation.x, rangeTeleportation.y), 0f, 0f);
+                wereTeleportedFromFinish = true;
+            }
+            
         }
-        */
+        // YARIK PLIS FIKS !!!! AND SEND DICK PICK IN DARK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! I WILL:) 8=0
         
+
     }
 
     private void UpdateClient()
     {
-        if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
+        if(placeInGame == -1)
         {
-            UpdateClientPositionServerRpc(true);
+            if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
+            {
+                UpdateClientPositionServerRpc(true);
+            }
+        }else
+        {
+            winerText.gameObject.SetActive(true);
+            winerText.text = "YOU WON " + placeInGame.ToString() + " PLACE!!!";
         }
+        
     }
 
     [ServerRpc]

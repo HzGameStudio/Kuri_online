@@ -11,10 +11,8 @@ public class finishScript : NetworkBehaviour
 
     void Start()
     {
-        if (IsServer)
-        {
-            gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<gameData>();
-        }
+        Debug.Log(GameObject.FindGameObjectWithTag("gameManager"));
+        gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<gameData>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
