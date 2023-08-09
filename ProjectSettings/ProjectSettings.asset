@@ -283,7 +283,14 @@ PlayerSettings:
   AndroidMinifyDebug: 0
   AndroidValidateAppBundleSize: 1
   AndroidAppBundleSizeToValidate: 150
-  m_BuildTargetIcons: []
+  m_BuildTargetIcons:
+  - m_BuildTarget: 
+    m_Icons:
+    - serializedVersion: 2
+      m_Icon: {fileID: 2800000, guid: d32969d52f7018643acdbf4d9c7e2fe6, type: 3}
+      m_Width: 128
+      m_Height: 128
+      m_Kind: 0
   m_BuildTargetPlatformIcons:
   - m_BuildTarget: Android
     m_Icons:
@@ -817,11 +824,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 97af349f-4825-4ffb-a556-d5fcd0f3c1cf
+  cloudProjectId: ddaf5dc0-b71d-48e3-a6e1-65be82de6bd8
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Kuri_Online
-  organizationId: vanoanto
+  projectName: Kuri_online (1)
+  organizationId: flowwithchicken
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
