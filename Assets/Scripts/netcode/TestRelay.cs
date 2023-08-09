@@ -14,9 +14,15 @@ public class TestRelay : MonoBehaviour
 {
     public const int m_MaxPlayers = 4;
 
-    string m_EnterLobbyCode = "Enter code";
+    private string m_EnterLobbyCode = "Enter code";
 
-    string m_LobbyCode;
+    private string m_LobbyCode;
+
+    [SerializeField]
+    private GameObject m_NetworkManager;
+
+    [SerializeField]
+    private GameObject m_NetworkManagerOffline;
 
     private async void Start()
     {
@@ -87,9 +93,34 @@ public class TestRelay : MonoBehaviour
 
         if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
         {
-            if (GUILayout.Button("Host")) CreateRelay();
+            if (GUILayout.Button("Host"))
+            {
+                m_NetworkManager.SetActive(true);
+                m_NetworkManagerOffline.SetActive(false);
+
+                CreateRelay();
+            }
             m_EnterLobbyCode = GUILayout.TextField(m_EnterLobbyCode);
-            if (GUILayout.Button("Client")) JoinRelay(m_EnterLobbyCode);
+            if (GUILayout.Button("Client"))
+            {
+                m_NetworkManager.SetActive(true);
+                m_NetworkManagerOffline.SetActive(false);
+
+                JoinRelay(m_EnterLobbyCode);
+            }
+
+            if (GUILayout.Button("Host - offline"))
+            {
+                AuthenticationService.Instance.SignOut();
+
+                NetworkManager.Singleton.StartHost();
+            }
+            if (GUILayout.Button("Client - offline"))
+            {
+                AuthenticationService.Instance.SignOut();
+
+                NetworkManager.Singleton.StartClient();
+            }
         }
 
         if (NetworkManager.Singleton.IsClient)
