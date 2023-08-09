@@ -62,19 +62,22 @@ public class PlayerControl : NetworkBehaviour
     // Physics
 
     [SerializeField]
-    private const float s_OnGroundVelocity = 5f;
+    private const float s_OnGroundVelocity = 10f;
 
     [SerializeField]
-    private const float s_BrakeVelocity = 0.005f;
+    private const float s_BrakeVelocity = 0.01f;
 
     [SerializeField]
-    private const float s_MaxVelocity = 10f;
+    private const float s_MaxVelocity = 20f;
 
     [SerializeField]
-    private const int s_Force = 1;
+    private const int s_Force = 2;
 
     [SerializeField]
-    private const float s_TimeOfAcselerationOfPlatform = 1f;
+    private const float s_TimeOfAcselerationOfPlatform = 0.5f;
+
+    [SerializeField]
+    private const float s_GravityMultiplier = 1.5f;
 
     // Logic
 
@@ -167,7 +170,7 @@ public class PlayerControl : NetworkBehaviour
                 if (s_NFlips > 0)
                 {
                     s_GravityDirection *= -1;
-                    s_RigidBody2d.gravityScale = s_GravityDirection;
+                    s_RigidBody2d.gravityScale = s_GravityDirection * s_GravityMultiplier;
 
                     s_NFlips--;
                 }

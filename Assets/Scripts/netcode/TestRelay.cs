@@ -64,19 +64,13 @@ public class TestRelay : MonoBehaviour
             Debug.Log("Joining relay with " +  joinCode);
             JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
 
-            Debug.Log("1");
+            m_LobbyCode = joinCode;
 
             RelayServerData relayServerData = new RelayServerData(joinAllocation, "udp");
 
-            Debug.Log("2");
-
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
-            Debug.Log("3");
-
             NetworkManager.Singleton.StartClient();
-
-            Debug.Log("4");
         }
         catch (RelayServiceException ex)
         {
