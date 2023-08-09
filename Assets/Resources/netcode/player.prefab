@@ -261,7 +261,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &6622316633189505540
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -361,7 +361,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 989c52490af508d408f5f31a55dcd53a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerID:
+    m_InternalValue: 0
+  placeInGame:
+    m_InternalValue: -1
+  playerIDText: {fileID: 0}
+  winerText: {fileID: 0}
+  rangeTeleportation: {x: 2, y: 10}
   k_Camera: {fileID: 5694893905788086875}
   s_BoxCollider2D: {fileID: 2771624505157586718}
   s_RigidBody2d: {fileID: 8296578570219098812}
   s_State: 1
+  gameManagerGameData: {fileID: 0}

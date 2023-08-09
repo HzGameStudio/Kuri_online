@@ -10,9 +10,11 @@ using TMPro;
 public class PlayerControl : NetworkBehaviour
 {
     /////////////////////////////////////////////////////////////////////////////
-    public int playerID;
+    //public int playerID;
 
-    
+    public NetworkVariable<int> playerID = new NetworkVariable<int>();
+    public NetworkVariable<int> placeInGame = new NetworkVariable<int>(-1);
+
 
     [SerializeField]
     private TextMeshProUGUI playerIDText;
@@ -20,7 +22,7 @@ public class PlayerControl : NetworkBehaviour
     [SerializeField]
     private TextMeshProUGUI winerText;
 
-    public int placeInGame = -1;
+    //public int placeInGame = -1;
 
     private bool wereTeleportedFromFinish = false;
 
@@ -101,15 +103,22 @@ public class PlayerControl : NetworkBehaviour
     {
         gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<gameData>();
         playerIDText = GameObject.FindGameObjectWithTag("playerID").GetComponent<TextMeshProUGUI>();
-        winerText = GameObject.FindGameObjectWithTag("winerText").GetComponent<TextMeshProUGUI>();
+        
+        
         if (IsClient && IsOwner)
         {
-            winerText.gameObject.SetActive(false);
+            if (GameObject.FindGameObjectWithTag("winerText").GetComponent<TextMeshProUGUI>() != null)
+            {
+                winerText = GameObject.FindGameObjectWithTag("winerText").GetComponent<TextMeshProUGUI>();
+                winerText.gameObject.SetActive(false);
+
+            }
+
         }
 
         //Debug.Log(GameObject.FindGameObjectWithTag("playerID").GetComponent<Te>);
 
-        s_RigidBody2d.freezeRotation = true;
+        //s_RigidBody2d.freezeRotation = true;
 
         if (IsClient && IsOwner)
         {
@@ -121,13 +130,14 @@ public class PlayerControl : NetworkBehaviour
 
         if(IsServer)
         {
+            Debug.Log("djfjfdjdffd");
             gameManagerGameData.CalcNumPlayersInGame();
-            playerID = gameManagerGameData.numPlayersInGame;
+            playerID.Value = gameManagerGameData.numPlayersInGame.Value;
         }
 
         if (IsClient && IsOwner)
         {
-            playerIDText.text = "player num" + playerID.ToString();
+            playerIDText.text = "player num" + playerID.Value.ToString();
         }
     }
 
@@ -148,7 +158,7 @@ public class PlayerControl : NetworkBehaviour
     private void UpdateServer()
     {
         //Debug.Log(nm.ConnectedClientsList.Count);
-        if (placeInGame == -1)
+        if (placeInGame.Value == -1)
         {
             if (sk_Request)
             {
@@ -180,7 +190,7 @@ public class PlayerControl : NetworkBehaviour
 
     private void UpdateClient()
     {
-        if(placeInGame == -1)
+        if(placeInGame.Value == -1)
         {
             if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
             {
@@ -189,7 +199,7 @@ public class PlayerControl : NetworkBehaviour
         }else
         {
             winerText.gameObject.SetActive(true);
-            winerText.text = "YOU WON " + placeInGame.ToString() + " PLACE!!!";
+            winerText.text = "YOU WON " + placeInGame.Value.ToString() + " PLACE!!!";
         }
         
     }
@@ -210,7 +220,7 @@ public class PlayerControl : NetworkBehaviour
 
     private void FixedUpdateServer()
     {
-        if(placeInGame == -1)
+        if(placeInGame.Value == -1)
         {
             if (checkGround())
             {
