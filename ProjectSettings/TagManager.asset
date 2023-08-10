@@ -11,6 +11,8 @@ TagManager:
   - finish
   - playerID
   - winerText
+  - spawnPoint
+  - startButton
   layers:
   - Default
   - TransparentFX

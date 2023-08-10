@@ -22,6 +22,9 @@ public class PlayerControl : NetworkBehaviour
     [SerializeField]
     private TextMeshProUGUI winerText;
 
+    [SerializeField]
+    private GameObject startGameButton;
+
     //public int placeInGame = -1;
 
     private bool wereTeleportedFromFinish = false;
@@ -133,6 +136,8 @@ public class PlayerControl : NetworkBehaviour
 
         if(IsServer)
         {
+            startGameButton = gameManagerGameData.startButton;
+            startGameButton.SetActive(true);
             Debug.Log("djfjfdjdffd");
             gameManagerGameData.CalcNumPlayersInGame();
             playerID.Value = gameManagerGameData.numPlayersInGame.Value;
@@ -142,20 +147,34 @@ public class PlayerControl : NetworkBehaviour
         {
             playerIDText.text = "player num" + playerID.Value.ToString();
         }
+
+        //Shange position to a Spawn postion
+        if(IsServer)
+        {
+            transform.position = gameManagerGameData.GetSpawnPosition();
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (IsServer)
+        if(gameManagerGameData.isGameRuning)
         {
-            UpdateServer();
-        }
+            if(startGameButton.activeInHierarchy)
+            {
+                startGameButton.SetActive(false);
+            }
+            if (IsServer)
+            {
+                UpdateServer();
+            }
 
-        if (IsClient && IsOwner)
-        {
-            UpdateClient();
+            if (IsClient && IsOwner)
+            {
+                UpdateClient();
+            }
         }
+        
     }
 
     private void UpdateServer()
@@ -215,10 +234,14 @@ public class PlayerControl : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (IsServer)
+        if (gameManagerGameData.isGameRuning)
         {
-            FixedUpdateServer();
+            if (IsServer)
+            {
+                FixedUpdateServer();
+            }
         }
+        
     }
 
     private void FixedUpdateServer()
