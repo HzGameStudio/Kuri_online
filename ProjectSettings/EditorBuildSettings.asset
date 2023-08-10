@@ -18,7 +18,7 @@ EditorBuildSettings:
     path: Assets/Scenes/testScene.unity
     guid: e80d3b4abd6141f4489cd1f62e641ed1
   - enabled: 1
-    path: Assets/Scenes/networkGAme.unity
+    path: Assets/Scenes/NetworkGame.unity
     guid: 899e26967f11da7468bd6285f5315b86
   m_configObjects:
     com.unity.adaptiveperformance.loader_settings: {fileID: 11400000, guid: 67327d95d28d18d4eac08df7b631f5fd, type: 2}
