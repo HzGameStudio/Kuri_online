@@ -10,11 +10,9 @@ using TMPro;
 public class PlayerControl : NetworkBehaviour
 {
     /////////////////////////////////////////////////////////////////////////////
-    //public int playerID;
 
     public NetworkVariable<int> playerID = new NetworkVariable<int>();
     public NetworkVariable<int> placeInGame = new NetworkVariable<int>(-1);
-
 
     [SerializeField]
     private TextMeshProUGUI playerIDText;
@@ -74,22 +72,22 @@ public class PlayerControl : NetworkBehaviour
     // Physics
 
     [SerializeField]
-    private const float s_OnGroundVelocity = 10f;
+    private float s_OnGroundVelocity = 10f;
 
     [SerializeField]
-    private const float s_BrakeVelocity = 0.01f;
+    private float s_BrakeVelocity = 0.01f;
 
     [SerializeField]
-    private const float s_MaxVelocity = 20f;
+    private float s_MaxVelocity = 20f;
 
     [SerializeField]
-    private const int s_Force = 2;
+    private int s_Force = 100;
 
     [SerializeField]
-    private const float s_TimeOfAcselerationOfPlatform = 0.5f;
+    private float s_TimeOfAcselerationOfPlatform = 0.5f;
 
     [SerializeField]
-    private const float s_GravityMultiplier = 1.5f;
+    private float s_GravityMultiplier = 1.5f;
 
     // Logic
 
@@ -146,7 +144,6 @@ public class PlayerControl : NetworkBehaviour
         if(IsServer)
         {
             startGameButton.SetActive(true);
-            Debug.Log("djfjfdjdffd");
             gameManagerGameData.CalcNumPlayersInGame();
             playerID.Value = gameManagerGameData.numPlayersInGame.Value;
         }
@@ -243,7 +240,8 @@ public class PlayerControl : NetworkBehaviour
             winerText.gameObject.SetActive(true);
             winerText.text = "YOU WON " + placeInGame.Value.ToString() + " PLACE!!!";
         }
-        
+
+        Debug.DrawRay(transform.position, s_RigidBody2d.velocity, Color.red, 1 / 300f);
     }
 
     [ServerRpc]
@@ -270,6 +268,8 @@ public class PlayerControl : NetworkBehaviour
         {
             if (checkGround())
             {
+                Debug.Log("On ground");
+
                 if (s_RigidBody2d.velocity.magnitude > s_OnGroundVelocity)
                 {
                     s_RigidBody2d.velocity -= Vector2.right * s_CurrentAcseleration;
@@ -301,7 +301,7 @@ public class PlayerControl : NetworkBehaviour
     private bool checkGround()
     {
         float extraBoxHeight = 0.1f;
-        RaycastHit2D[] raycasthit = Physics2D.BoxCastAll(s_BoxCollider2D.bounds.center, new Vector2(s_BoxCollider2D.bounds.size.y, s_BoxCollider2D.bounds.size.y + extraBoxHeight), 0f, Vector2.zero, 0f);
+        RaycastHit2D[] raycasthit = Physics2D.BoxCastAll(s_BoxCollider2D.bounds.center, new Vector2(s_BoxCollider2D.bounds.size.x, s_BoxCollider2D.bounds.size.y + extraBoxHeight), 0f, Vector2.zero, 0f);
 
         for (int i = 0; i < raycasthit.Length; i++)
         {
