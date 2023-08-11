@@ -1,18 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class PlayerData : MonoBehaviour
+public class PlayerData : NetworkBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public NetworkVariable<bool> FinishedGame = new NetworkVariable<bool>(false);
+    public NetworkVariable<int> playerID = new NetworkVariable<int>(-1);
+    public NetworkVariable<int> placeInGame = new NetworkVariable<int>(-1);
 
-    // Update is called once per frame
-    void Update()
+    private GameData gameManagerGameData;
+
+    private void Start()
     {
-        
+        gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
+
+        playerID.Value = gameManagerGameData.numPlayersInGame.Value;
     }
 }

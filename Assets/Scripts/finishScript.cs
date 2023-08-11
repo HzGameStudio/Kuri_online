@@ -6,12 +6,10 @@ using UnityEngine;
 
 public class FinishScript : NetworkBehaviour
 {
-    [SerializeField]
     private GameData gameManagerGameData;
 
     void Start()
     {
-        Debug.Log(GameObject.FindGameObjectWithTag("gameManager"));
         gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
     }
 
@@ -25,7 +23,8 @@ public class FinishScript : NetworkBehaviour
                 //end of game someone won
                 Debug.Log("finish of the game hz wich kura won");
                 gameManagerGameData.numFinishedPlayers++;
-                collision.gameObject.GetComponent<PlayerUIManager>().placeInGame.Value = gameManagerGameData.numFinishedPlayers;
+                collision.gameObject.GetComponent<PlayerData>().placeInGame.Value = gameManagerGameData.numFinishedPlayers;
+                collision.gameObject.GetComponent<PlayerData>().FinishedGame.Value = true;
                 //gameManagerGameData.isGameRunning = false;
             }
         }

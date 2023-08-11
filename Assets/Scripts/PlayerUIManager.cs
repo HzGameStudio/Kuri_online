@@ -6,17 +6,13 @@ using TMPro;
 
 public class PlayerUIManager : NetworkBehaviour
 {
-    public NetworkVariable<int> playerID = new NetworkVariable<int>();
-    public NetworkVariable<int> placeInGame = new NetworkVariable<int>(-1);
-
-    [SerializeField]
     private GameData gameManagerGameData;
 
     private GameObject startGameButton;
 
     private TextMeshProUGUI playerIDText;
 
-    private TextMeshProUGUI winerText;
+    private TextMeshProUGUI winnerText;
 
     private void Start()
     {
@@ -24,18 +20,17 @@ public class PlayerUIManager : NetworkBehaviour
 
         startGameButton = gameManagerGameData.startButton;
         playerIDText = gameManagerGameData.playerIDText;
-        winerText = gameManagerGameData.winerText;
+        winnerText = gameManagerGameData.winnerText;
 
         if (IsServer)
         {
             startGameButton.SetActive(true);
             gameManagerGameData.CalcNumPlayersInGame();
-            playerID.Value = gameManagerGameData.numPlayersInGame.Value;
         }
 
         if (IsClient && IsOwner)
         {
-            playerIDText.text = "player num" + playerID.Value.ToString();
+            playerIDText.text = "player num" + GetComponent<PlayerData>().playerID.Value.ToString();
         }
 
         // this shouldnt be here, make player spawner
@@ -46,6 +41,7 @@ public class PlayerUIManager : NetworkBehaviour
         }
 
         gameManagerGameData.isGameRunning.OnValueChanged += OnIsGameRunningChanged;
+        GetComponent<PlayerData>().placeInGame.OnValueChanged += OnPlaceInGameChanged;
     }
 
     private void OnIsGameRunningChanged(bool previous, bool current)
@@ -53,27 +49,12 @@ public class PlayerUIManager : NetworkBehaviour
          startGameButton.SetActive(false);
     }
 
-    private void Update()
+    private void OnPlaceInGameChanged(int previous, int current)
     {
-        Debug.Log("HELP1");
-        if (IsServer)
+        if (GetComponent<PlayerData>().placeInGame.Value != -1)
         {
-
-        }
-        if (IsClient && IsOwner)
-        {
-            Debug.Log("HELP2");
-            UpdateClient();
-        }
-    }
-
-    private void UpdateClient()
-    {
-        if (placeInGame.Value != -1)
-        {
-            Debug.Log("HELP");
-            winerText.gameObject.SetActive(true);
-            winerText.text = "YOU WON " + placeInGame.Value.ToString() + " PLACE!!!";
+            winnerText.gameObject.SetActive(true);
+            winnerText.text = "YOU WON " + GetComponent<PlayerData>().placeInGame.Value.ToString() + " PLACE!!!";
         }
     }
 }

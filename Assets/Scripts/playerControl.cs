@@ -10,12 +10,6 @@ using UnityEditor.Search;
 
 public class PlayerControl : NetworkBehaviour
 {
-    //temp here
-    private bool wereTeleportedFromFinish = false;
-
-    [SerializeField]
-    private Vector2 rangeTeleportation = new Vector2(2, 10);
-
     public enum KuraState
     {
         //Kissing a wall, ground
@@ -33,29 +27,6 @@ public class PlayerControl : NetworkBehaviour
     }
 
     // *** Constants
-
-    // Objects
-
-    [SerializeField]
-    private Camera k_Camera;
-
-    [SerializeField]
-    private BoxCollider2D s_BoxCollider2D;
-
-    [SerializeField]
-    private Rigidbody2D s_RigidBody2d;
-
-    [SerializeField]
-    private Transform s_Transform;
-
-    [SerializeField]
-    private GameData gameManagerGameData;
-
-    //[SerializeField]
-    //private GameObject s_RedKura;
-
-    //[SerializeField]
-    //private GameObject s_BlueKura;
 
     // Physics
 
@@ -77,18 +48,45 @@ public class PlayerControl : NetworkBehaviour
     [SerializeField]
     private float s_GravityMultiplier;
 
+    [SerializeField]
+    private Vector2 rangeTeleportation = new Vector2(2, 10);
+
+    // Objects
+
+    [SerializeField]
+    private Camera k_Camera;
+
+    [SerializeField]
+    private BoxCollider2D s_BoxCollider2D;
+
+    [SerializeField]
+    private Rigidbody2D s_RigidBody2d;
+
+    [SerializeField]
+    private Transform s_Transform;
+
+    private GameData gameManagerGameData;
+
+    //[SerializeField]
+    //private GameObject s_RedKura;
+
+    //[SerializeField]
+    //private GameObject s_BlueKura;
+
     // Logic
 
+    [SerializeField]
     private string[] s_FlipTagList = { "simplePlatform", "player" };
 
     [SerializeField]
-    private const int s_MaxFlips = 1;
+    private int s_MaxFlips = 1;
+    
 
     // *** Active
 
     private bool sk_Request = false;
 
-    private float s_GravityDirection = 1    ;
+    private int s_GravityDirection = 1;
 
     private float s_CurrentAcseleration;
 
@@ -106,8 +104,6 @@ public class PlayerControl : NetworkBehaviour
             }
         }
 
-        gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
-
         //if(IsClient && IsOwner)
         //{
         //    s_RedKura.SetActive(false);
@@ -118,66 +114,53 @@ public class PlayerControl : NetworkBehaviour
         //    s_RedKura.SetActive(true);
         //    s_BlueKura.SetActive(false);
         //}
+
+        gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
+
+        GetComponent<PlayerData>().FinishedGame.OnValueChanged += OnFinishedGameChanged;
     }
 
     // Update is called once per frame
     private void Update()
-    {
-        // dont like this, maybe will need to do smth before game is running
-        if(gameManagerGameData.isGameRunning.Value)
         {
-            if (IsServer)
-            {
-                UpdateServer();
-            }
-
-            if (IsClient && IsOwner)
-            {
-                UpdateClient();
-            }
+        if (IsServer)
+        {
+            UpdateServer();
         }
-        
+
         if (IsClient && IsOwner)
         {
-            Debug.Log("HELP3");
+            UpdateClient();
         }
     }
 
     private void UpdateServer()
     {
-        //Debug.Log(nm.ConnectedClientsList.Count);
-        if (GetComponent<PlayerUIManager>().placeInGame.Value == -1)
+        if (gameManagerGameData.isGameRunning.Value)
         {
-            if (sk_Request)
+            //Debug.Log(nm.ConnectedClientsList.Count);
+            if (GetComponent<PlayerData>().FinishedGame.Value == false)
             {
-                sk_Request = false;
-
-                if (s_NFlips > 0)
+                if (sk_Request)
                 {
-                    s_GravityDirection *= -1;
-                    s_RigidBody2d.gravityScale = s_GravityDirection * s_GravityMultiplier;
-                    s_Transform.localScale = new Vector3(s_Transform.localScale.x, s_Transform.localScale.y * -1, s_Transform.localScale.z);
+                    sk_Request = false;
 
-                    s_NFlips--;
+                    if (s_NFlips > 0)
+                    {
+                        s_GravityDirection *= -1;
+                        s_RigidBody2d.gravityScale = s_GravityDirection * s_GravityMultiplier;
+                        s_Transform.localScale = new Vector3(s_Transform.localScale.x, s_Transform.localScale.y * -1, s_Transform.localScale.z);
+
+                        s_NFlips--;
+                    }
                 }
             }
         }
-        else
-        {
-            s_RigidBody2d.gravityScale = 0;
-            if(!wereTeleportedFromFinish)
-            {
-                transform.position += new Vector3(UnityEngine.Random.Range(rangeTeleportation.x, rangeTeleportation.y), 0f, 0f);
-                wereTeleportedFromFinish = true;
-            }
-            
-        }
-        // YARIK PLIS FIKS !!!! AND SEND DICK PICK IN DARK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! I WILL:) 8=0
     }
 
     private void UpdateClient()
     {
-        if(GetComponent<PlayerUIManager>().placeInGame.Value == -1)
+        if(GetComponent<PlayerData>().FinishedGame.Value == false)
         {
             if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
             {
@@ -196,50 +179,48 @@ public class PlayerControl : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (gameManagerGameData.isGameRunning.Value)
+        if (IsServer)
         {
-            if (IsServer)
-            {
-                FixedUpdateServer();
-            }
+            FixedUpdateServer();
         }
-        
     }
 
     private void FixedUpdateServer()
     {
-        if(GetComponent<PlayerUIManager>().placeInGame.Value == -1)
+        if (gameManagerGameData.isGameRunning.Value)
         {
-            if (checkGround())
+            if (GetComponent<PlayerData>().FinishedGame.Value == false)
             {
-                Debug.Log("On ground");
+                if (checkGround())
+                {
+                    //Debug.Log("On ground");
 
-                if (s_RigidBody2d.velocity.magnitude > s_OnGroundVelocity)
-                {
-                    s_RigidBody2d.velocity -= Vector2.right * s_CurrentAcseleration;
-                }
-                else
-                {
-                    if (s_RigidBody2d.velocity.magnitude < s_MaxVelocity)
+                    if (s_RigidBody2d.velocity.magnitude > s_OnGroundVelocity)
                     {
-                        s_RigidBody2d.velocity += Vector2.right * s_CurrentAcseleration;
+                        s_RigidBody2d.velocity -= Vector2.right * s_CurrentAcseleration;
                     }
                     else
                     {
-                        s_RigidBody2d.velocity = Vector2.right * s_OnGroundVelocity;
+                        if (s_RigidBody2d.velocity.magnitude < s_MaxVelocity)
+                        {
+                            s_RigidBody2d.velocity += Vector2.right * s_CurrentAcseleration;
+                        }
+                        else
+                        {
+                            s_RigidBody2d.velocity = Vector2.right * s_OnGroundVelocity;
+                        }
                     }
+                }
+                else
+                {
+                    s_RigidBody2d.AddForce(Vector2.right * s_Force);
                 }
             }
             else
             {
-                s_RigidBody2d.AddForce(Vector2.right * s_Force);
+                s_RigidBody2d.velocity = Vector2.zero;
             }
         }
-        else
-        {
-            s_RigidBody2d.velocity = Vector2.zero;
-        }
-        
     }
 
     private bool checkGround()
@@ -277,5 +258,11 @@ public class PlayerControl : NetworkBehaviour
             Debug.DrawLine(new Vector3(contact.point.x, contact.point.y, transform.position.z), transform.position, Color.red, 2, false);
         }
         //Debug.Break();
+    }
+
+    private void OnFinishedGameChanged(bool previous, bool current)
+    {
+        s_RigidBody2d.gravityScale = 0;
+        transform.position += new Vector3(UnityEngine.Random.Range(rangeTeleportation.x, rangeTeleportation.y), 0f, 0f);
     }
 }
