@@ -10111,7 +10111,7 @@ MonoBehaviour:
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 517975432}
-    PlayerPrefab: {fileID: 3620769974879820551, guid: 3abaae34ff7919e4d8fefdb6f11ec432, type: 3}
+    PlayerPrefab: {fileID: 598193417818329421, guid: 3abaae34ff7919e4d8fefdb6f11ec432, type: 3}
     Prefabs:
       NetworkPrefabsLists:
       - {fileID: 11400000, guid: 030e86a6118153c49a7af541ae74cb8f, type: 2}
@@ -27875,7 +27875,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1351579879}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
@@ -28270,7 +28270,7 @@ MonoBehaviour:
   winerText: {fileID: 1376665266}
   numPlayersInGame:
     m_InternalValue: 0
-  isGameRuning:
+  isGameRunning:
     m_InternalValue: 0
   spawnPosTransformList: []
   numFinishedPlayers: 0

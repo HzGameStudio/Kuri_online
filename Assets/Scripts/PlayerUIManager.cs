@@ -55,12 +55,14 @@ public class PlayerUIManager : NetworkBehaviour
 
     private void Update()
     {
+        Debug.Log("HELP1");
         if (IsServer)
         {
 
         }
-        else if (IsClient && IsOwner)
+        if (IsClient && IsOwner)
         {
+            Debug.Log("HELP2");
             UpdateClient();
         }
     }
@@ -69,6 +71,7 @@ public class PlayerUIManager : NetworkBehaviour
     {
         if (placeInGame.Value != -1)
         {
+            Debug.Log("HELP");
             winerText.gameObject.SetActive(true);
             winerText.text = "YOU WON " + placeInGame.Value.ToString() + " PLACE!!!";
         }

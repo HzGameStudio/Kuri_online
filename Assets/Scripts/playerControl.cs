@@ -6,6 +6,7 @@ using System.Globalization;
 using Unity.Netcode;
 using UnityEngine;
 using TMPro;
+using UnityEditor.Search;
 
 public class PlayerControl : NetworkBehaviour
 {
@@ -136,6 +137,10 @@ public class PlayerControl : NetworkBehaviour
             }
         }
         
+        if (IsClient && IsOwner)
+        {
+            Debug.Log("HELP3");
+        }
     }
 
     private void UpdateServer()
