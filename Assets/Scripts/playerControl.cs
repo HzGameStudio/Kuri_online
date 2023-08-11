@@ -62,6 +62,15 @@ public class PlayerControl : NetworkBehaviour
     [SerializeField]
     private Rigidbody2D s_RigidBody2d;
 
+    [SerializeField]
+    private Transform s_Transform;
+
+    //[SerializeField]
+    //private GameObject s_RedKura;
+
+    //[SerializeField]
+    //private GameObject s_BlueKura;
+
     // Physics
 
     [SerializeField]
@@ -153,6 +162,17 @@ public class PlayerControl : NetworkBehaviour
         {
             transform.position = gameManagerGameData.GetSpawnPosition();
         }
+
+        //if(IsClient && IsOwner)
+        //{
+        //    s_RedKura.SetActive(false);
+        //    s_BlueKura.SetActive(true);
+        //}
+        //else
+        //{
+        //    s_RedKura.SetActive(true);
+        //    s_BlueKura.SetActive(false);
+        //}
     }
 
     // Update is called once per frame
@@ -190,6 +210,7 @@ public class PlayerControl : NetworkBehaviour
                 {
                     s_GravityDirection *= -1;
                     s_RigidBody2d.gravityScale = s_GravityDirection * s_GravityMultiplier;
+                    s_Transform.localScale = new Vector3(s_Transform.localScale.x, s_Transform.localScale.y * -1, s_Transform.localScale.z);
 
                     s_NFlips--;
                 }
