@@ -137,6 +137,8 @@ PlayerSettings:
   preloadedAssets:
   - {fileID: 0}
   - {fileID: 0}
+  - {fileID: 7864191682366771529, guid: 67327d95d28d18d4eac08df7b631f5fd, type: 2}
+  - {fileID: 11400000, guid: 925558920e63979448a7a05f1b657702, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -822,11 +824,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 75a40e58-8be3-4563-95e6-29aaa5d21eac
+  cloudProjectId: 97af349f-4825-4ffb-a556-d5fcd0f3c1cf
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Kuri_online (3)
-  organizationId: flowwithchicken
+  projectName: Kuri_Online
+  organizationId: vanoanto
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

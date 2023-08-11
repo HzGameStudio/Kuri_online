@@ -49,8 +49,6 @@ public class GameData : NetworkBehaviour
         curGameSpawnPosTransformList = new List<Vector3>(spawnPosTransformList);
 
         Shuffle<Vector3>(curGameSpawnPosTransformList);
-
-        Debug.Break();
     }
 
     public void CalcNumPlayersInGame()

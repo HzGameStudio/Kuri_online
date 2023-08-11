@@ -14,7 +14,10 @@ public class PlayerData : NetworkBehaviour
     private void Start()
     {
         gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
-
-        playerID.Value = gameManagerGameData.numPlayersInGame.Value;
+        if (IsServer)
+        {
+            gameManagerGameData.CalcNumPlayersInGame();
+            playerID.Value = gameManagerGameData.numPlayersInGame.Value;
+        }
     }
 }

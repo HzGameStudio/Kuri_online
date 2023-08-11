@@ -248,7 +248,6 @@ public class PlayerControl : NetworkBehaviour
         {
             s_NFlips ++;
             s_NFlips = Math.Min(s_NFlips, s_MaxFlips);
-            s_NFlips = (s_NFlips > s_MaxFlips) ? s_MaxFlips : s_NFlips;
         }
         s_CurrentAcseleration = Mathf.Abs(s_RigidBody2d.velocity.magnitude - s_OnGroundVelocity) / 50f * s_TimeOfAcselerationOfPlatform;
 
@@ -261,7 +260,10 @@ public class PlayerControl : NetworkBehaviour
 
     private void OnFinishedGameChanged(bool previous, bool current)
     {
-        s_RigidBody2d.gravityScale = 0;
-        transform.position += new Vector3(UnityEngine.Random.Range(rangeTeleportation.x, rangeTeleportation.y), 0f, 0f);
+        if (IsServer)
+        {
+            s_RigidBody2d.gravityScale = 0;
+            transform.position += new Vector3(UnityEngine.Random.Range(rangeTeleportation.x, rangeTeleportation.y), 0f, 0f);
+        }
     }
 }

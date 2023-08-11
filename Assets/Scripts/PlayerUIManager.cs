@@ -22,14 +22,9 @@ public class PlayerUIManager : NetworkBehaviour
         playerIDText = gameManagerGameData.playerIDText;
         winnerText = gameManagerGameData.winnerText;
 
-        if (IsServer)
-        {
-            startGameButton.SetActive(true);
-            gameManagerGameData.CalcNumPlayersInGame();
-        }
-
         if (IsClient && IsOwner)
         {
+            startGameButton.SetActive(true);
             playerIDText.text = "player num" + GetComponent<PlayerData>().playerID.Value.ToString();
         }
 
@@ -51,10 +46,13 @@ public class PlayerUIManager : NetworkBehaviour
 
     private void OnPlaceInGameChanged(int previous, int current)
     {
-        if (GetComponent<PlayerData>().placeInGame.Value != -1)
+        if (IsClient && IsOwner)
         {
-            winnerText.gameObject.SetActive(true);
-            winnerText.text = "YOU WON " + GetComponent<PlayerData>().placeInGame.Value.ToString() + " PLACE!!!";
+            if (GetComponent<PlayerData>().placeInGame.Value != -1)
+            {
+                winnerText.gameObject.SetActive(true);
+                winnerText.text = "YOU WON " + GetComponent<PlayerData>().placeInGame.Value.ToString() + " PLACE!!!";
+            }
         }
     }
 }
