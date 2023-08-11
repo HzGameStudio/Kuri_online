@@ -6,7 +6,6 @@ using System.Globalization;
 using Unity.Netcode;
 using UnityEngine;
 using TMPro;
-using UnityEditor.Search;
 
 public class PlayerControl : NetworkBehaviour
 {
@@ -67,11 +66,11 @@ public class PlayerControl : NetworkBehaviour
 
     private GameData gameManagerGameData;
 
-    //[SerializeField]
-    //private GameObject s_RedKura;
+    [SerializeField]
+    private GameObject s_RedKura;
 
-    //[SerializeField]
-    //private GameObject s_BlueKura;
+    [SerializeField]
+    private GameObject s_BlueKura;
 
     // Logic
 
@@ -104,16 +103,16 @@ public class PlayerControl : NetworkBehaviour
             }
         }
 
-        //if(IsClient && IsOwner)
-        //{
-        //    s_RedKura.SetActive(false);
-        //    s_BlueKura.SetActive(true);
-        //}
-        //else
-        //{
-        //    s_RedKura.SetActive(true);
-        //    s_BlueKura.SetActive(false);
-        //}
+        if (IsClient && IsOwner)
+        {
+            s_RedKura.SetActive(false);
+            s_BlueKura.SetActive(true);
+        }
+        else
+        {
+            s_RedKura.SetActive(true);
+            s_BlueKura.SetActive(false);
+        }
 
         gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
 

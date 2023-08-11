@@ -54,18 +54,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 989c52490af508d408f5f31a55dcd53a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rangeTeleportation: {x: 2, y: 10}
-  k_Camera: {fileID: 5440809166809444851}
-  s_BoxCollider2D: {fileID: 4581643266298009302}
-  s_RigidBody2d: {fileID: 7788865133089810928}
-  s_Transform: {fileID: 64830023102685248}
-  gameManagerGameData: {fileID: 0}
   s_OnGroundVelocity: 10
   s_BrakeVelocity: 0.01
   s_MaxVelocity: 20
   s_Force: 2
   s_TimeOfAcselerationOfPlatform: 0.5
   s_GravityMultiplier: 1.5
+  rangeTeleportation: {x: 2, y: 10}
+  k_Camera: {fileID: 5440809166809444851}
+  s_BoxCollider2D: {fileID: 4581643266298009302}
+  s_RigidBody2d: {fileID: 7788865133089810928}
+  s_Transform: {fileID: 64830023102685248}
+  s_RedKura: {fileID: 1519113936764943184}
+  s_BlueKura: {fileID: 5454749229449544498}
+  s_FlipTagList:
+  - simplePlatform
+  - player
+  s_MaxFlips: 1
   s_State: 1
 --- !u!114 &6316624174453296671
 MonoBehaviour:
@@ -79,11 +84,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e23094dfcd8560c4b87d2a09bd2fe131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerID:
-    m_InternalValue: 0
-  placeInGame:
-    m_InternalValue: -1
-  gameManagerGameData: {fileID: 0}
 --- !u!114 &7651855770735843210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,6 +96,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d03b72cfff461cf43b7b7e49283654d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FinishedGame:
+    m_InternalValue: 0
+  playerID:
+    m_InternalValue: -1
+  placeInGame:
+    m_InternalValue: -1
 --- !u!50 &7788865133089810928
 Rigidbody2D:
   serializedVersion: 4
@@ -323,7 +329,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: -687029204966679497, guid: 7349619ad7330434583d95020a5358ee, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -407,7 +413,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: -466193084, guid: 49ed94532f846a046b1fbf2a5bc89f49, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -496,7 +502,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -651,7 +657,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_Sprite: {fileID: 194395921555441794, guid: 7349619ad7330434583d95020a5358ee, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -735,7 +741,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 2049825561, guid: 49ed94532f846a046b1fbf2a5bc89f49, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -905,7 +911,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: -2060187970, guid: 49ed94532f846a046b1fbf2a5bc89f49, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -989,7 +995,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_Sprite: {fileID: -5167006931174000657, guid: 7349619ad7330434583d95020a5358ee, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

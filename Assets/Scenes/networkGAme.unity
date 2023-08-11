@@ -14053,7 +14053,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 694019753}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.4, y: -6.8, z: -0.030226037}
+  m_LocalPosition: {x: 1013.5, y: -6.8, z: -0.030226037}
   m_LocalScale: {x: 1, y: 200, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -28260,8 +28260,9 @@ MonoBehaviour:
     m_InternalValue: 0
   startButton: {fileID: 2020881691}
   playerIDText: {fileID: 1351579881}
-  winerText: {fileID: 1376665266}
+  winnerText: {fileID: 1376665266}
   spawnPosTransformList: []
+  curGameSpawnPosTransformList: []
   numFinishedPlayers: 0
 --- !u!114 &1360156883
 MonoBehaviour:

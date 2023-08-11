@@ -133,7 +133,7 @@ PlayerSettings:
   vulkanEnableLateAcquireNextImage: 0
   vulkanEnableCommandBufferRecycling: 1
   loadStoreDebugModeEnabled: 0
-  bundleVersion: 0.2.0
+  bundleVersion: 0.2.1
   preloadedAssets:
   - {fileID: 0}
   - {fileID: 0}
@@ -822,11 +822,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 97af349f-4825-4ffb-a556-d5fcd0f3c1cf
+  cloudProjectId: 75a40e58-8be3-4563-95e6-29aaa5d21eac
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Kuri_Online
-  organizationId: vanoanto
+  projectName: Kuri_online (3)
+  organizationId: flowwithchicken
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
