@@ -118,8 +118,8 @@ public class PlayerControl : NetworkBehaviour
     {
         gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<gameData>();
         playerIDText = GameObject.FindGameObjectWithTag("playerID").GetComponent<TextMeshProUGUI>();
-        
-        
+        startGameButton = gameManagerGameData.startButton;
+
         if (IsClient && IsOwner)
         {
             if (GameObject.FindGameObjectWithTag("winerText").GetComponent<TextMeshProUGUI>() != null)
@@ -145,7 +145,6 @@ public class PlayerControl : NetworkBehaviour
 
         if(IsServer)
         {
-            startGameButton = gameManagerGameData.startButton;
             startGameButton.SetActive(true);
             Debug.Log("djfjfdjdffd");
             gameManagerGameData.CalcNumPlayersInGame();
