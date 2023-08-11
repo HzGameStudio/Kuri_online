@@ -4,15 +4,15 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class finishScript : NetworkBehaviour
+public class FinishScript : NetworkBehaviour
 {
     [SerializeField]
-    private gameData gameManagerGameData;
+    private GameData gameManagerGameData;
 
     void Start()
     {
         Debug.Log(GameObject.FindGameObjectWithTag("gameManager"));
-        gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<gameData>();
+        gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -25,8 +25,8 @@ public class finishScript : NetworkBehaviour
                 //end of game someone won
                 Debug.Log("finish of the game hz wich kura won");
                 gameManagerGameData.numFinishedPlayers++;
-                collision.gameObject.GetComponent<PlayerControl>().placeInGame.Value = gameManagerGameData.numFinishedPlayers;
-                //gameManagerGameData.isGameRuning = false;
+                collision.gameObject.GetComponent<PlayerUIManager>().placeInGame.Value = gameManagerGameData.numFinishedPlayers;
+                //gameManagerGameData.isGameRunning = false;
             }
         }
     }

@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using Unity.VisualScripting;
+using TMPro;
 
-public class gameData : NetworkBehaviour
+public class GameData : NetworkBehaviour
 {
     //public struct SpawnPosition
     //{
@@ -19,10 +20,13 @@ public class gameData : NetworkBehaviour
     //}
     public GameObject startButton;
 
+    public TextMeshProUGUI playerIDText;
+
+    public TextMeshProUGUI winerText;
 
     public NetworkVariable<int> numPlayersInGame = new NetworkVariable<int>();
 
-    public bool isGameRuning = false;
+    public NetworkVariable<bool> isGameRunning = new NetworkVariable<bool>(false);
 
     [SerializeField]
     private List<Vector3> spawnPosTransformList = new List<Vector3>();
@@ -30,7 +34,6 @@ public class gameData : NetworkBehaviour
 
     private void Start()
     { 
-
         //Get list of all spawn position on map
         GameObject[] SpawnPointList = GameObject.FindGameObjectsWithTag("spawnPoint");
         for(int i=0;i< SpawnPointList.Length;i++)
@@ -65,7 +68,7 @@ public class gameData : NetworkBehaviour
 
     public void StartGame()
     {
-        isGameRuning = true;
+        isGameRunning.Value = true;
     }
 }
  

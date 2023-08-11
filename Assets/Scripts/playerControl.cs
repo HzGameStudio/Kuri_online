@@ -9,27 +9,11 @@ using TMPro;
 
 public class PlayerControl : NetworkBehaviour
 {
-    /////////////////////////////////////////////////////////////////////////////
-
-    public NetworkVariable<int> playerID = new NetworkVariable<int>();
-    public NetworkVariable<int> placeInGame = new NetworkVariable<int>(-1);
-
-    [SerializeField]
-    private TextMeshProUGUI playerIDText;
-
-    [SerializeField]
-    private TextMeshProUGUI winerText;
-
-    [SerializeField]
-    private GameObject startGameButton;
-
-    //public int placeInGame = -1;
-
+    //temp here
     private bool wereTeleportedFromFinish = false;
 
     [SerializeField]
     private Vector2 rangeTeleportation = new Vector2(2, 10);
-    /////////////////////////////////////////////////////////////////////////////
 
     public enum KuraState
     {
@@ -63,6 +47,9 @@ public class PlayerControl : NetworkBehaviour
     [SerializeField]
     private Transform s_Transform;
 
+    [SerializeField]
+    private GameData gameManagerGameData;
+
     //[SerializeField]
     //private GameObject s_RedKura;
 
@@ -72,22 +59,22 @@ public class PlayerControl : NetworkBehaviour
     // Physics
 
     [SerializeField]
-    private float s_OnGroundVelocity = 10f;
+    private float s_OnGroundVelocity;
 
     [SerializeField]
-    private float s_BrakeVelocity = 0.01f;
+    private float s_BrakeVelocity;
 
     [SerializeField]
-    private float s_MaxVelocity = 20f;
+    private float s_MaxVelocity;
 
     [SerializeField]
-    private int s_Force = 100;
+    private int s_Force;
 
     [SerializeField]
-    private float s_TimeOfAcselerationOfPlatform = 0.5f;
+    private float s_TimeOfAcselerationOfPlatform;
 
     [SerializeField]
-    private float s_GravityMultiplier = 1.5f;
+    private float s_GravityMultiplier;
 
     // Logic
 
@@ -108,31 +95,8 @@ public class PlayerControl : NetworkBehaviour
 
     public KuraState s_State = KuraState.Fall;
 
-    //
-    [SerializeField]
-    private gameData gameManagerGameData;
-    //
-    void Start()
+    private void Start()
     {
-        gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<gameData>();
-        playerIDText = GameObject.FindGameObjectWithTag("playerID").GetComponent<TextMeshProUGUI>();
-        startGameButton = gameManagerGameData.startButton;
-
-        if (IsClient && IsOwner)
-        {
-            if (GameObject.FindGameObjectWithTag("winerText").GetComponent<TextMeshProUGUI>() != null)
-            {
-                winerText = GameObject.FindGameObjectWithTag("winerText").GetComponent<TextMeshProUGUI>();
-                winerText.gameObject.SetActive(false);
-
-            }
-
-        }
-
-        //Debug.Log(GameObject.FindGameObjectWithTag("playerID").GetComponent<Te>);
-
-        //s_RigidBody2d.freezeRotation = true;
-
         if (IsClient && IsOwner)
         {
             if (!k_Camera.gameObject.activeInHierarchy)
@@ -141,23 +105,7 @@ public class PlayerControl : NetworkBehaviour
             }
         }
 
-        if(IsServer)
-        {
-            startGameButton.SetActive(true);
-            gameManagerGameData.CalcNumPlayersInGame();
-            playerID.Value = gameManagerGameData.numPlayersInGame.Value;
-        }
-
-        if (IsClient && IsOwner)
-        {
-            playerIDText.text = "player num" + playerID.Value.ToString();
-        }
-
-        //Shange position to a Spawn postion
-        if(IsServer)
-        {
-            transform.position = gameManagerGameData.GetSpawnPosition();
-        }
+        gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
 
         //if(IsClient && IsOwner)
         //{
@@ -172,14 +120,11 @@ public class PlayerControl : NetworkBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if(gameManagerGameData.isGameRuning)
+        // dont like this, maybe will need to do smth before game is running
+        if(gameManagerGameData.isGameRunning.Value)
         {
-            if(startGameButton.activeInHierarchy)
-            {
-                startGameButton.SetActive(false);
-            }
             if (IsServer)
             {
                 UpdateServer();
@@ -196,7 +141,7 @@ public class PlayerControl : NetworkBehaviour
     private void UpdateServer()
     {
         //Debug.Log(nm.ConnectedClientsList.Count);
-        if (placeInGame.Value == -1)
+        if (GetComponent<PlayerUIManager>().placeInGame.Value == -1)
         {
             if (sk_Request)
             {
@@ -223,22 +168,16 @@ public class PlayerControl : NetworkBehaviour
             
         }
         // YARIK PLIS FIKS !!!! AND SEND DICK PICK IN DARK !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! I WILL:) 8=0
-        
-
     }
 
     private void UpdateClient()
     {
-        if(placeInGame.Value == -1)
+        if(GetComponent<PlayerUIManager>().placeInGame.Value == -1)
         {
             if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
             {
                 UpdateClientPositionServerRpc(true);
             }
-        }else
-        {
-            winerText.gameObject.SetActive(true);
-            winerText.text = "YOU WON " + placeInGame.Value.ToString() + " PLACE!!!";
         }
 
         Debug.DrawRay(transform.position, s_RigidBody2d.velocity, Color.red, 1 / 300f);
@@ -252,7 +191,7 @@ public class PlayerControl : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (gameManagerGameData.isGameRuning)
+        if (gameManagerGameData.isGameRunning.Value)
         {
             if (IsServer)
             {
@@ -264,7 +203,7 @@ public class PlayerControl : NetworkBehaviour
 
     private void FixedUpdateServer()
     {
-        if(placeInGame.Value == -1)
+        if(GetComponent<PlayerUIManager>().placeInGame.Value == -1)
         {
             if (checkGround())
             {

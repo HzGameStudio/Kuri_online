@@ -465,12 +465,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5320962072737063233}
-  - component: {fileID: 301393099065025696}
+  - component: {fileID: 8715710596546683499}
+  - component: {fileID: 965426731543125957}
   - component: {fileID: 6436385417632137103}
+  - component: {fileID: 6750565392076862893}
+  - component: {fileID: 301393099065025696}
   - component: {fileID: 8855940567596524163}
   - component: {fileID: 4256339930012156672}
-  - component: {fileID: 6750565392076862893}
-  - component: {fileID: 8715710596546683499}
   - component: {fileID: 7902719850916975518}
   m_Layer: 0
   m_Name: player
@@ -496,7 +497,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &301393099065025696
+--- !u!114 &8715710596546683499
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -505,17 +506,39 @@ MonoBehaviour:
   m_GameObject: {fileID: 3620769974879820551}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Script: {fileID: 11500000, guid: 989c52490af508d408f5f31a55dcd53a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 951099334
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
+  rangeTeleportation: {x: 2, y: 10}
+  k_Camera: {fileID: 7797403982012730019}
+  s_BoxCollider2D: {fileID: 6750565392076862893}
+  s_RigidBody2d: {fileID: 6436385417632137103}
+  s_Transform: {fileID: 1141031319604685561}
+  gameManagerGameData: {fileID: 0}
+  s_OnGroundVelocity: 10
+  s_BrakeVelocity: 0.01
+  s_MaxVelocity: 20
+  s_Force: 2
+  s_TimeOfAcselerationOfPlatform: 0.5
+  s_GravityMultiplier: 1.5
+  s_State: 1
+--- !u!114 &965426731543125957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3620769974879820551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e23094dfcd8560c4b87d2a09bd2fe131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerID:
+    m_InternalValue: 0
+  placeInGame:
+    m_InternalValue: -1
+  gameManagerGameData: {fileID: 0}
 --- !u!50 &6436385417632137103
 Rigidbody2D:
   serializedVersion: 4
@@ -543,48 +566,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &8855940567596524163
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3620769974879820551}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SyncPositionX: 1
-  SyncPositionY: 1
-  SyncPositionZ: 1
-  SyncRotAngleX: 1
-  SyncRotAngleY: 1
-  SyncRotAngleZ: 1
-  SyncScaleX: 1
-  SyncScaleY: 1
-  SyncScaleZ: 1
-  PositionThreshold: 0.001
-  RotAngleThreshold: 0.01
-  ScaleThreshold: 0.01
-  UseQuaternionSynchronization: 0
-  UseQuaternionCompression: 0
-  UseHalfFloatPrecision: 0
-  InLocalSpace: 0
-  Interpolate: 1
-  SlerpPosition: 0
---- !u!114 &4256339930012156672
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3620769974879820551}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 80d7c879794dfda4687da0e400131852, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!61 &6750565392076862893
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -630,7 +611,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.222331, y: 1.5123284}
   m_EdgeRadius: 0
---- !u!114 &8715710596546683499
+--- !u!114 &301393099065025696
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -639,23 +620,59 @@ MonoBehaviour:
   m_GameObject: {fileID: 3620769974879820551}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 989c52490af508d408f5f31a55dcd53a, type: 3}
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerID:
-    m_InternalValue: 0
-  placeInGame:
-    m_InternalValue: -1
-  playerIDText: {fileID: 0}
-  winerText: {fileID: 0}
-  startGameButton: {fileID: 0}
-  rangeTeleportation: {x: 2, y: 10}
-  k_Camera: {fileID: 7797403982012730019}
-  s_BoxCollider2D: {fileID: 6750565392076862893}
-  s_RigidBody2d: {fileID: 6436385417632137103}
-  s_Transform: {fileID: 1141031319604685561}
-  s_State: 1
-  gameManagerGameData: {fileID: 0}
+  GlobalObjectIdHash: 951099334
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+--- !u!114 &8855940567596524163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3620769974879820551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 1
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  Interpolate: 1
+  SlerpPosition: 0
+--- !u!114 &4256339930012156672
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3620769974879820551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80d7c879794dfda4687da0e400131852, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!95 &7902719850916975518
 Animator:
   serializedVersion: 5

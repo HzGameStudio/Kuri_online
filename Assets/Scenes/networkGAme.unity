@@ -13987,7 +13987,7 @@ GameObject:
   - component: {fileID: 694019754}
   - component: {fileID: 694019757}
   m_Layer: 0
-  m_Name: finish
+  m_Name: Finish
   m_TagString: finish
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27875,7 +27875,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1351579879}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
@@ -28266,9 +28266,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startButton: {fileID: 2020881691}
+  playerIDText: {fileID: 1351579881}
+  winerText: {fileID: 1376665266}
   numPlayersInGame:
     m_InternalValue: 0
-  isGameRuning: 0
+  isGameRuning:
+    m_InternalValue: 0
   spawnPosTransformList: []
   numFinishedPlayers: 0
 --- !u!114 &1360156883
@@ -28456,7 +28459,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1376665264}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
   m_Name: 
