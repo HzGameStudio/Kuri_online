@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5228072498571887063}
-  - component: {fileID: 7162729809543369524}
-  - component: {fileID: 6316624174453296671}
   - component: {fileID: 7651855770735843210}
+  - component: {fileID: 6316624174453296671}
+  - component: {fileID: 7162729809543369524}
   - component: {fileID: 7788865133089810928}
   - component: {fileID: 4581643266298009302}
   - component: {fileID: 602077874640059309}
@@ -42,6 +42,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7651855770735843210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 598193417818329421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d03b72cfff461cf43b7b7e49283654d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  FinishedGame:
+    m_InternalValue: 0
+  playerID:
+    m_InternalValue: -1
+  placeInGame:
+    m_InternalValue: -1
+--- !u!114 &6316624174453296671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 598193417818329421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e23094dfcd8560c4b87d2a09bd2fe131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7162729809543369524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -72,36 +102,6 @@ MonoBehaviour:
   - player
   s_MaxFlips: 1
   s_State: 1
---- !u!114 &6316624174453296671
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 598193417818329421}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e23094dfcd8560c4b87d2a09bd2fe131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &7651855770735843210
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 598193417818329421}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d03b72cfff461cf43b7b7e49283654d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  FinishedGame:
-    m_InternalValue: 0
-  playerID:
-    m_InternalValue: -1
-  placeInGame:
-    m_InternalValue: -1
 --- !u!50 &7788865133089810928
 Rigidbody2D:
   serializedVersion: 4

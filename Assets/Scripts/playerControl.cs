@@ -120,10 +120,6 @@ public class PlayerControl : NetworkBehaviour
 
         gameManagerGameData.playerDataList.Add(new GameData.PlayerData(gameObject, playerRunTime.Value));
         GetComponent<PlayerData>().FinishedGame.OnValueChanged += OnFinishedGameChanged;
-        if(IsOwner)
-        {
-            gameManagerGameData.playerRunTimeText.gameObject.SetActive(true);
-        }
     }
 
     // Update is called once per frame
@@ -137,10 +133,7 @@ public class PlayerControl : NetworkBehaviour
         if (IsClient && IsOwner)
         {
             UpdateClient();
-            gameManagerGameData.playerRunTimeText.text = Mathf.Floor(playerRunTime.Value / 60f).ToString() + ":" + (playerRunTime.Value - 60f * Mathf.Floor(playerRunTime.Value / 60f)).ToString();
         }
-
-        
     }
 
     private void UpdateServer()
@@ -178,6 +171,10 @@ public class PlayerControl : NetworkBehaviour
                 UpdateClientPositionServerRpc(true);
             }
         }
+
+        // help why
+        String temp = Math.Floor(playerRunTime.Value).ToString() + "." + Math.Floor(playerRunTime.Value * 10) % 10 + Math.Floor(playerRunTime.Value * 100) % 10;
+        gameManagerGameData.playerRunTimeText.text = temp;
 
         Debug.DrawRay(transform.position, s_RigidBody2d.velocity, Color.red, 1 / 300f);
     }

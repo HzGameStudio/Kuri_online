@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using TMPro;
+using System.Runtime.InteropServices;
+using Unity.Collections;
 
 public class PlayerUIManager : NetworkBehaviour
 {
@@ -14,6 +16,10 @@ public class PlayerUIManager : NetworkBehaviour
 
     private TextMeshProUGUI winnerText;
 
+    private TextMeshProUGUI RunTimeText;
+
+    private TextMeshProUGUI lobbyIDText;
+
     private void Start()
     {
         gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
@@ -21,27 +27,41 @@ public class PlayerUIManager : NetworkBehaviour
         startGameButton = gameManagerGameData.startButton;
         playerIDText = gameManagerGameData.playerIDText;
         winnerText = gameManagerGameData.winnerText;
+        RunTimeText = gameManagerGameData.playerRunTimeText;
+        lobbyIDText = gameManagerGameData.lobbyIDText;
 
-        if (IsClient && IsOwner)
+        if (IsHost)
         {
             startGameButton.SetActive(true);
-            playerIDText.text = "player num" + GetComponent<PlayerData>().playerID.Value.ToString();
         }
 
-        // this shouldnt be here, make player spawner
-        //Shange position to a Spawn postion
         if (IsServer)
         {
             transform.position = gameManagerGameData.GetSpawnPosition();
         }
 
+        if (IsClient && IsOwner)
+        {
+            playerIDText.gameObject.SetActive(true);
+            playerIDText.text = GetComponent<PlayerData>().playerID.Value.ToString();
+
+            RunTimeText.gameObject.SetActive(true);
+
+            lobbyIDText.gameObject.SetActive(true);
+            lobbyIDText.text = gameManagerGameData.m_LobbyCode.Value.Value;
+        }
+
         gameManagerGameData.isGameRunning.OnValueChanged += OnIsGameRunningChanged;
         GetComponent<PlayerData>().placeInGame.OnValueChanged += OnPlaceInGameChanged;
+        //GetComponent<PlayerData>().playerID.OnValueChanged += OnPlayerIDChanged;
     }
 
     private void OnIsGameRunningChanged(bool previous, bool current)
     {
-         startGameButton.SetActive(false);
+        if (current == true)
+        {
+            startGameButton.SetActive(false);
+        }
     }
 
     private void OnPlaceInGameChanged(int previous, int current)
@@ -55,4 +75,14 @@ public class PlayerUIManager : NetworkBehaviour
             }
         }
     }
+
+    /*
+    private void OnPlayerIDChanged(int previous, int current)
+    {
+        if (IsClient && IsOwner)
+        {
+            playerIDText.text = "player " + GetComponent<PlayerData>().playerID.Value.ToString();
+        }
+    }
+    */
 }

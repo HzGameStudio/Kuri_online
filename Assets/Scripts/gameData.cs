@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using TMPro;
+using Unity.Collections;
 
 public class GameData : NetworkBehaviour
 {
@@ -30,8 +31,11 @@ public class GameData : NetworkBehaviour
         public GameObject gameObject;
     }
 
+    public int m_MaxPlayers = 4;
+
     public NetworkVariable<int> numPlayersInGame = new NetworkVariable<int>();
     public NetworkVariable<bool> isGameRunning = new NetworkVariable<bool>(false);
+    public NetworkVariable<FixedString128Bytes> m_LobbyCode = new NetworkVariable<FixedString128Bytes>("IF YOU SEE THIS THEN YOU'RE OFFLINE, YARIK FORGOT TO CHANGE UNITY TRANSFORM PROTOCOL TYPE");
 
     public GameObject startButton;
 
@@ -40,6 +44,8 @@ public class GameData : NetworkBehaviour
     public TextMeshProUGUI winnerText;
 
     public TextMeshProUGUI playerRunTimeText;
+
+    public TextMeshProUGUI lobbyIDText;
 
     [SerializeField]
     private List<Vector3> spawnPosTransformList = new List<Vector3>();
@@ -51,7 +57,7 @@ public class GameData : NetworkBehaviour
     public int numFinishedPlayers = 0;
 
     private void Start()
-    { 
+    {
         //Get list of all spawn position on map
         GameObject[] SpawnPointList = GameObject.FindGameObjectsWithTag("spawnPoint");
         for (int i = 0; i < SpawnPointList.Length; i++) 
