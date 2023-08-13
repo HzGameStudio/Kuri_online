@@ -19,6 +19,17 @@ public class GameData : NetworkBehaviour
     //    public bool isTaken;
     //}
 
+    public struct PlayerData
+    {
+        public PlayerData(GameObject GameObject, float RunTime)
+        {
+            runTime = RunTime;
+            gameObject = GameObject;
+        }
+        public float runTime;
+        public GameObject gameObject;
+    }
+
     public NetworkVariable<int> numPlayersInGame = new NetworkVariable<int>();
     public NetworkVariable<bool> isGameRunning = new NetworkVariable<bool>(false);
 
@@ -28,8 +39,11 @@ public class GameData : NetworkBehaviour
 
     public TextMeshProUGUI winnerText;
 
+    public TextMeshProUGUI playerRunTimeText;
+
     [SerializeField]
     private List<Vector3> spawnPosTransformList = new List<Vector3>();
+    public List<PlayerData> playerDataList = new List<PlayerData>();
 
     [SerializeField]
     private List<Vector3> curGameSpawnPosTransformList;

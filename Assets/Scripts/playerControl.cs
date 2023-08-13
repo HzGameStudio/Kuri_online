@@ -9,6 +9,8 @@ using TMPro;
 
 public class PlayerControl : NetworkBehaviour
 {
+
+    private NetworkVariable<float> playerRunTime = new NetworkVariable<float>(0);
     public enum KuraState
     {
         //Kissing a wall, ground
@@ -116,12 +118,17 @@ public class PlayerControl : NetworkBehaviour
 
         gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
 
+        gameManagerGameData.playerDataList.Add(new GameData.PlayerData(gameObject, playerRunTime.Value));
         GetComponent<PlayerData>().FinishedGame.OnValueChanged += OnFinishedGameChanged;
+        if(IsOwner)
+        {
+            gameManagerGameData.playerRunTimeText.gameObject.SetActive(true);
+        }
     }
 
     // Update is called once per frame
     private void Update()
-        {
+    {
         if (IsServer)
         {
             UpdateServer();
@@ -130,16 +137,20 @@ public class PlayerControl : NetworkBehaviour
         if (IsClient && IsOwner)
         {
             UpdateClient();
+            gameManagerGameData.playerRunTimeText.text = Mathf.Floor(playerRunTime.Value / 60f).ToString() + ":" + (playerRunTime.Value - 60f * Mathf.Floor(playerRunTime.Value / 60f)).ToString();
         }
+
+        
     }
 
     private void UpdateServer()
     {
         if (gameManagerGameData.isGameRunning.Value)
-        {
+        { 
             //Debug.Log(nm.ConnectedClientsList.Count);
             if (GetComponent<PlayerData>().FinishedGame.Value == false)
             {
+                playerRunTime.Value += Time.deltaTime;
                 if (sk_Request)
                 {
                     sk_Request = false;
@@ -154,6 +165,7 @@ public class PlayerControl : NetworkBehaviour
                     }
                 }
             }
+
         }
     }
 
