@@ -55,7 +55,11 @@ public class PlayerControl : NetworkBehaviour
     // Objects
 
     [SerializeField]
-    private Camera k_Camera;
+    private Camera k_MainCamera;
+
+    [SerializeField]
+    private Camera k_MiniMapCamera;
+
 
     [SerializeField]
     private BoxCollider2D s_BoxCollider2D;
@@ -99,9 +103,14 @@ public class PlayerControl : NetworkBehaviour
     {
         if (IsClient && IsOwner)
         {
-            if (!k_Camera.gameObject.activeInHierarchy)
+            if (!k_MainCamera.gameObject.activeInHierarchy)
             {
-                k_Camera.gameObject.SetActive(true);
+                k_MainCamera.gameObject.SetActive(true);
+            }
+
+            if (!k_MiniMapCamera.gameObject.activeInHierarchy)
+            {
+                k_MiniMapCamera.gameObject.SetActive(true);
             }
         }
 
