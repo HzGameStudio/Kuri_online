@@ -129,6 +129,11 @@ public class PlayerControl : NetworkBehaviour
 
         gameManagerGameData.playerDataList.Add(new GameData.PlayerData(gameObject, playerRunTime.Value));
         GetComponent<PlayerData>().FinishedGame.OnValueChanged += OnFinishedGameChanged;
+
+        if(IsOwner)
+        {
+            gameManagerGameData.MiniMapGameObject.SetActive(true);
+        }
     }
 
     // Update is called once per frame

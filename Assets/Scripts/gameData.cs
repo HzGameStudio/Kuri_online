@@ -47,6 +47,8 @@ public class GameData : NetworkBehaviour
 
     public TextMeshProUGUI lobbyIDText;
 
+    public GameObject MiniMapGameObject;
+
     [SerializeField]
     private List<Vector3> spawnPosTransformList = new List<Vector3>();
     public List<PlayerData> playerDataList = new List<PlayerData>();
