@@ -8,16 +8,17 @@ public class PlayerData : NetworkBehaviour
     public NetworkVariable<bool> FinishedGame = new NetworkVariable<bool>(false);
     public NetworkVariable<int> playerID = new NetworkVariable<int>(-1);
     public NetworkVariable<int> placeInGame = new NetworkVariable<int>(-1);
+    public NetworkVariable<float> playerRunTime = new NetworkVariable<float>(0);
 
-    private GameData gameManagerGameData;
+    private GameData m_GameManagerGameData;
 
     private void Start()
     {
-        gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
+        m_GameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
         if (IsServer)
         {
-            gameManagerGameData.CalcNumPlayersInGame();
-            playerID.Value = gameManagerGameData.numPlayersInGame.Value;
+            m_GameManagerGameData.CalcNumPlayersInGame();
+            playerID.Value = m_GameManagerGameData.numPlayersInGame.Value;
         }
     }
 }

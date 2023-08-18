@@ -6,11 +6,11 @@ using System.Globalization;
 using Unity.Netcode;
 using UnityEngine;
 using TMPro;
+using System.Linq;
+using Unity.VisualScripting;
 
 public class PlayerControl : NetworkBehaviour
 {
-
-    private NetworkVariable<float> playerRunTime = new NetworkVariable<float>(0);
     public enum KuraState
     {
         //Kissing a wall, ground
@@ -32,107 +32,115 @@ public class PlayerControl : NetworkBehaviour
     // Physics
 
     [SerializeField]
-    private float s_OnGroundVelocity;
+    private float m_OnGroundVelocity;
 
     [SerializeField]
-    private float s_BrakeVelocity;
+    private float m_BrakeVelocity;
 
     [SerializeField]
-    private float s_MaxVelocity;
+    private float m_MaxVelocity;
 
     [SerializeField]
-    private int s_Force;
+    private int m_Force;
 
     [SerializeField]
-    private float s_TimeOfAcselerationOfPlatform;
+    private float m_TimeOfAcselerationOfPlatform;
 
     [SerializeField]
-    private float s_GravityMultiplier;
+    private float m_GravityMultiplier;
 
     [SerializeField]
-    private Vector2 rangeTeleportation = new Vector2(2, 10);
+    private Vector2 m_RangeTeleportation = new Vector2(2, 10);
 
     // Objects
 
     [SerializeField]
-    private Camera k_MainCamera;
+    private Camera m_MainCamera;
 
     [SerializeField]
-    private Camera k_MiniMapCamera;
-
-
-    [SerializeField]
-    private BoxCollider2D s_BoxCollider2D;
+    private Camera m_MiniMapCamera;
 
     [SerializeField]
-    private Rigidbody2D s_RigidBody2d;
+    private BoxCollider2D m_BoxCollider2D;
 
     [SerializeField]
-    private Transform s_Transform;
-
-    private GameData gameManagerGameData;
+    private Rigidbody2D m_RigidBody2d;
 
     [SerializeField]
-    private GameObject s_RedKura;
+    private Transform m_Transform;
+
+    private GameData m_GameManagerGameData;
 
     [SerializeField]
-    private GameObject s_BlueKura;
+    private GameObject m_RedKura;
+
+    [SerializeField]
+    private GameObject m_BlueKura;
+
+    private PlayerData m_PlayerData;
 
     // Logic
 
     [SerializeField]
-    private string[] s_FlipTagList = { "simplePlatform", "player" };
+    private string[] m_FlipTagList = { "simplePlatform", "player" };
 
     [SerializeField]
-    private int s_MaxFlips = 1;
+    private int m_MaxFlips = 1;
     
 
     // *** Active
 
-    private bool sk_Request = false;
+    private bool m_Request = false;
 
-    private int s_GravityDirection = 1;
+    private int m_GravityDirection = 1;
 
-    private float s_CurrentAcseleration;
+    private float m_CurrentAcseleration;
 
-    int s_NFlips = 1;
+    private int m_NFlips = 1;
 
-    public KuraState s_State = KuraState.Fall;
+    public KuraState m_State = KuraState.Fall;
+
+    // Platform tag, platform direction, platform gameObject name
+    public List<Tuple<string, int, string>> m_TouchingPlatforms = new List<Tuple<string, int, string>>();
 
     private void Start()
     {
+        //Time.timeScale = 0.3f;
+
         if (IsClient && IsOwner)
         {
-            if (!k_MainCamera.gameObject.activeInHierarchy)
+            if (!m_MainCamera.gameObject.activeInHierarchy)
             {
-                k_MainCamera.gameObject.SetActive(true);
+                m_MainCamera.gameObject.SetActive(true);
             }
 
-            if (!k_MiniMapCamera.gameObject.activeInHierarchy)
+            if (!m_MiniMapCamera.gameObject.activeInHierarchy)
             {
-                k_MiniMapCamera.gameObject.SetActive(true);
+                m_MiniMapCamera.gameObject.SetActive(true);
             }
         }
 
         if (IsClient && IsOwner)
         {
-            s_RedKura.SetActive(false);
-            s_BlueKura.SetActive(true);
+            m_RedKura.SetActive(false);
+            m_BlueKura.SetActive(true);
         }
         else
         {
-            s_RedKura.SetActive(true);
-            s_BlueKura.SetActive(false);
+            m_RedKura.SetActive(true);
+            m_BlueKura.SetActive(false);
         }
 
-        gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
+        m_PlayerData = GetComponent<PlayerData>();
 
-        gameManagerGameData.playerDataList.Add(new GameData.PlayerData(gameObject, playerRunTime.Value, 0));
+        m_GameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
+
+        m_GameManagerGameData.playerDataList.Add(new GameData.PlayerData(gameObject, m_PlayerData.playerRunTime.Value, 0));
         GetComponent<PlayerData>().FinishedGame.OnValueChanged += OnFinishedGameChanged;
 
         if(IsOwner)
         {
-            gameManagerGameData.MiniMapGameObject.SetActive(true);
+            m_GameManagerGameData.MiniMapGameObject.SetActive(true);
         }
     }
 
@@ -152,27 +160,22 @@ public class PlayerControl : NetworkBehaviour
 
     private void UpdateServer()
     {
-        if (gameManagerGameData.isGameRunning.Value)
-        { 
-            //Debug.Log(nm.ConnectedClientsList.Count);
-            if (GetComponent<PlayerData>().FinishedGame.Value == false)
+        if (!(m_GameManagerGameData.isGameRunning.Value && !GetComponent<PlayerData>().FinishedGame.Value)) return;
+
+        //Debug.Log(nm.ConnectedClientsList.Count);
+        m_PlayerData.playerRunTime.Value += Time.deltaTime;
+        if (m_Request)
+        {
+            m_Request = false;
+
+            if (m_NFlips > 0)
             {
-                playerRunTime.Value += Time.deltaTime;
-                if (sk_Request)
-                {
-                    sk_Request = false;
+                m_GravityDirection *= -1;
+                m_RigidBody2d.gravityScale = m_GravityDirection * m_GravityMultiplier;
+                m_Transform.localScale = new Vector3(m_Transform.localScale.x, m_Transform.localScale.y * -1, m_Transform.localScale.z);
 
-                    if (s_NFlips > 0)
-                    {
-                        s_GravityDirection *= -1;
-                        s_RigidBody2d.gravityScale = s_GravityDirection * s_GravityMultiplier;
-                        s_Transform.localScale = new Vector3(s_Transform.localScale.x, s_Transform.localScale.y * -1, s_Transform.localScale.z);
-
-                        s_NFlips--;
-                    }
-                }
+                m_NFlips--;
             }
-
         }
     }
 
@@ -187,16 +190,16 @@ public class PlayerControl : NetworkBehaviour
         }
 
         // help why
-        String temp = Math.Floor(playerRunTime.Value).ToString() + "." + Math.Floor(playerRunTime.Value * 10) % 10 + Math.Floor(playerRunTime.Value * 100) % 10;
-        gameManagerGameData.playerRunTimeText.text = temp;
+        String temp = Math.Floor(m_PlayerData.playerRunTime.Value / 60f).ToString() + ":" + Math.Floor(m_PlayerData.playerRunTime.Value).ToString() + "." + Math.Floor(m_PlayerData.playerRunTime.Value * 10) % 10 + Math.Floor(m_PlayerData.playerRunTime.Value * 100) % 10;
+        m_GameManagerGameData.playerRunTimeText.text = temp;
 
-        Debug.DrawRay(transform.position, s_RigidBody2d.velocity, Color.red, 1 / 300f);
+        Debug.DrawRay(transform.position, m_RigidBody2d.velocity, Color.red, 1 / 300f);
     }
 
     [ServerRpc]
     public void UpdateClientPositionServerRpc(bool request)
     {
-        sk_Request = request;
+        m_Request = request;
     }
 
     private void FixedUpdate()
@@ -209,57 +212,60 @@ public class PlayerControl : NetworkBehaviour
 
     private void FixedUpdateServer()
     {
-        if (gameManagerGameData.isGameRunning.Value)
+        if (!(m_GameManagerGameData.isGameRunning.Value && !GetComponent<PlayerData>().FinishedGame.Value))
         {
-            if (GetComponent<PlayerData>().FinishedGame.Value == false)
-            {
-                if (checkGround())
-                {
-                    //Debug.Log("On ground");
+            return;
+        }
 
-                    if (s_RigidBody2d.velocity.magnitude > s_OnGroundVelocity)
-                    {
-                        s_RigidBody2d.velocity -= Vector2.right * s_CurrentAcseleration;
-                    }
-                    else
-                    {
-                        if (s_RigidBody2d.velocity.magnitude < s_MaxVelocity)
-                        {
-                            s_RigidBody2d.velocity += Vector2.right * s_CurrentAcseleration;
-                        }
-                        else
-                        {
-                            s_RigidBody2d.velocity = Vector2.right * s_OnGroundVelocity;
-                        }
-                    }
+        Tuple<string, int, string> feetPlatform = FindFeetPlatform();
+        if (feetPlatform != null)
+        {
+            Debug.Log("On ground");
+
+            if (feetPlatform.Item1 == "simplePlatform")
+            {
+                if (m_RigidBody2d.velocity.magnitude > m_OnGroundVelocity)
+                {
+                    m_RigidBody2d.velocity -= Vector2.right * m_CurrentAcseleration;
                 }
                 else
                 {
-                    s_RigidBody2d.AddForce(Vector2.right * s_Force);
+                    if (m_RigidBody2d.velocity.magnitude < m_MaxVelocity)
+                    {
+                        m_RigidBody2d.velocity += Vector2.right * m_CurrentAcseleration;
+                    }
+                    else
+                    {
+                        m_RigidBody2d.velocity = Vector2.right * m_OnGroundVelocity;
+                    }
                 }
             }
-            else
-            {
-                s_RigidBody2d.velocity = Vector2.zero;
-            }
+        }
+        else
+        {
+            m_RigidBody2d.AddForce(Vector2.right * m_Force);
+        }
+
+        for (int i=0; i<m_TouchingPlatforms.Count; i++)
+        {
+            Debug.Log(i + " " + m_TouchingPlatforms[i].Item1 + " " + m_TouchingPlatforms[i].Item2 + " " + m_TouchingPlatforms[i].Item3);
         }
     }
 
-    private bool checkGround()
+    private Tuple<string, int, string> FindFeetPlatform()
     {
-        float extraBoxHeight = 0.1f;
-        RaycastHit2D[] raycasthit = Physics2D.BoxCastAll(s_BoxCollider2D.bounds.center, new Vector2(s_BoxCollider2D.bounds.size.x, s_BoxCollider2D.bounds.size.y + extraBoxHeight), 0f, Vector2.zero, 0f);
+        // this probably should return all feet platforms, but irrelevant for now
 
-        for (int i = 0; i < raycasthit.Length; i++)
+        foreach(Tuple<string, int, string> platform in m_TouchingPlatforms)
         {
-            //Debug.Log(raycasthit[i].collider.tag);
-            if (raycasthit[i].collider != null && raycasthit[i].collider.CompareTag("simplePlatform"))
+            if ((m_GravityDirection == 1 && platform.Item2 == 2) ||
+                (m_GravityDirection == -1 && platform.Item2 == 0))
             {
-                //Debug.Log(raycasthit[i].collider.tag);
-                return true;
+                return platform;
             }
         }
-        return false;
+
+        return null;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -267,26 +273,72 @@ public class PlayerControl : NetworkBehaviour
         if (!IsServer) return;
 
         //Debug.Log(collision.gameObject.tag);
-        if (Array.Exists(s_FlipTagList, element => collision.gameObject.CompareTag(element)))
+        if (Array.Exists(m_FlipTagList, element => collision.gameObject.CompareTag(element)))
         {
-            s_NFlips ++;
-            s_NFlips = Math.Min(s_NFlips, s_MaxFlips);
+            m_NFlips ++;
+            m_NFlips = Math.Min(m_NFlips, m_MaxFlips);
         }
-        s_CurrentAcseleration = Mathf.Abs(s_RigidBody2d.velocity.magnitude - s_OnGroundVelocity) / 50f * s_TimeOfAcselerationOfPlatform;
+        m_CurrentAcseleration = Mathf.Abs(m_RigidBody2d.velocity.magnitude - m_OnGroundVelocity) / 50f * m_TimeOfAcselerationOfPlatform;
+
+        m_TouchingPlatforms.Add(new Tuple<string, int, string>(collision.gameObject.tag, FindCollisionDirection(collision), collision.gameObject.name));
 
         foreach (ContactPoint2D contact in collision.contacts)
         {
-            Debug.DrawLine(new Vector3(contact.point.x, contact.point.y, transform.position.z), transform.position, Color.red, 2, false);
+            Debug.DrawLine(new Vector3(contact.point.x, contact.point.y, transform.position.z), transform.position, Color.green, 2, false);
         }
         //Debug.Break();
+    }
+
+    private int FindCollisionDirection(Collision2D collision)
+    {
+        // Direction is absolute
+        // 0 - up, 1 -right, 2 - down, 3 - left
+        bool[] directions = { true, true, true, true };
+
+        if (collision.contacts.Length != 2)
+        {
+            Debug.Log("HELP HELP HELP HELP HELP BAD COLLISION");
+            return -1;
+        }
+
+        foreach(ContactPoint2D contact in collision.contacts)
+        {
+            float dx = contact.point.x - transform.position.x;
+            float dy = contact.point.y - transform.position.y;
+
+            directions[0] = directions[0] && (dy > 0);
+            directions[1] = directions[1] && (dx > 0);
+            directions[2] = directions[2] && (dy < 0);
+            directions[3] = directions[3] && (dx < 0);
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (directions[i])
+                return i;
+        }
+
+        return -1;
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (!IsServer) return;
+
+        m_TouchingPlatforms.RemoveAt(m_TouchingPlatforms.FindIndex(e => e.Item3 == collision.gameObject.name));
     }
 
     private void OnFinishedGameChanged(bool previous, bool current)
     {
         if (IsServer)
         {
-            s_RigidBody2d.gravityScale = 0;
-            transform.position += new Vector3(UnityEngine.Random.Range(rangeTeleportation.x, rangeTeleportation.y), 0f, 0f);
+            m_RigidBody2d.gravityScale = 0;
+            m_RigidBody2d.velocity = Vector2.zero;
+            transform.position += new Vector3(UnityEngine.Random.Range(m_RangeTeleportation.x, m_RangeTeleportation.y), 0f, 0f);
         }
     }
 }
+
+// change syntaxis
+// remove CheckGround, add OnCollisionExit2D
+// add touching platforms list

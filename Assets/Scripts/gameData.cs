@@ -108,10 +108,5 @@ public class GameData : NetworkBehaviour
             list[n] = value;
         }
     }
-
-    private void FixedUpdate()
-    {
-        
-    }
 }
  

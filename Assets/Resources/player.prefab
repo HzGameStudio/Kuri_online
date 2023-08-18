@@ -60,6 +60,8 @@ MonoBehaviour:
     m_InternalValue: -1
   placeInGame:
     m_InternalValue: -1
+  playerRunTime:
+    m_InternalValue: 0
 --- !u!114 &6316624174453296671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -84,25 +86,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 989c52490af508d408f5f31a55dcd53a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  s_OnGroundVelocity: 10
-  s_BrakeVelocity: 0.01
-  s_MaxVelocity: 20
-  s_Force: 2
-  s_TimeOfAcselerationOfPlatform: 0.5
-  s_GravityMultiplier: 1.5
-  rangeTeleportation: {x: 2, y: 10}
-  k_MainCamera: {fileID: 5440809166809444851}
-  k_MiniMapCamera: {fileID: 5318391851890978683}
-  s_BoxCollider2D: {fileID: 4581643266298009302}
-  s_RigidBody2d: {fileID: 7788865133089810928}
-  s_Transform: {fileID: 64830023102685248}
-  s_RedKura: {fileID: 1519113936764943184}
-  s_BlueKura: {fileID: 5454749229449544498}
-  s_FlipTagList:
+  m_OnGroundVelocity: 10
+  m_BrakeVelocity: 0.01
+  m_MaxVelocity: 20
+  m_Force: 2
+  m_TimeOfAcselerationOfPlatform: 0.5
+  m_GravityMultiplier: 1.5
+  m_RangeTeleportation: {x: 2, y: 10}
+  m_MainCamera: {fileID: 5440809166809444851}
+  m_MiniMapCamera: {fileID: 5318391851890978683}
+  m_BoxCollider2D: {fileID: 4581643266298009302}
+  m_RigidBody2d: {fileID: 7788865133089810928}
+  m_Transform: {fileID: 64830023102685248}
+  m_RedKura: {fileID: 1519113936764943184}
+  m_BlueKura: {fileID: 5454749229449544498}
+  m_FlipTagList:
   - simplePlatform
   - player
-  s_MaxFlips: 1
-  s_State: 1
+  m_MaxFlips: 1
+  m_State: 1
 --- !u!50 &7788865133089810928
 Rigidbody2D:
   serializedVersion: 4
@@ -967,7 +969,6 @@ GameObject:
   m_Component:
   - component: {fileID: 315393498114306391}
   - component: {fileID: 5318391851890978683}
-  - component: {fileID: 1454223414788940582}
   m_Layer: 0
   m_Name: MiniMapCamera
   m_TagString: Untagged
@@ -1041,14 +1042,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &1454223414788940582
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6568274798154469283}
-  m_Enabled: 1
 --- !u!1 &8700358796918268845
 GameObject:
   m_ObjectHideFlags: 0
