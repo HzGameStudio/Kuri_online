@@ -11,46 +11,44 @@ using Unity.VisualScripting;
 
 public class PlayerControl : NetworkBehaviour
 {
-    public enum KuraState
-    {
-        //Kissing a wall, ground
-        Stand,
-        //No speed, air
-        Fall,
-        //No\Normal speed, ground
-        Run,
-        //Too much speed, ground
-        FlapRun,
-        //Normal speed, air
-        Fly,
-        //Too much speed, air
-        Glide
-    }
-
     // *** Constants
 
     // Physics
 
     [SerializeField]
-    private float m_OnGroundVelocity;
+    private float m_MaxRunVelocity;
 
     [SerializeField]
-    private float m_BrakeVelocity;
+    private float m_MinFlyVelocity;
 
     [SerializeField]
-    private float m_MaxVelocity;
+    private float m_MaxFlyVelocity;
 
     [SerializeField]
-    private int m_Force;
+    private float m_AbsoluteMaxVelocity;
 
     [SerializeField]
-    private float m_TimeOfAcselerationOfPlatform;
+    private float m_ChillThresholdVelocity;
+
+
+
+    [SerializeField]
+    private float m_RunForce;
+
+    [SerializeField]
+    private float m_ReadyRunForce;
+
+    [SerializeField]
+    private float m_RunBrakeForce;
+
+    [SerializeField]
+    private float m_FlyForce;
+
+    [SerializeField]
+    private float m_FlyBrakeForce;
 
     [SerializeField]
     private float m_GravityMultiplier;
-
-    [SerializeField]
-    private Vector2 m_RangeTeleportation = new Vector2(2, 10);
 
     // Objects
 
@@ -66,6 +64,7 @@ public class PlayerControl : NetworkBehaviour
     [SerializeField]
     private Rigidbody2D m_RigidBody2d;
 
+    // square transform, not player
     [SerializeField]
     private Transform m_Transform;
 
@@ -86,7 +85,15 @@ public class PlayerControl : NetworkBehaviour
 
     [SerializeField]
     private int m_MaxFlips = 1;
-    
+
+    private float m_MaxFlapRunTime = 1.5f;
+
+    // Other
+
+    [SerializeField]
+    private Vector2 m_RangeTeleportation = new Vector2(2, 10);
+
+
 
     // *** Active
 
@@ -94,14 +101,12 @@ public class PlayerControl : NetworkBehaviour
 
     private int m_GravityDirection = 1;
 
-    private float m_CurrentAcseleration;
-
     private int m_NFlips = 1;
-
-    public KuraState m_State = KuraState.Fall;
 
     // Platform tag, platform direction, platform gameObject name
     public List<Tuple<string, int, string>> m_TouchingPlatforms = new List<Tuple<string, int, string>>();
+
+    private float m_CurFlapRunTime = 0f;
 
     private void Start()
     {
@@ -136,7 +141,7 @@ public class PlayerControl : NetworkBehaviour
         m_GameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
 
         m_GameManagerGameData.playerDataList.Add(new GameData.PlayerData(gameObject, m_PlayerData.playerRunTime.Value, 0));
-        GetComponent<PlayerData>().FinishedGame.OnValueChanged += OnFinishedGameChanged;
+        m_PlayerData.finishedgame.OnValueChanged += OnFinishedGameChanged;
 
         if(IsOwner)
         {
@@ -160,7 +165,7 @@ public class PlayerControl : NetworkBehaviour
 
     private void UpdateServer()
     {
-        if (!(m_GameManagerGameData.isGameRunning.Value && !GetComponent<PlayerData>().FinishedGame.Value)) return;
+        if (!(m_GameManagerGameData.isGameRunning.Value && !m_PlayerData.finishedgame.Value)) return;
 
         //Debug.Log(nm.ConnectedClientsList.Count);
         m_PlayerData.playerRunTime.Value += Time.deltaTime;
@@ -181,7 +186,7 @@ public class PlayerControl : NetworkBehaviour
 
     private void UpdateClient()
     {
-        if(GetComponent<PlayerData>().FinishedGame.Value == false)
+        if(GetComponent<PlayerData>().finishedgame.Value == false)
         {
             if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
             {
@@ -193,7 +198,7 @@ public class PlayerControl : NetworkBehaviour
         String temp = Math.Floor(m_PlayerData.playerRunTime.Value / 60f).ToString() + ":" + Math.Floor(m_PlayerData.playerRunTime.Value).ToString() + "." + Math.Floor(m_PlayerData.playerRunTime.Value * 10) % 10 + Math.Floor(m_PlayerData.playerRunTime.Value * 100) % 10;
         m_GameManagerGameData.playerRunTimeText.text = temp;
 
-        Debug.DrawRay(transform.position, m_RigidBody2d.velocity, Color.red, 1 / 300f);
+        Debug.DrawLine(transform.position, new Vector3(transform.position.x + m_RigidBody2d.velocity.x, transform.position.y, transform.position.z), Color.red, 1 / 300f);
     }
 
     [ServerRpc]
@@ -212,38 +217,103 @@ public class PlayerControl : NetworkBehaviour
 
     private void FixedUpdateServer()
     {
-        if (!(m_GameManagerGameData.isGameRunning.Value && !GetComponent<PlayerData>().FinishedGame.Value))
+        if (!(m_GameManagerGameData.isGameRunning.Value && !GetComponent<PlayerData>().finishedgame.Value))
         {
             return;
         }
 
-        Tuple<string, int, string> feetPlatform = FindFeetPlatform();
-        if (feetPlatform != null)
-        {
-            Debug.Log("On ground");
+        bool onFloor = m_TouchingPlatforms.Any(platform => (m_GravityDirection == 1 && platform.Item2 == 2) ||
+                                                    (m_GravityDirection == -1 && platform.Item2 == 0));
+        bool kissWall = m_TouchingPlatforms.Any(platform => platform.Item2 == 1);
 
-            if (feetPlatform.Item1 == "simplePlatform")
-            {
-                if (m_RigidBody2d.velocity.magnitude > m_OnGroundVelocity)
-                {
-                    m_RigidBody2d.velocity -= Vector2.right * m_CurrentAcseleration;
-                }
-                else
-                {
-                    if (m_RigidBody2d.velocity.magnitude < m_MaxVelocity)
-                    {
-                        m_RigidBody2d.velocity += Vector2.right * m_CurrentAcseleration;
-                    }
-                    else
-                    {
-                        m_RigidBody2d.velocity = Vector2.right * m_OnGroundVelocity;
-                    }
-                }
-            }
+        if (kissWall)
+        {
+            if (onFloor)
+                m_PlayerData.state.Value = PlayerData.KuraState.Stand;
+            else
+                m_PlayerData.state.Value = PlayerData.KuraState.Fall;
         }
         else
         {
-            m_RigidBody2d.AddForce(Vector2.right * m_Force);
+            if (onFloor)
+            {
+                if (m_RigidBody2d.velocity.x < m_MinFlyVelocity)
+                    m_PlayerData.state.Value = PlayerData.KuraState.Run;
+                else if (m_RigidBody2d.velocity.x <= m_MaxRunVelocity)
+                {
+                    m_PlayerData.state.Value = PlayerData.KuraState.ReadyRun;
+                }
+                else
+                {
+                    if (m_CurFlapRunTime <= m_MaxFlapRunTime)
+                    {
+                        m_PlayerData.state.Value = PlayerData.KuraState.FlapRun;
+                        m_CurFlapRunTime += Time.deltaTime;
+                    }
+                    else
+                    {
+                        m_PlayerData.state.Value = PlayerData.KuraState.ReadyRun;
+                    }
+                }
+            }
+            else
+            {
+                if (m_RigidBody2d.velocity.x < m_MinFlyVelocity)
+                    m_PlayerData.state.Value = PlayerData.KuraState.Fall;
+                else if (m_RigidBody2d.velocity.x <= m_MaxFlyVelocity)
+                    m_PlayerData.state.Value = PlayerData.KuraState.Fly;
+                else
+                    m_PlayerData.state.Value = PlayerData.KuraState.Glide;
+            }
+        }
+
+        if (m_PlayerData.state.Value == PlayerData.KuraState.Stand)
+        {
+
+        }
+        else if (m_PlayerData.state.Value == PlayerData.KuraState.Fall)
+        {
+
+        }
+        else if (m_PlayerData.state.Value == PlayerData.KuraState.Run)
+        {
+            Tuple<string, int, string> feetPlatform = FindFeetPlatform();
+
+            if (feetPlatform.Item1 == "simplePlatform")
+            {
+                m_RigidBody2d.AddForce(Vector2.right * m_RunForce);
+            }
+        }
+        else if (m_PlayerData.state.Value == PlayerData.KuraState.ReadyRun)
+        {
+            Tuple<string, int, string> feetPlatform = FindFeetPlatform();
+
+            if (feetPlatform.Item1 == "simplePlatform")
+            {
+                if (Math.Abs(m_MaxRunVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
+                {
+                    if (m_RigidBody2d.velocity.x < m_MaxRunVelocity)
+                        m_RigidBody2d.AddForce(Vector2.right * m_ReadyRunForce);
+                    else
+                        m_RigidBody2d.AddForce(Vector2.left * m_RunBrakeForce);
+                }
+            }
+        }
+        else if (m_PlayerData.state.Value == PlayerData.KuraState.FlapRun)
+        {
+            
+        }
+        else if (m_PlayerData.state.Value == PlayerData.KuraState.Fly)
+        {
+            m_RigidBody2d.AddForce(Vector2.right * m_FlyForce);
+        }
+        else if (m_PlayerData.state.Value == PlayerData.KuraState.Glide)
+        {
+            m_RigidBody2d.AddForce(Vector2.left * m_FlyBrakeForce);
+        }
+        else
+        {
+            Debug.Log("No kura state ???");
         }
 
         for (int i=0; i<m_TouchingPlatforms.Count; i++)
@@ -278,11 +348,17 @@ public class PlayerControl : NetworkBehaviour
             m_NFlips ++;
             m_NFlips = Math.Min(m_NFlips, m_MaxFlips);
         }
-        m_CurrentAcseleration = Mathf.Abs(m_RigidBody2d.velocity.magnitude - m_OnGroundVelocity) / 50f * m_TimeOfAcselerationOfPlatform;
 
-        m_TouchingPlatforms.Add(new Tuple<string, int, string>(collision.gameObject.tag, FindCollisionDirection(collision), collision.gameObject.name));
+        int dir = FindCollisionDirection(collision);
+        m_TouchingPlatforms.Add(new Tuple<string, int, string>(collision.gameObject.tag, dir, collision.gameObject.name));
 
-        foreach (ContactPoint2D contact in collision.contacts)
+        if ((m_GravityDirection == 1 && dir == 2) ||
+            (m_GravityDirection == -1 && dir == 0))
+        {
+            m_CurFlapRunTime = 0f;
+        }
+
+            foreach (ContactPoint2D contact in collision.contacts)
         {
             Debug.DrawLine(new Vector3(contact.point.x, contact.point.y, transform.position.z), transform.position, Color.green, 2, false);
         }
@@ -338,7 +414,3 @@ public class PlayerControl : NetworkBehaviour
         }
     }
 }
-
-// change syntaxis
-// remove CheckGround, add OnCollisionExit2D
-// add touching platforms list

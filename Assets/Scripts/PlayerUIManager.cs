@@ -20,6 +20,8 @@ public class PlayerUIManager : NetworkBehaviour
 
     private TextMeshProUGUI lobbyIDText;
 
+    private TextMeshProUGUI kuraStatetext;
+
     private void Start()
     {
         gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
@@ -29,6 +31,7 @@ public class PlayerUIManager : NetworkBehaviour
         winnerText = gameManagerGameData.winnerText;
         RunTimeText = gameManagerGameData.playerRunTimeText;
         lobbyIDText = gameManagerGameData.lobbyIDText;
+        kuraStatetext = gameManagerGameData.kuraStatetext;
 
         if (IsHost)
         {
@@ -49,11 +52,13 @@ public class PlayerUIManager : NetworkBehaviour
 
             lobbyIDText.gameObject.SetActive(true);
             lobbyIDText.text = gameManagerGameData.m_LobbyCode.Value.Value;
+
+            kuraStatetext.gameObject.SetActive(true);
         }
 
         gameManagerGameData.isGameRunning.OnValueChanged += OnIsGameRunningChanged;
         GetComponent<PlayerData>().placeInGame.OnValueChanged += OnPlaceInGameChanged;
-        //GetComponent<PlayerData>().playerID.OnValueChanged += OnPlayerIDChanged;
+        GetComponent<PlayerData>().state.OnValueChanged += OnKuraStateChanged;
     }
 
     private void OnIsGameRunningChanged(bool previous, bool current)
@@ -76,13 +81,11 @@ public class PlayerUIManager : NetworkBehaviour
         }
     }
 
-    /*
-    private void OnPlayerIDChanged(int previous, int current)
+    private void OnKuraStateChanged(PlayerData.KuraState previous, PlayerData.KuraState current)
     {
         if (IsClient && IsOwner)
         {
-            playerIDText.text = "player " + GetComponent<PlayerData>().playerID.Value.ToString();
+            kuraStatetext.text = GetComponent<PlayerData>().state.Value.ToString();
         }
     }
-    */
 }

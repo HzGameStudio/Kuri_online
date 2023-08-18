@@ -50,6 +50,8 @@ public class GameData : NetworkBehaviour
 
     public TextMeshProUGUI lobbyIDText;
 
+    public TextMeshProUGUI kuraStatetext;
+
     public GameObject MiniMapGameObject;
 
     [SerializeField]

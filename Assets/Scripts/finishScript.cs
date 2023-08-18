@@ -24,7 +24,7 @@ public class FinishScript : NetworkBehaviour
                 Debug.Log("finish of the game hz wich kura won");
                 gameManagerGameData.numFinishedPlayers++;
                 collision.gameObject.GetComponent<PlayerData>().placeInGame.Value = gameManagerGameData.numFinishedPlayers;
-                collision.gameObject.GetComponent<PlayerData>().FinishedGame.Value = true;
+                collision.gameObject.GetComponent<PlayerData>().finishedgame.Value = true;
                 //gameManagerGameData.isGameRunning = false;
             }
         }
