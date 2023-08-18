@@ -127,7 +127,7 @@ public class PlayerControl : NetworkBehaviour
 
         gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
 
-        gameManagerGameData.playerDataList.Add(new GameData.PlayerData(gameObject, playerRunTime.Value));
+        gameManagerGameData.playerDataList.Add(new GameData.PlayerData(gameObject, playerRunTime.Value, 0));
         GetComponent<PlayerData>().FinishedGame.OnValueChanged += OnFinishedGameChanged;
 
         if(IsOwner)

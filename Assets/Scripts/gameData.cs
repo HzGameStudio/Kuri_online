@@ -22,13 +22,16 @@ public class GameData : NetworkBehaviour
 
     public struct PlayerData
     {
-        public PlayerData(GameObject GameObject, float RunTime)
+        public PlayerData(GameObject GameObject, float RunTime, int PlaceInRuningGame)
         {
             runTime = RunTime;
             gameObject = GameObject;
+            placeInRuningGame = new NetworkVariable<int>(PlaceInRuningGame);
+
         }
         public float runTime;
         public GameObject gameObject;
+        public NetworkVariable<int> placeInRuningGame;
     }
 
     public int m_MaxPlayers = 4;
@@ -104,6 +107,11 @@ public class GameData : NetworkBehaviour
             list[k] = list[n];
             list[n] = value;
         }
+    }
+
+    private void FixedUpdate()
+    {
+        
     }
 }
  
