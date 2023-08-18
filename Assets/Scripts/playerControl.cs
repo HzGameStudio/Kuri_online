@@ -223,7 +223,8 @@ public class PlayerControl : NetworkBehaviour
         }
 
         bool onFloor = m_TouchingPlatforms.Any(platform => (m_GravityDirection == 1 && platform.Item2 == 2) ||
-                                                    (m_GravityDirection == -1 && platform.Item2 == 0));
+                                                           (m_GravityDirection == -1 && platform.Item2 == 0));
+
         bool kissWall = m_TouchingPlatforms.Any(platform => platform.Item2 == 1);
 
         if (kissWall)
@@ -305,11 +306,13 @@ public class PlayerControl : NetworkBehaviour
         }
         else if (m_PlayerData.state.Value == PlayerData.KuraState.Fly)
         {
-            m_RigidBody2d.AddForce(Vector2.right * m_FlyForce);
+            if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
+                m_RigidBody2d.AddForce(Vector2.right * m_FlyForce);
         }
         else if (m_PlayerData.state.Value == PlayerData.KuraState.Glide)
         {
-            m_RigidBody2d.AddForce(Vector2.left * m_FlyBrakeForce);
+            if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
+                m_RigidBody2d.AddForce(Vector2.left * m_FlyBrakeForce);
         }
         else
         {
@@ -358,7 +361,7 @@ public class PlayerControl : NetworkBehaviour
             m_CurFlapRunTime = 0f;
         }
 
-            foreach (ContactPoint2D contact in collision.contacts)
+        foreach (ContactPoint2D contact in collision.contacts)
         {
             Debug.DrawLine(new Vector3(contact.point.x, contact.point.y, transform.position.z), transform.position, Color.green, 2, false);
         }

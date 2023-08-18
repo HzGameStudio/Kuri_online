@@ -77,6 +77,10 @@ public class PlayerUIManager : NetworkBehaviour
             {
                 winnerText.gameObject.SetActive(true);
                 winnerText.text = "YOU WON " + GetComponent<PlayerData>().placeInGame.Value.ToString() + " PLACE!!!";
+
+                playerIDText.gameObject.SetActive(false);
+                lobbyIDText.gameObject.SetActive(false);
+                kuraStatetext.gameObject.SetActive(false);
             }
         }
     }
