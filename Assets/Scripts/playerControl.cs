@@ -15,8 +15,8 @@ public class PlayerControl : NetworkBehaviour
 
     // Physics
 
-    [SerializeField]
-    private float m_MaxRunVelocity;
+    //[SerializeField]
+    //private float m_MaxRunVelocity;
 
     [SerializeField]
     private float m_MinFlyVelocity;
@@ -32,14 +32,14 @@ public class PlayerControl : NetworkBehaviour
 
 
 
-    [SerializeField]
-    private float m_RunForce;
+    //[SerializeField]
+    //private float m_RunForce;
 
-    [SerializeField]
-    private float m_ReadyRunForce;
+    //[SerializeField]
+    //private float m_ReadyRunForce;
 
-    [SerializeField]
-    private float m_RunBrakeForce;
+    //[SerializeField]
+    //private float m_RunBrakeForce;
 
     [SerializeField]
     private float m_FlyForce;
@@ -86,7 +86,7 @@ public class PlayerControl : NetworkBehaviour
     [SerializeField]
     private int m_MaxFlips = 1;
 
-    private float m_MaxFlapRunTime = 1.5f;
+    //private float m_MaxFlapRunTime = 1.5f;
 
     // Other
 
@@ -238,15 +238,19 @@ public class PlayerControl : NetworkBehaviour
         {
             if (onFloor)
             {
+                Tuple<string, int, string> feetPlatform = FindFeetPlatform();
+
+                PlatformScreaptebleObject platformData = GameObject.Find(feetPlatform.Item3).GetComponent<PlatformBasicScript>().platformData;
+
                 if (m_RigidBody2d.velocity.x < m_MinFlyVelocity)
                     m_PlayerData.state.Value = PlayerData.KuraState.Run;
-                else if (m_RigidBody2d.velocity.x <= m_MaxRunVelocity)
+                else if (m_RigidBody2d.velocity.x <= platformData.m_MaxRunVelocity)
                 {
                     m_PlayerData.state.Value = PlayerData.KuraState.ReadyRun;
                 }
                 else
                 {
-                    if (m_CurFlapRunTime <= m_MaxFlapRunTime)
+                    if (m_CurFlapRunTime <= platformData.m_MaxFlapRunTime)
                     {
                         m_PlayerData.state.Value = PlayerData.KuraState.FlapRun;
                         m_CurFlapRunTime += Time.deltaTime;
@@ -280,23 +284,27 @@ public class PlayerControl : NetworkBehaviour
         {
             Tuple<string, int, string> feetPlatform = FindFeetPlatform();
 
+            PlatformScreaptebleObject platformData = GameObject.Find(feetPlatform.Item3).GetComponent<PlatformBasicScript>().platformData;
+
             if (feetPlatform.Item1 == "simplePlatform")
             {
-                m_RigidBody2d.AddForce(Vector2.right * m_RunForce);
+                m_RigidBody2d.AddForce(Vector2.right * platformData.m_RunForce);
             }
         }
         else if (m_PlayerData.state.Value == PlayerData.KuraState.ReadyRun)
         {
             Tuple<string, int, string> feetPlatform = FindFeetPlatform();
 
+            PlatformScreaptebleObject platformData = GameObject.Find(feetPlatform.Item3).GetComponent<PlatformBasicScript>().platformData;
+
             if (feetPlatform.Item1 == "simplePlatform")
             {
-                if (Math.Abs(m_MaxRunVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
+                if (Math.Abs(platformData.m_MaxRunVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
                 {
-                    if (m_RigidBody2d.velocity.x < m_MaxRunVelocity)
-                        m_RigidBody2d.AddForce(Vector2.right * m_ReadyRunForce);
+                    if (m_RigidBody2d.velocity.x < platformData.m_MaxRunVelocity)
+                        m_RigidBody2d.AddForce(Vector2.right * platformData.m_ReadyRunForce);
                     else
-                        m_RigidBody2d.AddForce(Vector2.left * m_RunBrakeForce);
+                        m_RigidBody2d.AddForce(Vector2.left * platformData.m_RunBrakeForce);
                 }
             }
         }
