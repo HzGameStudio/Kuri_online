@@ -180,6 +180,7 @@ public class PlayerControl : NetworkBehaviour
             }
         }
 
+        // NOTE: this should be in PlayerUIManager, but im dying 
         String temp = Math.Floor(m_PlayerData.playerRunTime.Value / 60f).ToString() + ":" + Math.Floor(m_PlayerData.playerRunTime.Value).ToString() + "." + Math.Floor(m_PlayerData.playerRunTime.Value * 10) % 10 + Math.Floor(m_PlayerData.playerRunTime.Value * 100) % 10;
         m_GameData.playerRunTimeText.text = temp;
 

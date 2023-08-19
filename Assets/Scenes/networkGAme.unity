@@ -4799,7 +4799,7 @@ MonoBehaviour:
         byte0124: 0
         byte0125: 0
   maxPlayers: 4
-  startButtonGameObject: {fileID: 0}
+  startButtonGameObject: {fileID: 2020881691}
   playerIDText: {fileID: 1351579881}
   winnerText: {fileID: 1376665266}
   playerRunTimeText: {fileID: 1494586203}
@@ -7975,7 +7975,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_NetworkManager: {fileID: 517975428}
-  m_GameData: {fileID: 0}
+  m_GameData: {fileID: 1360156882}
 --- !u!114 &2043721961
 MonoBehaviour:
   m_ObjectHideFlags: 0

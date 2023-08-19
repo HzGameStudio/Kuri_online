@@ -31,11 +31,14 @@ public class PlayerUIManager : NetworkBehaviour
     [SerializeField]
     private Camera m_MiniMapCamera;
 
+    [SerializeField]
     private GameObject m_MiniMapGameObject;
 
     private void Start()
     {
         m_GameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
+
+        m_PlayerData = GetComponent<PlayerData>();
 
         m_StartGameButton = m_GameData.startButtonGameObject;
         m_PlayerIDText = m_GameData.playerIDText;
@@ -43,6 +46,7 @@ public class PlayerUIManager : NetworkBehaviour
         m_RunTimeText = m_GameData.playerRunTimeText;
         m_LobbyIDText = m_GameData.lobbyIDText;
         m_KuraStatetext = m_GameData.kuraStatetext;
+        m_MiniMapGameObject = m_GameData.miniMapGameObject;
 
         if (IsHost)
         {
