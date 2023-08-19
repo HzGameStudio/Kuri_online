@@ -4657,66 +4657,65 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06b443aff9132bb459945682d7b7f330, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MaxPlayers: 4
   numPlayersInGame:
     m_InternalValue: 0
   isGameRunning:
     m_InternalValue: 0
-  m_LobbyCode:
+  lobbyCode:
     m_InternalValue:
-      utf8LengthInBytes: 0
+      utf8LengthInBytes: 89
       bytes:
         offset0000:
-          byte0000: 0
-          byte0001: 0
-          byte0002: 0
-          byte0003: 0
-          byte0004: 0
-          byte0005: 0
-          byte0006: 0
-          byte0007: 0
-          byte0008: 0
-          byte0009: 0
-          byte0010: 0
-          byte0011: 0
-          byte0012: 0
-          byte0013: 0
-          byte0014: 0
-          byte0015: 0
+          byte0000: 73
+          byte0001: 70
+          byte0002: 32
+          byte0003: 89
+          byte0004: 79
+          byte0005: 85
+          byte0006: 32
+          byte0007: 83
+          byte0008: 69
+          byte0009: 69
+          byte0010: 32
+          byte0011: 84
+          byte0012: 72
+          byte0013: 73
+          byte0014: 83
+          byte0015: 32
         offset0016:
-          byte0000: 0
-          byte0001: 0
-          byte0002: 0
-          byte0003: 0
-          byte0004: 0
-          byte0005: 0
-          byte0006: 0
-          byte0007: 0
-          byte0008: 0
-          byte0009: 0
-          byte0010: 0
-          byte0011: 0
-          byte0012: 0
-          byte0013: 0
-          byte0014: 0
-          byte0015: 0
+          byte0000: 84
+          byte0001: 72
+          byte0002: 69
+          byte0003: 78
+          byte0004: 32
+          byte0005: 89
+          byte0006: 79
+          byte0007: 85
+          byte0008: 39
+          byte0009: 82
+          byte0010: 69
+          byte0011: 32
+          byte0012: 79
+          byte0013: 70
+          byte0014: 70
+          byte0015: 76
         offset0032:
-          byte0000: 0
-          byte0001: 0
-          byte0002: 0
-          byte0003: 0
-          byte0004: 0
-          byte0005: 0
-          byte0006: 0
-          byte0007: 0
-          byte0008: 0
-          byte0009: 0
-          byte0010: 0
-          byte0011: 0
-          byte0012: 0
-          byte0013: 0
-          byte0014: 0
-          byte0015: 0
+          byte0000: 73
+          byte0001: 78
+          byte0002: 69
+          byte0003: 44
+          byte0004: 32
+          byte0005: 89
+          byte0006: 65
+          byte0007: 82
+          byte0008: 73
+          byte0009: 75
+          byte0010: 32
+          byte0011: 70
+          byte0012: 79
+          byte0013: 82
+          byte0014: 71
+          byte0015: 79
         offset0048:
           byte0000: 84
           byte0001: 32
@@ -4799,15 +4798,17 @@ MonoBehaviour:
         byte0123: 0
         byte0124: 0
         byte0125: 0
-  startButton: {fileID: 2020881691}
+  maxPlayers: 4
+  startButtonGameObject: {fileID: 0}
   playerIDText: {fileID: 1351579881}
   winnerText: {fileID: 1376665266}
   playerRunTimeText: {fileID: 1494586203}
   lobbyIDText: {fileID: 1470569737}
   kuraStatetext: {fileID: 1299542031}
-  MiniMapGameObject: {fileID: 1921264880}
-  spawnPosTransformList: []
-  curGameSpawnPosTransformList: []
+  miniMapGameObject: {fileID: 1921264880}
+  m_PlayerDataList: []
+  m_SpawnPosTransformList: []
+  m_CurGameSpawnPosTransformList: []
   numFinishedPlayers: 0
 --- !u!114 &1360156883
 MonoBehaviour:
@@ -7974,7 +7975,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_NetworkManager: {fileID: 517975428}
-  gameManagerGameData: {fileID: 1360156882}
+  m_GameData: {fileID: 0}
 --- !u!114 &2043721961
 MonoBehaviour:
   m_ObjectHideFlags: 0

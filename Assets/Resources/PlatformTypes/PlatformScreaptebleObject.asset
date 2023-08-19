@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00a99cab6fff3044b9aad4da58c5f836, type: 3}
   m_Name: PlatformScreaptebleObject
   m_EditorClassIdentifier: 
-  m_MaxFlapRunTime: 1.5
+  m_MaxFlapRunTime: 1
   platformType: normalPlatrorm
   m_MaxRunVelocity: 15
   m_RunForce: 4
   m_ReadyRunForce: 2
-  m_RunBrakeForce: 1
+  m_RunBrakeForce: 3

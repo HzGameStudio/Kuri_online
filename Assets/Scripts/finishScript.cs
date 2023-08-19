@@ -6,26 +6,23 @@ using UnityEngine;
 
 public class FinishScript : NetworkBehaviour
 {
-    private GameData gameManagerGameData;
+    private GameData m_GameData;
 
     void Start()
     {
-        gameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
+        m_GameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (IsServer)
         {
-            Debug.Log(collision.gameObject.tag);
             if (collision.gameObject.CompareTag("player"))
             {
-                //end of game someone won
-                Debug.Log("finish of the game hz wich kura won");
-                gameManagerGameData.numFinishedPlayers++;
-                collision.gameObject.GetComponent<PlayerData>().placeInGame.Value = gameManagerGameData.numFinishedPlayers;
+                Debug.Log("some kura won");
+                m_GameData.numFinishedPlayers++;
+                collision.gameObject.GetComponent<PlayerData>().placeInGame.Value = m_GameData.numFinishedPlayers;
                 collision.gameObject.GetComponent<PlayerData>().finishedgame.Value = true;
-                //gameManagerGameData.isGameRunning = false;
             }
         }
     }

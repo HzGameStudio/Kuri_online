@@ -4,8 +4,16 @@ using UnityEngine;
 using Unity.Netcode;
 using TMPro;
 
+// Class that stores general data about the player (see below), it is also the only class that other classes can take data from
+// <PlayerUIManager> and <PlayerControl> should not be accessed by other classes !!
 public class PlayerData : NetworkBehaviour
 {
+    // The states that a kura can be in,
+    // used for animation and physics (and a lot of other stuff TBA)
+    // The state of a kura generally depends on:
+    // 1) Whether the kura is on the ground
+    // 2) Whether the kura is bumped into a wall and can't (shouldn't) move forward
+    // 3) Speed of the kura
     public enum KuraState
     {
         //Kissing a wall, ground
@@ -30,15 +38,17 @@ public class PlayerData : NetworkBehaviour
     public NetworkVariable<float> playerRunTime = new NetworkVariable<float>(0);
     public NetworkVariable<KuraState> state = new NetworkVariable<KuraState>(KuraState.Fall);
 
-    private GameData m_GameManagerGameData;
+    private GameData m_GameData;
 
     private void Start()
     {
-        m_GameManagerGameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
+        // <GameManager>.<GameData> is the only we need to find when the player spawns in,
+        // it usually has all the player needs in the scene, to minimize GameObject.Find() calls, as they are costly
+        m_GameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
         if (IsServer)
         {
-            m_GameManagerGameData.CalcNumPlayersInGame();
-            playerID.Value = m_GameManagerGameData.numPlayersInGame.Value;
+            m_GameData.CalcNumPlayersInGame();
+            playerID.Value = m_GameData.numPlayersInGame.Value;
         }
     }
 }

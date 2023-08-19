@@ -6,41 +6,23 @@ using Unity.VisualScripting;
 using TMPro;
 using Unity.Collections;
 
+// This class is for storing the general information about the game, such as:
+// The lobby code, references to all the players, is the game running bool, etc.
 public class GameData : NetworkBehaviour
 {
-    //public struct SpawnPosition
-    //{
-    //    public SpawnPosition(Vector3 Position, bool IsTaken)
-    //    {
-    //        position = Position;
-    //        isTaken = IsTaken;
-    //    }
-
-    //    public Vector3 position;
-    //    public bool isTaken;
-    //}
-
-    public struct PlayerData
-    {
-        public PlayerData(GameObject GameObject, float RunTime, int PlaceInRuningGame)
-        {
-            runTime = RunTime;
-            gameObject = GameObject;
-            placeInRuningGame = new NetworkVariable<int>(PlaceInRuningGame);
-
-        }
-        public float runTime;
-        public GameObject gameObject;
-        public NetworkVariable<int> placeInRuningGame;
-    }
-
-    public int m_MaxPlayers = 4;
-
+    // <NetworkVariable>s are generally variables that update often and other scripts use them often, they are automatically syncronized
+    // among all the clients (by the way they can only be changed by the Server(Host)
+    // and for a client to change them, you need a [SeverRPC] (see PlayerControl.cs (211)))
     public NetworkVariable<int> numPlayersInGame = new NetworkVariable<int>();
     public NetworkVariable<bool> isGameRunning = new NetworkVariable<bool>(false);
-    public NetworkVariable<FixedString128Bytes> m_LobbyCode = new NetworkVariable<FixedString128Bytes>("IF YOU SEE THIS THEN YOU'RE OFFLINE, YARIK FORGOT TO CHANGE UNITY TRANSFORM PROTOCOL TYPE");
+    public NetworkVariable<FixedString128Bytes> lobbyCode = new NetworkVariable<FixedString128Bytes>("IF YOU SEE THIS THEN YOU'RE OFFLINE, YARIK FORGOT TO CHANGE UNITY TRANSFORM PROTOCOL TYPE");
 
-    public GameObject startButton;
+    // Non-<NetworkVariable> variables usually don't update on run-time,
+    // so they are the same when the clients starts so it doesn't need to sync
+    public int maxPlayers = 4;
+
+    // These variables are used to give players that spawn in links to UI elements, so we don't have to run GameObject.Find() every time
+    public GameObject startButtonGameObject;
 
     public TextMeshProUGUI playerIDText;
 
@@ -52,30 +34,35 @@ public class GameData : NetworkBehaviour
 
     public TextMeshProUGUI kuraStatetext;
 
-    public GameObject MiniMapGameObject;
+    public GameObject miniMapGameObject;
 
-    [SerializeField]
-    private List<Vector3> spawnPosTransformList = new List<Vector3>();
-    public List<PlayerData> playerDataList = new List<PlayerData>();
+    // Maybe have to do list of <PlayerData> ? Ask yarik later
+    // This is kind of useless for now, but the idea is good lemao
+    public List<GameObject> m_PlayerDataList = new List<GameObject>();
 
+    // All positions that a player can spawn in
     [SerializeField]
-    private List<Vector3> curGameSpawnPosTransformList;
+    private List<Vector3> m_SpawnPosTransformList = new List<Vector3>();
+
+    // Currently available positions to spawn, position is removed when player spawns there, and the list is reset to full when map spawns
+    [SerializeField]
+    private List<Vector3> m_CurGameSpawnPosTransformList;
 
     public int numFinishedPlayers = 0;
 
     private void Start()
     {
-        //Get list of all spawn position on map
+        // Get list of all spawn position on map
         GameObject[] SpawnPointList = GameObject.FindGameObjectsWithTag("spawnPoint");
         for (int i = 0; i < SpawnPointList.Length; i++) 
         {
             Debug.Log(SpawnPointList[i].transform.position);
-            spawnPosTransformList.Add(SpawnPointList[i].transform.position);
+            m_SpawnPosTransformList.Add(SpawnPointList[i].transform.position);
         }
 
-        curGameSpawnPosTransformList = new List<Vector3>(spawnPosTransformList);
+        m_CurGameSpawnPosTransformList = new List<Vector3>(m_SpawnPosTransformList);
 
-        Shuffle<Vector3>(curGameSpawnPosTransformList);
+        Shuffle<Vector3>(m_CurGameSpawnPosTransformList);
     }
 
     public void CalcNumPlayersInGame()
@@ -86,16 +73,18 @@ public class GameData : NetworkBehaviour
 
     public Vector3 GetSpawnPosition()
     {
-        Vector3 pos = curGameSpawnPosTransformList[0];
-        curGameSpawnPosTransformList.RemoveAt(0);
+        Vector3 pos = m_CurGameSpawnPosTransformList[0];
+        m_CurGameSpawnPosTransformList.RemoveAt(0);
         return pos;
     }
 
+    // This function is bound to the <StartButton>
     public void StartGame()
     {
         isGameRunning.Value = true;
     }
 
+    // Just algorhythm to shuffle a list, copied from internet 
     public static void Shuffle<T>(in IList<T> list)
     {
         System.Random rng = new System.Random();

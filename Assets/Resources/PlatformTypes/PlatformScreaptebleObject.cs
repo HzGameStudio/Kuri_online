@@ -17,6 +17,4 @@ public class PlatformScreaptebleObject : ScriptableObject
     public float m_ReadyRunForce;
 
     public float m_RunBrakeForce;
-
-    
 }

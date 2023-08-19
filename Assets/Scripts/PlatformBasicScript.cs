@@ -4,6 +4,5 @@ using UnityEngine;
 
 public class PlatformBasicScript : MonoBehaviour
 {
-    // Start is called before the first frame update
     public PlatformScreaptebleObject platformData;
 }

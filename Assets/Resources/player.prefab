@@ -76,6 +76,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e23094dfcd8560c4b87d2a09bd2fe131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_MainCamera: {fileID: 5440809166809444851}
+  m_MiniMapCamera: {fileID: 5318391851890978683}
 --- !u!114 &7162729809543369524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,19 +90,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 989c52490af508d408f5f31a55dcd53a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MaxRunVelocity: 15
   m_MinFlyVelocity: 6
   m_MaxFlyVelocity: 40
   m_AbsoluteMaxVelocity: 80
   m_ChillThresholdVelocity: 1
-  m_RunForce: 4
-  m_ReadyRunForce: 2
-  m_RunBrakeForce: 1
   m_FlyForce: 1.5
   m_FlyBrakeForce: 1
   m_GravityMultiplier: 1.5
-  m_MainCamera: {fileID: 5440809166809444851}
-  m_MiniMapCamera: {fileID: 5318391851890978683}
   m_BoxCollider2D: {fileID: 4581643266298009302}
   m_RigidBody2d: {fileID: 7788865133089810928}
   m_Transform: {fileID: 64830023102685248}
@@ -110,7 +106,7 @@ MonoBehaviour:
   - simplePlatform
   - player
   m_MaxFlips: 1
-  m_RangeTeleportation: {x: 2, y: 10}
+  m_FinishTPDistance: {x: 2, y: 10}
 --- !u!50 &7788865133089810928
 Rigidbody2D:
   serializedVersion: 4
