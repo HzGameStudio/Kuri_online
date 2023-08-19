@@ -11,6 +11,12 @@ using Unity.VisualScripting;
 
 public class PlayerControl : NetworkBehaviour
 {
+
+    //Boost treking veriabls
+    public bool isSpeedBoosted = false;
+    public float curSpeedBoostTime = 0;
+    public float curSpeedBoostForce = 0;
+
     // *** Constants
 
     // Physics
@@ -222,6 +228,8 @@ public class PlayerControl : NetworkBehaviour
             return;
         }
 
+
+
         bool onFloor = m_TouchingPlatforms.Any(platform => (m_GravityDirection == 1 && platform.Item2 == 2) ||
                                                            (m_GravityDirection == -1 && platform.Item2 == 0));
 
@@ -236,6 +244,18 @@ public class PlayerControl : NetworkBehaviour
         }
         else
         {
+            if(isSpeedBoosted && curSpeedBoostTime>0)
+            {
+                curSpeedBoostTime -= Time.deltaTime;
+                m_RigidBody2d.AddForce(Vector2.right * curSpeedBoostForce);
+                Debug.Log("isBOOOSTED");
+
+            }
+            else
+            {
+                isSpeedBoosted = false;
+                curSpeedBoostTime = 0;
+            }
             if (onFloor)
             {
                 Tuple<string, int, string> feetPlatform = FindFeetPlatform();
