@@ -35,8 +35,14 @@ public class PlayerControl : NetworkBehaviour
     [SerializeField]
     private float m_AbsoluteMaxVelocity;
 
+    [SerializeField]
+    private float maxY;
+
+    [SerializeField]
+    private float minY;
+
     // This value is to prevent kura from speeding up, then on next frame slowing down, then speeding up again, etc.,
-    // so kura's velocity doesn't change when it's +- <m_ChillThresholdVelocity> from the currently desired value
+    // so kura's velocity doesn't change when it's +- <m_ChillThresholdVelocity> from the currently desired(im you venus, im your fire, your desire) value
     [SerializeField]
     private float m_ChillThresholdVelocity;
 
@@ -114,6 +120,9 @@ public class PlayerControl : NetworkBehaviour
 
         m_GameData.m_PlayerDataList.Add(gameObject);
 
+
+        //this makes you see yourself as a blue kura
+        //while other players are red 
         if (IsClient && IsOwner)
         {
             m_RedKura.SetActive(false);
@@ -128,6 +137,7 @@ public class PlayerControl : NetworkBehaviour
         if (IsServer)
         {
             transform.position = m_GameData.GetSpawnPosition();
+            m_PlayerData.spawnPosition.Value = transform.position;
         }
 
         m_PlayerData.finishedgame.OnValueChanged += OnFinishedGameChanged;
@@ -166,6 +176,11 @@ public class PlayerControl : NetworkBehaviour
 
                 m_NFlips--;
             }
+        }
+
+        if(transform.position.y < minY || transform.position.y > maxY)
+        {
+            transform.position = m_PlayerData.spawnPosition.Value;
         }
     }
 
@@ -238,7 +253,7 @@ public class PlayerControl : NetworkBehaviour
             // Code to boost kura if it is <m_IsSpeedBoosted>
             if (m_IsSpeedBoosted && m_CurSpeedBoostTime > 0)
             {
-                m_CurSpeedBoostTime -= Time.deltaTime;
+                m_CurSpeedBoostTime -= Time.fixedDeltaTime;
                 m_RigidBody2d.AddForce(Vector2.right * m_CurSpeedBoostForce);
                 Debug.Log("isBOOOSTED");
             }
@@ -277,7 +292,7 @@ public class PlayerControl : NetworkBehaviour
                     if (m_CurFlapRunTime <= platformData.m_MaxFlapRunTime)
                     {
                         m_PlayerData.state.Value = PlayerData.KuraState.FlapRun;
-                        m_CurFlapRunTime += Time.deltaTime;
+                        m_CurFlapRunTime += Time.fixedDeltaTime;
                     }
                     else
                     {
@@ -304,7 +319,8 @@ public class PlayerControl : NetworkBehaviour
         }
         else if (m_PlayerData.state.Value == PlayerData.KuraState.Fall)
         {
-
+            if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
+                m_RigidBody2d.AddForce(Vector2.right * m_FlyForce);
         }
         else if (m_PlayerData.state.Value == PlayerData.KuraState.Run)
         {

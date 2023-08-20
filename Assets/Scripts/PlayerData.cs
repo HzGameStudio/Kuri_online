@@ -37,6 +37,7 @@ public class PlayerData : NetworkBehaviour
     public NetworkVariable<int> placeInGame = new NetworkVariable<int>(-1);
     public NetworkVariable<float> playerRunTime = new NetworkVariable<float>(0);
     public NetworkVariable<KuraState> state = new NetworkVariable<KuraState>(KuraState.Fall);
+    public NetworkVariable<Vector3> spawnPosition = new NetworkVariable<Vector3>();
 
     private GameData m_GameData;
 

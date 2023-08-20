@@ -64,6 +64,8 @@ MonoBehaviour:
     m_InternalValue: 0
   state:
     m_InternalValue: 1
+  spawnPosition:
+    m_InternalValue: {x: 0, y: 0, z: 0}
 --- !u!114 &6316624174453296671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,6 +80,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_MainCamera: {fileID: 5440809166809444851}
   m_MiniMapCamera: {fileID: 5318391851890978683}
+  m_MiniMapGameObject: {fileID: 0}
 --- !u!114 &7162729809543369524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -91,10 +94,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_MinFlyVelocity: 6
-  m_MaxFlyVelocity: 40
-  m_AbsoluteMaxVelocity: 80
+  m_MaxFlyVelocity: 15
+  m_AbsoluteMaxVelocity: 20
+  maxY: 25
+  minY: -17
   m_ChillThresholdVelocity: 1
-  m_FlyForce: 1.5
+  m_FlyForce: 8
   m_FlyBrakeForce: 1
   m_GravityMultiplier: 1.5
   m_BoxCollider2D: {fileID: 4581643266298009302}
