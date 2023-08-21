@@ -162,6 +162,8 @@ public class PlayerControl : NetworkBehaviour
 
         m_PlayerData.playerRunTime.Value += Time.deltaTime;
 
+        //CheckHealth();
+
         // Process client's request to jump
         if (m_Request)
         {
@@ -177,11 +179,25 @@ public class PlayerControl : NetworkBehaviour
                 m_NFlips--;
             }
         }
+    }
 
-        if(transform.position.y < minY || transform.position.y > maxY)
+    public void GetDamage(float damage)
+    {
+        m_PlayerData.playerHealht.Value += damage;
+        CheckHealth();
+    }
+    private void CheckHealth()
+    {
+        if(m_PlayerData.playerHealht.Value < 0)
         {
-            transform.position = m_PlayerData.spawnPosition.Value;
+            //Dead
+            Respawn();
         }
+    }
+    private void Respawn()
+    { 
+        transform.position = m_PlayerData.spawnPosition.Value;
+        m_PlayerData.playerHealht.Value = m_PlayerData.playerStartHealht;
     }
 
     private void UpdateClient()
@@ -196,7 +212,7 @@ public class PlayerControl : NetworkBehaviour
         }
 
         // NOTE: this should be in PlayerUIManager, but im dying 
-        String temp = Math.Floor(m_PlayerData.playerRunTime.Value / 60f).ToString() + ":" + Math.Floor(m_PlayerData.playerRunTime.Value).ToString() + "." + Math.Floor(m_PlayerData.playerRunTime.Value * 10) % 10 + Math.Floor(m_PlayerData.playerRunTime.Value * 100) % 10;
+        String temp = Math.Floor(m_PlayerData.playerRunTime.Value / 60f).ToString() + ":" + Math.Floor(m_PlayerData.playerRunTime.Value - 60f*Math.Floor(m_PlayerData.playerRunTime.Value / 60f)).ToString() + "." + Math.Floor(m_PlayerData.playerRunTime.Value * 10) % 10 + Math.Floor(m_PlayerData.playerRunTime.Value * 100) % 10;
         m_GameData.playerRunTimeText.text = temp;
 
         Debug.DrawLine(transform.position, new Vector3(transform.position.x + m_RigidBody2d.velocity.x, transform.position.y, transform.position.z), Color.red, 1 / 300f);

@@ -31,6 +31,8 @@ public class PlayerData : NetworkBehaviour
         //Too much speed, air
         Glide
     }
+    public const float playerStartHealhtConst = 100;
+    public float playerStartHealht = playerStartHealhtConst;
 
     public NetworkVariable<bool> finishedgame = new NetworkVariable<bool>(false);
     public NetworkVariable<int> playerID = new NetworkVariable<int>(-1);
@@ -38,6 +40,7 @@ public class PlayerData : NetworkBehaviour
     public NetworkVariable<float> playerRunTime = new NetworkVariable<float>(0);
     public NetworkVariable<KuraState> state = new NetworkVariable<KuraState>(KuraState.Fall);
     public NetworkVariable<Vector3> spawnPosition = new NetworkVariable<Vector3>();
+    public NetworkVariable<float> playerHealht = new NetworkVariable<float>(playerStartHealhtConst);
 
     private GameData m_GameData;
 
