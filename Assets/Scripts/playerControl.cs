@@ -35,12 +35,6 @@ public class PlayerControl : NetworkBehaviour
     [SerializeField]
     private float m_AbsoluteMaxVelocity;
 
-    [SerializeField]
-    private float maxY;
-
-    [SerializeField]
-    private float minY;
-
     // This value is to prevent kura from speeding up, then on next frame slowing down, then speeding up again, etc.,
     // so kura's velocity doesn't change when it's +- <m_ChillThresholdVelocity> from the currently desired(im you venus, im your fire, your desire) value
     [SerializeField]
@@ -112,7 +106,7 @@ public class PlayerControl : NetworkBehaviour
 
     private void Start()
     {
-        //Time.timeScale = 0.3f;
+        //Time.timeScale = 0.5f;
 
         m_PlayerData = GetComponent<PlayerData>();
 
@@ -335,8 +329,7 @@ public class PlayerControl : NetworkBehaviour
         }
         else if (m_PlayerData.state.Value == PlayerData.KuraState.Fall)
         {
-            if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
-                m_RigidBody2d.AddForce(Vector2.right * m_FlyForce);
+
         }
         else if (m_PlayerData.state.Value == PlayerData.KuraState.Run)
         {
@@ -444,7 +437,7 @@ public class PlayerControl : NetworkBehaviour
     {
         // Direction is absolute
         // 0 - up, 1 -right, 2 - down, 3 - left
-        bool[] directions = { true, true, true, true };
+        List<(double, int)> directions = new List<(double, int)>();
 
         if (collision.contacts.Length != 2)
         {
@@ -452,24 +445,17 @@ public class PlayerControl : NetworkBehaviour
             return -1;
         }
 
-        foreach(ContactPoint2D contact in collision.contacts)
-        {
-            float dx = contact.point.x - transform.position.x;
-            float dy = contact.point.y - transform.position.y;
+        double dx = collision.contacts[0].point.x - transform.position.x + collision.contacts[1].point.x - transform.position.x;
+        double dy = collision.contacts[0].point.y - transform.position.y + collision.contacts[1].point.y - transform.position.y;
 
-            directions[0] = directions[0] && (dy > 0);
-            directions[1] = directions[1] && (dx > 0);
-            directions[2] = directions[2] && (dy < 0);
-            directions[3] = directions[3] && (dx < 0);
-        }
+        directions.Add((dy, 0));
+        directions.Add((dx, 1));
+        directions.Add((-dy, 2));
+        directions.Add((-dx, 3));
 
-        for (int i = 0; i < 4; i++)
-        {
-            if (directions[i])
-                return i;
-        }
+        directions.Sort(delegate ((double, int) a, (double, int) b) { return b.Item1.CompareTo(a.Item1); });
 
-        return -1;
+        return directions[0].Item2;
     }
 
     private void OnCollisionExit2D(Collision2D collision)

@@ -54,6 +54,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d03b72cfff461cf43b7b7e49283654d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerStartHealht: 100
   finishedgame:
     m_InternalValue: 0
   playerID:
@@ -66,6 +67,8 @@ MonoBehaviour:
     m_InternalValue: 1
   spawnPosition:
     m_InternalValue: {x: 0, y: 0, z: 0}
+  playerHealht:
+    m_InternalValue: 100
 --- !u!114 &6316624174453296671
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93,15 +96,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 989c52490af508d408f5f31a55dcd53a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MinFlyVelocity: 6
-  m_MaxFlyVelocity: 15
-  m_AbsoluteMaxVelocity: 20
-  maxY: 25
-  minY: -17
+  m_MinFlyVelocity: -1
+  m_MaxFlyVelocity: 24
+  m_AbsoluteMaxVelocity: 40
   m_ChillThresholdVelocity: 1
-  m_FlyForce: 8
+  m_FlyForce: 5
   m_FlyBrakeForce: 1
-  m_GravityMultiplier: 1.5
+  m_GravityMultiplier: 2
   m_BoxCollider2D: {fileID: 4581643266298009302}
   m_RigidBody2d: {fileID: 7788865133089810928}
   m_Transform: {fileID: 64830023102685248}
