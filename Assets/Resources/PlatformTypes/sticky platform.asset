@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00a99cab6fff3044b9aad4da58c5f836, type: 3}
   m_Name: sticky platform
   m_EditorClassIdentifier: 
-  m_MaxFlapRunTime: 0
+  MaxFlapRunTime: 0
   platformType: stickyPlatform
-  m_MaxRunVelocity: 5
-  m_RunForce: 2
-  m_ReadyRunForce: 1
-  m_RunBrakeForce: 8
+  MaxRunVelocity: 0
+  RunForce: 0
+  ReadyRunForce: 0
+  RunBrakeForce: 0
+  instanteDamage: 30
+  deltaTimeDamage: 1

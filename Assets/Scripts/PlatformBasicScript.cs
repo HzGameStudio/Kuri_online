@@ -5,4 +5,7 @@ using UnityEngine;
 public class PlatformBasicScript : MonoBehaviour
 {
     public PlatformScreaptebleObject platformData;
+
+    public float currentTime;
+    public bool isDamageTimerRuning;
 }

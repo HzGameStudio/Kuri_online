@@ -175,6 +175,34 @@ public class PlayerControl : NetworkBehaviour
         }
     }
 
+    private void TakeDamageFormPlatmorm()
+    {
+        PlatformBasicScript platformData;
+        foreach(Tuple<string, int, string> platrom in m_TouchingPlatforms)
+        {
+            Debug.Log("foreach");
+            if(true)
+            {
+                platformData = GameObject.Find(platrom.Item3).GetComponent<PlatformBasicScript>();
+                Debug.Log("dfdfdgggfg");
+                if(platformData.isDamageTimerRuning)
+                {
+                    platformData.currentTime += Time.fixedDeltaTime;
+                    if(platformData.currentTime >= platformData.platformData.deltaTimeDamage)
+                    {
+                        platformData.isDamageTimerRuning = false;
+                        platformData.currentTime = 0;
+                    }
+                }
+                else
+                {
+                    GetDamage(platformData.platformData.instanteDamage);
+                    platformData.isDamageTimerRuning = true;
+                }
+            }
+        }
+    }
+
     public void GetDamage(float damage)
     {
         m_PlayerData.playerHealht.Value += damage;
@@ -229,8 +257,11 @@ public class PlayerControl : NetworkBehaviour
 
     private void FixedUpdateServer()
     {
+        
         if (!(m_GameData.isGameRunning.Value && !GetComponent<PlayerData>().finishedgame.Value)) return;
 
+
+        TakeDamageFormPlatmorm();
         // This is where the pizdec starts :skull:
 
         // First, we decide whether kura is standing on some platform and whether kura is bumped into a wall
@@ -287,7 +318,7 @@ public class PlayerControl : NetworkBehaviour
                 {
                     m_PlayerData.state.Value = PlayerData.KuraState.Run;
                 }
-                else if (m_RigidBody2d.velocity.x <= platformData.m_MaxRunVelocity)
+                else if (m_RigidBody2d.velocity.x <= platformData.MaxRunVelocity)
                 {
                     m_PlayerData.state.Value = PlayerData.KuraState.ReadyRun;
                 }
@@ -299,7 +330,7 @@ public class PlayerControl : NetworkBehaviour
                     // so you can flip and maintain all you speed
                     // by effectively chaining flips you can more effectively gain speed in the air
                     // (maybe stupid idea but who knows :P)
-                    if (m_CurFlapRunTime <= platformData.m_MaxFlapRunTime)
+                    if (m_CurFlapRunTime <= platformData.MaxFlapRunTime)
                     {
                         m_PlayerData.state.Value = PlayerData.KuraState.FlapRun;
                         m_CurFlapRunTime += Time.fixedDeltaTime;
@@ -339,7 +370,7 @@ public class PlayerControl : NetworkBehaviour
 
             if (feetPlatform.Item1 == "simplePlatform")
             {
-                m_RigidBody2d.AddForce(Vector2.right * platformData.m_RunForce);
+                m_RigidBody2d.AddForce(Vector2.right * platformData.RunForce);
             }
         }
         else if (m_PlayerData.state.Value == PlayerData.KuraState.ReadyRun)
@@ -351,12 +382,12 @@ public class PlayerControl : NetworkBehaviour
             if (feetPlatform.Item1 == "simplePlatform")
             {
                 // Implementaion of m_ChillThresholdVelocity (see line 38)
-                if (Math.Abs(platformData.m_MaxRunVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
+                if (Math.Abs(platformData.MaxRunVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
                 {
-                    if (m_RigidBody2d.velocity.x < platformData.m_MaxRunVelocity)
-                        m_RigidBody2d.AddForce(Vector2.right * platformData.m_ReadyRunForce);
+                    if (m_RigidBody2d.velocity.x < platformData.MaxRunVelocity)
+                        m_RigidBody2d.AddForce(Vector2.right * platformData.ReadyRunForce);
                     else
-                        m_RigidBody2d.AddForce(Vector2.left * platformData.m_RunBrakeForce);
+                        m_RigidBody2d.AddForce(Vector2.left * platformData.RunBrakeForce);
                 }
             }
         }

@@ -96,6 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 989c52490af508d408f5f31a55dcd53a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 598193417818329421}
   m_MinFlyVelocity: -1
   m_MaxFlyVelocity: 24
   m_AbsoluteMaxVelocity: 40

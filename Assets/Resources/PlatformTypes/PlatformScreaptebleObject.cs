@@ -6,15 +6,19 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PlatformScreaptebleObject", menuName = "ScriptableObjects/PlatformScreaptebleObject", order = 1)]
 public class PlatformScreaptebleObject : ScriptableObject
 {
-    public float m_MaxFlapRunTime;
+    public float MaxFlapRunTime;
 
     public string platformType;
 
-    public float m_MaxRunVelocity;
+    public float MaxRunVelocity;
 
-    public float m_RunForce;
+    public float RunForce;
 
-    public float m_ReadyRunForce;
+    public float ReadyRunForce;
 
-    public float m_RunBrakeForce;
+    public float RunBrakeForce;
+
+    public float instanteDamage;
+
+    public float deltaTimeDamage; //time betwen to damages
 }
