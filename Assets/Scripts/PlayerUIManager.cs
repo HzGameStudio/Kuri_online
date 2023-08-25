@@ -25,6 +25,9 @@ public class PlayerUIManager : NetworkBehaviour
 
     private TextMeshProUGUI m_KuraStatetext;
 
+    private GameObject m_SpactatorModeButton;
+    private GameObject m_SpactatorModeHolder;
+
     [SerializeField]
     private Camera m_MainCamera;
 
@@ -47,7 +50,8 @@ public class PlayerUIManager : NetworkBehaviour
         m_LobbyIDText = m_GameData.lobbyIDText;
         m_KuraStatetext = m_GameData.kuraStatetext;
         m_MiniMapGameObject = m_GameData.miniMapGameObject;
-
+        m_SpactatorModeButton = m_GameData.SpactatorModeButton;
+        m_SpactatorModeHolder = m_GameData.SpactatorModeHolder;
         if (IsHost)
         {
             m_StartGameButton.SetActive(true);
@@ -105,7 +109,7 @@ public class PlayerUIManager : NetworkBehaviour
             {
                 m_WinnerText.gameObject.SetActive(true);
                 m_WinnerText.text = "YOU WON " + m_PlayerData.placeInGame.Value.ToString() + " PLACE!!!";
-
+                m_SpactatorModeButton.SetActive(true);
                 m_PlayerIDText.gameObject.SetActive(false);
                 m_LobbyIDText.gameObject.SetActive(false);
                 m_KuraStatetext.gameObject.SetActive(false);
@@ -120,4 +124,6 @@ public class PlayerUIManager : NetworkBehaviour
             m_KuraStatetext.text = m_PlayerData.state.Value.ToString();
         }
     }
+
+    
 }

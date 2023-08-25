@@ -18,5 +18,5 @@ MonoBehaviour:
   RunForce: 0
   ReadyRunForce: 0
   RunBrakeForce: 0
-  instanteDamage: -30
+  instanteDamage: 0
   deltaTimeDamage: 1

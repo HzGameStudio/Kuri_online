@@ -5,6 +5,7 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using TMPro;
 using Unity.Collections;
+using UnityEngine.UI;
 
 // This class is for storing the general information about the game, such as:
 // The lobby code, references to all the players, is the game running bool, etc.
@@ -35,6 +36,9 @@ public class GameData : NetworkBehaviour
     public TextMeshProUGUI kuraStatetext;
 
     public GameObject miniMapGameObject;
+
+    public GameObject SpactatorModeButton;
+    public GameObject SpactatorModeHolder;
 
     // Maybe have to do list of <PlayerData> ? Ask yarik later
     // This is kind of useless for now, but the idea is good lemao
@@ -98,6 +102,12 @@ public class GameData : NetworkBehaviour
             list[k] = list[n];
             list[n] = value;
         }
+    }
+
+    public void ActivateSpactatorMode()
+    {
+        SpactatorModeButton.SetActive(false);
+        SpactatorModeHolder.gameObject.SetActive(true);
     }
 }
  
