@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxFlapRunTime: 0
   platformType: normalPlatrorm
-  MaxRunVelocity: 0
-  RunForce: 0
-  ReadyRunForce: 0
-  RunBrakeForce: 0
+  MaxRunVelocity: 16
+  RunForce: 8
+  ReadyRunForce: 8
+  RunBrakeForce: 8
   instanteDamage: 0
   deltaTimeDamage: 1

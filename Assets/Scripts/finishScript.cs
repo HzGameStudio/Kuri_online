@@ -19,7 +19,6 @@ public class FinishScript : NetworkBehaviour
         {
             if (collision.gameObject.CompareTag("player"))
             {
-                Debug.Log("some kura won");
                 m_GameData.numFinishedPlayers++;
                 collision.gameObject.GetComponent<PlayerData>().placeInGame.Value = m_GameData.numFinishedPlayers;
                 collision.gameObject.GetComponent<PlayerData>().finishedgame.Value = true;

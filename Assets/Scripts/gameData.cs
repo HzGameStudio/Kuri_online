@@ -61,7 +61,6 @@ public class GameData : NetworkBehaviour
         GameObject[] SpawnPointList = GameObject.FindGameObjectsWithTag("spawnPoint");
         for (int i = 0; i < SpawnPointList.Length; i++) 
         {
-            Debug.Log(SpawnPointList[i].transform.position);
             m_SpawnPosTransformList.Add(SpawnPointList[i].transform.position);
         }
 

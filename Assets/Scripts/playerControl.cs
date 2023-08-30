@@ -189,11 +189,9 @@ public class PlayerControl : NetworkBehaviour
         PlatformBasicScript platformData;
         foreach(Tuple<string, int, string> platrom in m_TouchingPlatforms)
         {
-            Debug.Log("foreach");
             if(true)
             {
                 platformData = GameObject.Find(platrom.Item3).GetComponent<PlatformBasicScript>();
-                Debug.Log("dfdfdgggfg");
                 if(platformData.isDamageTimerRuning)
                 {
                     platformData.currentTime += Time.fixedDeltaTime;
@@ -314,7 +312,6 @@ public class PlayerControl : NetworkBehaviour
                 {
                     m_CurSpeedBoostTime -= Time.fixedDeltaTime;
                     m_RigidBody2d.AddForce(Vector2.right * m_CurSpeedBoostForce);
-                    Debug.Log("isBOOOSTED");
                 }
                 else
                 {
@@ -427,11 +424,6 @@ public class PlayerControl : NetworkBehaviour
             {
                 Debug.Log("No kura state ???");
             }
-
-            for (int i = 0; i < m_TouchingPlatforms.Count; i++)
-            {
-                Debug.Log(i + " " + m_TouchingPlatforms[i].Item1 + " " + m_TouchingPlatforms[i].Item2 + " " + m_TouchingPlatforms[i].Item3);
-            }
         }
         else if(m_PlayerData.gameState.Value == PlayerData.GameState.SpactatorMode)
         {
@@ -442,11 +434,7 @@ public class PlayerControl : NetworkBehaviour
             }
             else
             {
-                Debug.Log(m_PlayerData.currentSpactatorModeIndex);
                 m_PlayerUIManagre.CameraHolder.transform.position = m_GameData.m_PlayerDataList.ElementAt(m_PlayerData.currentSpactatorModeIndex).transform.position;
-
-
-                
             }
         }
     }

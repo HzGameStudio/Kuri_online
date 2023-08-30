@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxFlapRunTime: 0
   platformType: stickyPlatform
-  MaxRunVelocity: 0
-  RunForce: 0
-  ReadyRunForce: 0
-  RunBrakeForce: 0
+  MaxRunVelocity: 5
+  RunForce: 2
+  ReadyRunForce: 1
+  RunBrakeForce: 8
   instanteDamage: 30
   deltaTimeDamage: 1
