@@ -43,9 +43,11 @@ public class PlayerData : NetworkBehaviour
     ///SpactatorMode
     public int currentSpactatorModeIndex;
 
-
     public const float playerStartHealhtConst = 100;
     public float playerStartHealht = playerStartHealhtConst;
+
+    [SerializeField]
+    public GameObject MainCamera;
 
     public NetworkVariable<bool> finishedgame = new NetworkVariable<bool>(false);
     public NetworkVariable<int> playerID = new NetworkVariable<int>(-1);

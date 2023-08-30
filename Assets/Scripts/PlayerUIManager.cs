@@ -6,6 +6,7 @@ using TMPro;
 using System.Runtime.InteropServices;
 using Unity.Collections;
 using UnityEngine.UI;
+using System;
 
 // This class manages the UI of the player
 public class PlayerUIManager : NetworkBehaviour
@@ -136,7 +137,10 @@ public class PlayerUIManager : NetworkBehaviour
         m_SpactatorModeButton.SetActive(false);
         m_SpactatorModeHolder.gameObject.SetActive(true);
         UpdateGameStateServerRpc(PlayerData.GameState.SpactatorMode);
-        m_PlayerData.currentSpactatorModeIndex = m_GameData.FindSpactatorModeIndex(m_PlayerData.playerID.Value, -1, 1 );
+        m_PlayerData.currentSpactatorModeIndex = m_GameData.FindSpactatorModeIndex(m_PlayerData.playerID.Value, -1, 1);
+
+        m_MainCamera.gameObject.SetActive(false);
+        m_GameData.m_PlayerDataList[m_PlayerData.currentSpactatorModeIndex].GetComponent<PlayerData>().MainCamera.SetActive(true);
     }
 
     [ServerRpc]
@@ -145,5 +149,10 @@ public class PlayerUIManager : NetworkBehaviour
         m_PlayerData.gameState.Value = GameState;
     }
 
+    private void Update()
+    {
+        String temp = Math.Floor(m_PlayerData.playerRunTime.Value / 60f).ToString() + ":" + Math.Floor(m_PlayerData.playerRunTime.Value % 60f).ToString() + "." + Math.Floor(m_PlayerData.playerRunTime.Value * 10) % 10 + Math.Floor(m_PlayerData.playerRunTime.Value * 100) % 10;
+        m_GameData.playerRunTimeText.text = temp;
 
+    }
 }

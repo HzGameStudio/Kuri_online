@@ -2251,7 +2251,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 694019753}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 479, y: -6.8, z: -0.030226037}
+  m_LocalPosition: {x: 8.5, y: -6.8, z: -0.030226037}
   m_LocalScale: {x: 1, y: 200, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -8531,9 +8531,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3835860239347684507, guid: 5cd8415de54dedb49805e0092b6358d2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3995848689819727519, guid: 5cd8415de54dedb49805e0092b6358d2, type: 3}
       propertyPath: m_Name
       value: SpawnBuilding
+      objectReference: {fileID: 0}
+    - target: {fileID: 7870716011489188943, guid: 5cd8415de54dedb49805e0092b6358d2, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

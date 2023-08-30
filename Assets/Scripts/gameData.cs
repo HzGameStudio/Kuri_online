@@ -41,8 +41,7 @@ public class GameData : NetworkBehaviour
     public GameObject SpactatorModeButton;
     public GameObject SpactatorModeHolder;
 
-    // Maybe have to do list of <PlayerData> ? Ask yarik later
-    // This is kind of useless for now, but the idea is good lemao
+
     public List<GameObject> m_PlayerDataList = new List<GameObject>();
 
     // All positions that a player can spawn in

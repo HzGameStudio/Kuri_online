@@ -240,14 +240,12 @@ public class PlayerControl : NetworkBehaviour
                 // Request to flip
                 if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
                 {
+                    //Debug.Log("telleport");
+                    //transform.position = new Vector3(transform.position.x + 5.0f, transform.position.y, transform.position.z);
                     UpdateClientPositionServerRpc(true);
                 }
             }
         }
-
-        // NOTE: this should be in PlayerUIManager, but im dying 
-        String temp = Math.Floor(m_PlayerData.playerRunTime.Value / 60f).ToString() + ":" + Math.Floor(m_PlayerData.playerRunTime.Value - 60f*Math.Floor(m_PlayerData.playerRunTime.Value / 60f)).ToString() + "." + Math.Floor(m_PlayerData.playerRunTime.Value * 10) % 10 + Math.Floor(m_PlayerData.playerRunTime.Value * 100) % 10;
-        m_GameData.playerRunTimeText.text = temp;
 
         Debug.DrawLine(transform.position, new Vector3(transform.position.x + m_RigidBody2d.velocity.x, transform.position.y, transform.position.z), Color.red, 1 / 300f);
     }
@@ -423,18 +421,6 @@ public class PlayerControl : NetworkBehaviour
             else
             {
                 Debug.Log("No kura state ???");
-            }
-        }
-        else if(m_PlayerData.gameState.Value == PlayerData.GameState.SpactatorMode)
-        {
-            //SpactatorMode
-            if(m_PlayerData.currentSpactatorModeIndex == -1)
-            {
-                Debug.Log("NOAvailablewPlayer!!!!!!");
-            }
-            else
-            {
-                m_PlayerUIManagre.CameraHolder.transform.position = m_GameData.m_PlayerDataList.ElementAt(m_PlayerData.currentSpactatorModeIndex).transform.position;
             }
         }
     }
