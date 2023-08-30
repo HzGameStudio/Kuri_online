@@ -8,6 +8,7 @@ using UnityEngine;
 using TMPro;
 using System.Linq;
 using Unity.VisualScripting;
+using System.Runtime.CompilerServices;
 
 // This class controls kura's movement
 // By extension this is the biggest and the shittiest and the badass-est script in the project
@@ -70,6 +71,7 @@ public class PlayerControl : NetworkBehaviour
     private GameData m_GameData;
 
     private PlayerData m_PlayerData;
+    private PlayerUIManager m_PlayerUIManagre;
 
     // Logic
 
@@ -109,6 +111,7 @@ public class PlayerControl : NetworkBehaviour
         //Time.timeScale = 0.5f;
 
         m_PlayerData = GetComponent<PlayerData>();
+        m_PlayerUIManagre = GetComponent<PlayerUIManager>();
 
         m_GameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
 
@@ -152,27 +155,33 @@ public class PlayerControl : NetworkBehaviour
 
     private void UpdateServer()
     {
-        if (!(m_GameData.isGameRunning.Value && !m_PlayerData.finishedgame.Value)) return;
+        if (!(m_GameData.isGameRunning.Value)) return;
 
-        m_PlayerData.playerRunTime.Value += Time.deltaTime;
-
-        //CheckHealth();
-
-        // Process client's request to jump
-        if (m_Request)
+        if(m_PlayerData.gameState.Value == PlayerData.GameState.ClasicMode)
         {
-            m_Request = false;
+            if (m_PlayerData.finishedgame.Value) return;
+            m_PlayerData.playerRunTime.Value += Time.deltaTime;
 
-            // Flip
-            if (m_NFlips > 0)
+            //CheckHealth();
+
+            // Process client's request to jump
+            if (m_Request)
             {
-                m_GravityDirection *= -1;
-                m_RigidBody2d.gravityScale = m_GravityDirection * m_GravityMultiplier;
-                m_Transform.localScale = new Vector3(m_Transform.localScale.x, m_Transform.localScale.y * -1, m_Transform.localScale.z);
+                m_Request = false;
 
-                m_NFlips--;
+                // Flip
+                if (m_NFlips > 0)
+                {
+                    m_GravityDirection *= -1;
+                    m_RigidBody2d.gravityScale = m_GravityDirection * m_GravityMultiplier;
+                    m_Transform.localScale = new Vector3(m_Transform.localScale.x, m_Transform.localScale.y * -1, m_Transform.localScale.z);
+
+                    m_NFlips--;
+                }
             }
         }
+
+        
     }
 
     private void TakeDamageFormPlatmorm()
@@ -224,12 +233,17 @@ public class PlayerControl : NetworkBehaviour
 
     private void UpdateClient()
     {
-        if(m_PlayerData.finishedgame.Value == false)
+        if (!(m_GameData.isGameRunning.Value)) return;
+
+        if (m_PlayerData.gameState.Value == PlayerData.GameState.ClasicMode)
         {
-            // Request to flip
-            if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
+            if (m_PlayerData.finishedgame.Value == false)
             {
-                UpdateClientPositionServerRpc(true);
+                // Request to flip
+                if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
+                {
+                    UpdateClientPositionServerRpc(true);
+                }
             }
         }
 
@@ -257,162 +271,183 @@ public class PlayerControl : NetworkBehaviour
 
     private void FixedUpdateServer()
     {
-        
-        if (!(m_GameData.isGameRunning.Value && !GetComponent<PlayerData>().finishedgame.Value)) return;
+        if (!(m_GameData.isGameRunning.Value)) return;
+
+        if (m_PlayerData.gameState.Value == PlayerData.GameState.ClasicMode)
+        { 
+
+            if (m_PlayerData.finishedgame.Value) return;
 
 
-        TakeDamageFormPlatmorm();
-        // This is where the pizdec starts :skull:
+            TakeDamageFormPlatmorm();
+            // This is where the pizdec starts :skull:
 
-        // First, we decide whether kura is standing on some platform and whether kura is bumped into a wall
+            // First, we decide whether kura is standing on some platform and whether kura is bumped into a wall
 
-        // Lambda majic
-        // Translated into words this means:
-        // "Does there exist Any platform that satisfies these condition:
-        //  we need a <platform> that (m_GravityDirection == 1 && platform.Item2 == 2) or (m_GravityDirection == -1 && platform.Item2 == 0)"
-        bool onFloor = m_TouchingPlatforms.Any(platform => (m_GravityDirection == 1 && platform.Item2 == 2) ||
-                                                           (m_GravityDirection == -1 && platform.Item2 == 0));
+            // Lambda majic
+            // Translated into words this means:
+            // "Does there exist Any platform that satisfies these condition:
+            //  we need a <platform> that (m_GravityDirection == 1 && platform.Item2 == 2) or (m_GravityDirection == -1 && platform.Item2 == 0)"
+            bool onFloor = m_TouchingPlatforms.Any(platform => (m_GravityDirection == 1 && platform.Item2 == 2) ||
+                                                               (m_GravityDirection == -1 && platform.Item2 == 0));
 
-        // Translated into words this means:
-        // "Does there exist Any platform that satisfies these condition:
-        //  we need a <platform> that platform.Item2 == 1
-        bool kissWall = m_TouchingPlatforms.Any(platform => platform.Item2 == 1);
+            // Translated into words this means:
+            // "Does there exist Any platform that satisfies these condition:
+            //  we need a <platform> that platform.Item2 == 1
+            bool kissWall = m_TouchingPlatforms.Any(platform => platform.Item2 == 1);
 
-        // This next whole chunk of code decides what state kura is currently in
-        // kura's state dictates how kura's physics will updated later
+            // This next whole chunk of code decides what state kura is currently in
+            // kura's state dictates how kura's physics will updated later
 
-        // If kura is bumped into a wall, there can be only 2 states, <Stand> and <Fall>
-        if (kissWall)
-        {
-            if (onFloor)
-                m_PlayerData.state.Value = PlayerData.KuraState.Stand;
-            else
-                m_PlayerData.state.Value = PlayerData.KuraState.Fall;
-        }
-        else
-        {
-            // Code to boost kura if it is <m_IsSpeedBoosted>
-            if (m_IsSpeedBoosted && m_CurSpeedBoostTime > 0)
+            // If kura is bumped into a wall, there can be only 2 states, <Stand> and <Fall>
+            if (kissWall)
             {
-                m_CurSpeedBoostTime -= Time.fixedDeltaTime;
-                m_RigidBody2d.AddForce(Vector2.right * m_CurSpeedBoostForce);
-                Debug.Log("isBOOOSTED");
+                if (onFloor)
+                    m_PlayerData.state.Value = PlayerData.KuraState.Stand;
+                else
+                    m_PlayerData.state.Value = PlayerData.KuraState.Fall;
             }
             else
             {
-                m_IsSpeedBoosted = false;
-                m_CurSpeedBoostTime = 0;
-            }
-
-
-            if (onFloor)
-            {
-                // This finds the platform that kura is currently standing on and returns it's tag, direction relative to kura, and name on the scene
-                Tuple<string, int, string> feetPlatform = FindFeetPlatform();
-
-                // This finds the data values asociated to the <feetPlatform>
-                PlatformScreaptebleObject platformData = GameObject.Find(feetPlatform.Item3).GetComponent<PlatformBasicScript>().platformData;
-
-                // note for me: m_MinFlyVelocity probably should be an atribute of a platform, ask yarik
-                if (m_RigidBody2d.velocity.x < m_MinFlyVelocity)
+                // Code to boost kura if it is <m_IsSpeedBoosted>
+                if (m_IsSpeedBoosted && m_CurSpeedBoostTime > 0)
                 {
-                    m_PlayerData.state.Value = PlayerData.KuraState.Run;
-                }
-                else if (m_RigidBody2d.velocity.x <= platformData.MaxRunVelocity)
-                {
-                    m_PlayerData.state.Value = PlayerData.KuraState.ReadyRun;
+                    m_CurSpeedBoostTime -= Time.fixedDeltaTime;
+                    m_RigidBody2d.AddForce(Vector2.right * m_CurSpeedBoostForce);
+                    Debug.Log("isBOOOSTED");
                 }
                 else
                 {
-                    // Flap run is a mechanic to allow to easily chain flying:
-                    // eg. you run on top platform on max running speed, then flip, gain some more speed in the air,
-                    // land on the bottom platform, then you have a little grace period of <m_MaxFlapRunTime> when you don't lose speed,
-                    // so you can flip and maintain all you speed
-                    // by effectively chaining flips you can more effectively gain speed in the air
-                    // (maybe stupid idea but who knows :P)
-                    if (m_CurFlapRunTime <= platformData.MaxFlapRunTime)
+                    m_IsSpeedBoosted = false;
+                    m_CurSpeedBoostTime = 0;
+                }
+
+
+                if (onFloor)
+                {
+                    // This finds the platform that kura is currently standing on and returns it's tag, direction relative to kura, and name on the scene
+                    Tuple<string, int, string> feetPlatform = FindFeetPlatform();
+
+                    // This finds the data values asociated to the <feetPlatform>
+                    PlatformScreaptebleObject platformData = GameObject.Find(feetPlatform.Item3).GetComponent<PlatformBasicScript>().platformData;
+
+                    // note for me: m_MinFlyVelocity probably should be an atribute of a platform, ask yarik
+                    if (m_RigidBody2d.velocity.x < m_MinFlyVelocity)
                     {
-                        m_PlayerData.state.Value = PlayerData.KuraState.FlapRun;
-                        m_CurFlapRunTime += Time.fixedDeltaTime;
+                        m_PlayerData.state.Value = PlayerData.KuraState.Run;
                     }
-                    else
+                    else if (m_RigidBody2d.velocity.x <= platformData.MaxRunVelocity)
                     {
                         m_PlayerData.state.Value = PlayerData.KuraState.ReadyRun;
                     }
+                    else
+                    {
+                        // Flap run is a mechanic to allow to easily chain flying:
+                        // eg. you run on top platform on max running speed, then flip, gain some more speed in the air,
+                        // land on the bottom platform, then you have a little grace period of <m_MaxFlapRunTime> when you don't lose speed,
+                        // so you can flip and maintain all you speed
+                        // by effectively chaining flips you can more effectively gain speed in the air
+                        // (maybe stupid idea but who knows :P)
+                        if (m_CurFlapRunTime <= platformData.MaxFlapRunTime)
+                        {
+                            m_PlayerData.state.Value = PlayerData.KuraState.FlapRun;
+                            m_CurFlapRunTime += Time.fixedDeltaTime;
+                        }
+                        else
+                        {
+                            m_PlayerData.state.Value = PlayerData.KuraState.ReadyRun;
+                        }
+                    }
                 }
+                else
+                {
+                    if (m_RigidBody2d.velocity.x < m_MinFlyVelocity)
+                        m_PlayerData.state.Value = PlayerData.KuraState.Fall;
+                    else if (m_RigidBody2d.velocity.x <= m_MaxFlyVelocity)
+                        m_PlayerData.state.Value = PlayerData.KuraState.Fly;
+                    else
+                        m_PlayerData.state.Value = PlayerData.KuraState.Glide;
+                }
+            }
+
+            // Now that we've decided what state kura is in, we apply forces and stuff to it
+
+            if (m_PlayerData.state.Value == PlayerData.KuraState.Stand)
+            {
+
+            }
+            else if (m_PlayerData.state.Value == PlayerData.KuraState.Fall)
+            {
+
+            }
+            else if (m_PlayerData.state.Value == PlayerData.KuraState.Run)
+            {
+                Tuple<string, int, string> feetPlatform = FindFeetPlatform();
+
+                PlatformScreaptebleObject platformData = GameObject.Find(feetPlatform.Item3).GetComponent<PlatformBasicScript>().platformData;
+
+                if (feetPlatform.Item1 == "simplePlatform")
+                {
+                    m_RigidBody2d.AddForce(Vector2.right * platformData.RunForce);
+                }
+            }
+            else if (m_PlayerData.state.Value == PlayerData.KuraState.ReadyRun)
+            {
+                Tuple<string, int, string> feetPlatform = FindFeetPlatform();
+
+                PlatformScreaptebleObject platformData = GameObject.Find(feetPlatform.Item3).GetComponent<PlatformBasicScript>().platformData;
+
+                if (feetPlatform.Item1 == "simplePlatform")
+                {
+                    // Implementaion of m_ChillThresholdVelocity (see line 38)
+                    if (Math.Abs(platformData.MaxRunVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
+                    {
+                        if (m_RigidBody2d.velocity.x < platformData.MaxRunVelocity)
+                            m_RigidBody2d.AddForce(Vector2.right * platformData.ReadyRunForce);
+                        else
+                            m_RigidBody2d.AddForce(Vector2.left * platformData.RunBrakeForce);
+                    }
+                }
+            }
+            else if (m_PlayerData.state.Value == PlayerData.KuraState.FlapRun)
+            {
+
+            }
+            else if (m_PlayerData.state.Value == PlayerData.KuraState.Fly)
+            {
+                if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
+                    m_RigidBody2d.AddForce(Vector2.right * m_FlyForce);
+            }
+            else if (m_PlayerData.state.Value == PlayerData.KuraState.Glide)
+            {
+                if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
+                    m_RigidBody2d.AddForce(Vector2.left * m_FlyBrakeForce);
             }
             else
             {
-                if (m_RigidBody2d.velocity.x < m_MinFlyVelocity)
-                    m_PlayerData.state.Value = PlayerData.KuraState.Fall;
-                else if (m_RigidBody2d.velocity.x <= m_MaxFlyVelocity)
-                    m_PlayerData.state.Value = PlayerData.KuraState.Fly;
-                else
-                    m_PlayerData.state.Value = PlayerData.KuraState.Glide;
+                Debug.Log("No kura state ???");
             }
-        }
 
-        // Now that we've decided what state kura is in, we apply forces and stuff to it
-
-        if (m_PlayerData.state.Value == PlayerData.KuraState.Stand)
-        {
-
-        }
-        else if (m_PlayerData.state.Value == PlayerData.KuraState.Fall)
-        {
-
-        }
-        else if (m_PlayerData.state.Value == PlayerData.KuraState.Run)
-        {
-            Tuple<string, int, string> feetPlatform = FindFeetPlatform();
-
-            PlatformScreaptebleObject platformData = GameObject.Find(feetPlatform.Item3).GetComponent<PlatformBasicScript>().platformData;
-
-            if (feetPlatform.Item1 == "simplePlatform")
+            for (int i = 0; i < m_TouchingPlatforms.Count; i++)
             {
-                m_RigidBody2d.AddForce(Vector2.right * platformData.RunForce);
+                Debug.Log(i + " " + m_TouchingPlatforms[i].Item1 + " " + m_TouchingPlatforms[i].Item2 + " " + m_TouchingPlatforms[i].Item3);
             }
         }
-        else if (m_PlayerData.state.Value == PlayerData.KuraState.ReadyRun)
+        else if(m_PlayerData.gameState.Value == PlayerData.GameState.SpactatorMode)
         {
-            Tuple<string, int, string> feetPlatform = FindFeetPlatform();
-
-            PlatformScreaptebleObject platformData = GameObject.Find(feetPlatform.Item3).GetComponent<PlatformBasicScript>().platformData;
-
-            if (feetPlatform.Item1 == "simplePlatform")
+            //SpactatorMode
+            if(m_PlayerData.currentSpactatorModeIndex == -1)
             {
-                // Implementaion of m_ChillThresholdVelocity (see line 38)
-                if (Math.Abs(platformData.MaxRunVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
-                {
-                    if (m_RigidBody2d.velocity.x < platformData.MaxRunVelocity)
-                        m_RigidBody2d.AddForce(Vector2.right * platformData.ReadyRunForce);
-                    else
-                        m_RigidBody2d.AddForce(Vector2.left * platformData.RunBrakeForce);
-                }
+                Debug.Log("NOAvailablewPlayer!!!!!!");
             }
-        }
-        else if (m_PlayerData.state.Value == PlayerData.KuraState.FlapRun)
-        {
-            
-        }
-        else if (m_PlayerData.state.Value == PlayerData.KuraState.Fly)
-        {
-            if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
-                m_RigidBody2d.AddForce(Vector2.right * m_FlyForce);
-        }
-        else if (m_PlayerData.state.Value == PlayerData.KuraState.Glide)
-        {
-            if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
-                m_RigidBody2d.AddForce(Vector2.left * m_FlyBrakeForce);
-        }
-        else
-        {
-            Debug.Log("No kura state ???");
-        }
+            else
+            {
+                Debug.Log(m_PlayerData.currentSpactatorModeIndex);
+                m_PlayerUIManagre.CameraHolder.transform.position = m_GameData.m_PlayerDataList.ElementAt(m_PlayerData.currentSpactatorModeIndex).transform.position;
 
-        for (int i=0; i<m_TouchingPlatforms.Count; i++)
-        {
-            Debug.Log(i + " " + m_TouchingPlatforms[i].Item1 + " " + m_TouchingPlatforms[i].Item2 + " " + m_TouchingPlatforms[i].Item3);
+
+                
+            }
         }
     }
 

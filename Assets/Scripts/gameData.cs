@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using TMPro;
 using Unity.Collections;
 using UnityEngine.UI;
+using System.Linq;
 
 // This class is for storing the general information about the game, such as:
 // The lobby code, references to all the players, is the game running bool, etc.
@@ -104,10 +105,42 @@ public class GameData : NetworkBehaviour
         }
     }
 
-    public void ActivateSpactatorMode()
+
+    public int FindSpactatorModeIndex(int playerIndex, int currentIndex, int shiftDirection)
     {
-        SpactatorModeButton.SetActive(false);
-        SpactatorModeHolder.gameObject.SetActive(true);
+        int index = -1;
+        if(currentIndex == -1)
+        {
+            int i = 0;
+            foreach(GameObject player in m_PlayerDataList) 
+            {
+                
+                if(!player.GetComponent<PlayerData>().finishedgame.Value)
+                {
+                    index = i;
+                    return index;
+                }
+                i++;
+            }
+        }else
+        {
+            for(int i=1;i<m_PlayerDataList.Count;i++)
+            {
+                if(!m_PlayerDataList.ElementAt((currentIndex+i)%m_PlayerDataList.Count).GetComponent<PlayerData>().finishedgame.Value)
+                {
+                    return i + currentIndex;
+                }
+            }
+        }
+
+        
+
+
+
+        return index;
     }
+
+
+
 }
  

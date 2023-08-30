@@ -54,6 +54,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d03b72cfff461cf43b7b7e49283654d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentSpactatorModeIndex: 0
   playerStartHealht: 100
   finishedgame:
     m_InternalValue: 0
@@ -65,6 +66,8 @@ MonoBehaviour:
     m_InternalValue: 0
   state:
     m_InternalValue: 1
+  gameState:
+    m_InternalValue: 0
   spawnPosition:
     m_InternalValue: {x: 0, y: 0, z: 0}
   playerHealht:
@@ -81,6 +84,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e23094dfcd8560c4b87d2a09bd2fe131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CameraHolder: {fileID: 2875988136723726469}
   m_MainCamera: {fileID: 5440809166809444851}
   m_MiniMapCamera: {fileID: 5318391851890978683}
   m_MiniMapGameObject: {fileID: 0}
@@ -96,7 +100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 989c52490af508d408f5f31a55dcd53a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 598193417818329421}
   m_MinFlyVelocity: -1
   m_MaxFlyVelocity: 24
   m_AbsoluteMaxVelocity: 40
@@ -496,7 +499,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2875988136723726469}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.12551248, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

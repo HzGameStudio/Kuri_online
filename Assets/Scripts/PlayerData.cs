@@ -31,6 +31,19 @@ public class PlayerData : NetworkBehaviour
         //Too much speed, air
         Glide
     }
+
+    public enum GameState
+    {
+        //normal game mode
+        ClasicMode,
+        // mane speak for it self :)
+        SpactatorMode
+    }
+
+    ///SpactatorMode
+    public int currentSpactatorModeIndex;
+
+
     public const float playerStartHealhtConst = 100;
     public float playerStartHealht = playerStartHealhtConst;
 
@@ -39,6 +52,7 @@ public class PlayerData : NetworkBehaviour
     public NetworkVariable<int> placeInGame = new NetworkVariable<int>(-1);
     public NetworkVariable<float> playerRunTime = new NetworkVariable<float>(0);
     public NetworkVariable<KuraState> state = new NetworkVariable<KuraState>(KuraState.Fall);
+    public NetworkVariable<GameState> gameState = new NetworkVariable<GameState>(GameState.ClasicMode);
     public NetworkVariable<Vector3> spawnPosition = new NetworkVariable<Vector3>();
     public NetworkVariable<float> playerHealht = new NetworkVariable<float>(playerStartHealhtConst);
 

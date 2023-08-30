@@ -5,6 +5,7 @@ using Unity.Netcode;
 using TMPro;
 using System.Runtime.InteropServices;
 using Unity.Collections;
+using UnityEngine.UI;
 
 // This class manages the UI of the player
 public class PlayerUIManager : NetworkBehaviour
@@ -27,6 +28,9 @@ public class PlayerUIManager : NetworkBehaviour
 
     private GameObject m_SpactatorModeButton;
     private GameObject m_SpactatorModeHolder;
+
+    [SerializeField]
+    public GameObject CameraHolder;
 
     [SerializeField]
     private Camera m_MainCamera;
@@ -80,6 +84,8 @@ public class PlayerUIManager : NetworkBehaviour
             }
 
             m_MiniMapGameObject.SetActive(true);
+            m_SpactatorModeButton.GetComponent<Button>().onClick.AddListener(ActivateSpactatorMode);
+
         }
 
         // <NetworkVariable>s have the ability to call functions when their value is changed (this is pretty cool yo)
@@ -125,5 +131,19 @@ public class PlayerUIManager : NetworkBehaviour
         }
     }
 
-    
+    public void ActivateSpactatorMode()
+    {
+        m_SpactatorModeButton.SetActive(false);
+        m_SpactatorModeHolder.gameObject.SetActive(true);
+        UpdateGameStateServerRpc(PlayerData.GameState.SpactatorMode);
+        m_PlayerData.currentSpactatorModeIndex = m_GameData.FindSpactatorModeIndex(m_PlayerData.playerID.Value, -1, 1 );
+    }
+
+    [ServerRpc]
+    public void UpdateGameStateServerRpc(PlayerData.GameState GameState)
+    {
+        m_PlayerData.gameState.Value = GameState;
+    }
+
+
 }
