@@ -10,8 +10,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using System.Runtime.CompilerServices;
 
-// This class controls kura's movement
-// By extension this is the biggest and the shittiest and the badass-est script in the project
+// Class to controls kura's movement
 public class PlayerControl : NetworkBehaviour
 {
     // Boost tracking veriables
@@ -20,12 +19,8 @@ public class PlayerControl : NetworkBehaviour
     private float m_CurSpeedBoostForce = 0;
 
     // *** Constants
-    // All these variables are "constant",
-    // but we can't make them actually constant because they assigned in run-time first, then are never changed
 
     // Physics
-    // These variables define kura's behaviour movement in the air
-    // Kura's movement on the ground is defined by the type of the platform, later this will be the same for air movement (probably)
 
     [SerializeField]
     private float m_MinFlyVelocity;
@@ -36,8 +31,6 @@ public class PlayerControl : NetworkBehaviour
     [SerializeField]
     private float m_AbsoluteMaxVelocity;
 
-    // This value is to prevent kura from speeding up, then on next frame slowing down, then speeding up again, etc.,
-    // so kura's velocity doesn't change when it's +- <m_ChillThresholdVelocity> from the currently desired(im you venus, im your fire, your desire) value
     [SerializeField]
     private float m_ChillThresholdVelocity;
 
@@ -91,7 +84,6 @@ public class PlayerControl : NetworkBehaviour
 
 
     // *** Active
-    // These values often change in run-time
 
     // This indicates for the server when a client pressed the screen, then the server processes it
     private bool m_Request = false;
@@ -100,9 +92,8 @@ public class PlayerControl : NetworkBehaviour
 
     private int m_NFlips = 1;
 
-    // This list stores all objects that kura is currently touching (btw i forgor about other kuras, hz how it works :skull:)
     // Platform tag, platform direction, platform gameObject name
-    public List<Tuple<string, int, string>> m_TouchingPlatforms = new List<Tuple<string, int, string>>();
+    public List<Tuple<GameObject, int>> m_TouchingObjects = new List<Tuple<GameObject, int>>();
 
     private float m_CurFlapRunTime = 0f;
 
@@ -113,10 +104,9 @@ public class PlayerControl : NetworkBehaviour
         m_PlayerData = GetComponent<PlayerData>();
         m_PlayerUIManagre = GetComponent<PlayerUIManager>();
 
-        m_GameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
+        m_GameData = GameObject.FindObjectOfType<GameData>();
 
-        m_GameData.m_PlayerDataList.Add(gameObject);
-
+        m_GameData.playerDataList.Add(m_PlayerData);
 
         //this makes you see yourself as a blue kura
         //while other players are red 
@@ -137,7 +127,7 @@ public class PlayerControl : NetworkBehaviour
             m_PlayerData.spawnPosition.Value = transform.position;
         }
 
-        m_PlayerData.finishedgame.OnValueChanged += OnFinishedGameChanged;
+        m_PlayerData.finishedGame.OnValueChanged += OnFinishedGameChanged;
     }
 
     private void Update()
@@ -157,9 +147,9 @@ public class PlayerControl : NetworkBehaviour
     {
         if (!(m_GameData.isGameRunning.Value)) return;
 
-        if(m_PlayerData.gameState.Value == PlayerData.GameState.ClasicMode)
+        if(m_PlayerData.gameMode.Value == PlayerData.KuraGameMode.ClasicMode)
         {
-            if (m_PlayerData.finishedgame.Value) return;
+            if (m_PlayerData.finishedGame.Value) return;
             m_PlayerData.playerRunTime.Value += Time.deltaTime;
 
             //CheckHealth();
@@ -180,18 +170,16 @@ public class PlayerControl : NetworkBehaviour
                 }
             }
         }
-
-        
     }
 
-    private void TakeDamageFormPlatmorm()
+    private void TakeDamageFromPlatmorm()
     {
         PlatformBasicScript platformData;
-        foreach(Tuple<string, int, string> platrom in m_TouchingPlatforms)
+        foreach(Tuple<GameObject, int> platform in m_TouchingObjects)
         {
             if(true)
             {
-                platformData = GameObject.Find(platrom.Item3).GetComponent<PlatformBasicScript>();
+                platformData = platform.Item1.GetComponent<PlatformBasicScript>();
                 if(platformData.isDamageTimerRuning)
                 {
                     platformData.currentTime += Time.fixedDeltaTime;
@@ -212,36 +200,36 @@ public class PlayerControl : NetworkBehaviour
 
     public void GetDamage(float damage)
     {
-        m_PlayerData.playerHealht.Value += damage;
+        m_PlayerData.playerHealth.Value += damage;
         CheckHealth();
     }
+
     private void CheckHealth()
     {
-        if(m_PlayerData.playerHealht.Value < 0)
+        if(m_PlayerData.playerHealth.Value < 0)
         {
             //Dead
             Respawn();
         }
     }
+
     private void Respawn()
     { 
         transform.position = m_PlayerData.spawnPosition.Value;
-        m_PlayerData.playerHealht.Value = m_PlayerData.playerStartHealht;
+        m_PlayerData.playerHealth.Value = PlayerData.playerStartHealth;
     }
 
     private void UpdateClient()
     {
         if (!(m_GameData.isGameRunning.Value)) return;
 
-        if (m_PlayerData.gameState.Value == PlayerData.GameState.ClasicMode)
+        if (m_PlayerData.gameMode.Value == PlayerData.KuraGameMode.ClasicMode)
         {
-            if (m_PlayerData.finishedgame.Value == false)
+            if (m_PlayerData.finishedGame.Value == false)
             {
                 // Request to flip
                 if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
                 {
-                    //Debug.Log("telleport");
-                    //transform.position = new Vector3(transform.position.x + 5.0f, transform.position.y, transform.position.z);
                     UpdateClientPositionServerRpc(true);
                 }
             }
@@ -250,7 +238,7 @@ public class PlayerControl : NetworkBehaviour
         Debug.DrawLine(transform.position, new Vector3(transform.position.x + m_RigidBody2d.velocity.x, transform.position.y, transform.position.z), Color.red, 1 / 300f);
     }
 
-    // [ServerRpc] is used to change a <NetworkVariable> from client-side
+    // [ServerRpc] is used to run code on the server from client-side
     [ServerRpc]
     public void UpdateClientPositionServerRpc(bool request)
     {
@@ -269,33 +257,19 @@ public class PlayerControl : NetworkBehaviour
     {
         if (!(m_GameData.isGameRunning.Value)) return;
 
-        if (m_PlayerData.gameState.Value == PlayerData.GameState.ClasicMode)
+        if (m_PlayerData.gameMode.Value == PlayerData.KuraGameMode.ClasicMode)
         { 
 
-            if (m_PlayerData.finishedgame.Value) return;
+            if (m_PlayerData.finishedGame.Value) return;
 
 
-            TakeDamageFormPlatmorm();
-            // This is where the pizdec starts :skull:
+            TakeDamageFromPlatmorm();
 
-            // First, we decide whether kura is standing on some platform and whether kura is bumped into a wall
-
-            // Lambda majic
-            // Translated into words this means:
-            // "Does there exist Any platform that satisfies these condition:
-            //  we need a <platform> that (m_GravityDirection == 1 && platform.Item2 == 2) or (m_GravityDirection == -1 && platform.Item2 == 0)"
-            bool onFloor = m_TouchingPlatforms.Any(platform => (m_GravityDirection == 1 && platform.Item2 == 2) ||
+            bool onFloor = m_TouchingObjects.Any(platform => (m_GravityDirection == 1 && platform.Item2 == 2) ||
                                                                (m_GravityDirection == -1 && platform.Item2 == 0));
 
-            // Translated into words this means:
-            // "Does there exist Any platform that satisfies these condition:
-            //  we need a <platform> that platform.Item2 == 1
-            bool kissWall = m_TouchingPlatforms.Any(platform => platform.Item2 == 1);
+            bool kissWall = m_TouchingObjects.Any(platform => platform.Item2 == 1);
 
-            // This next whole chunk of code decides what state kura is currently in
-            // kura's state dictates how kura's physics will updated later
-
-            // If kura is bumped into a wall, there can be only 2 states, <Stand> and <Fall>
             if (kissWall)
             {
                 if (onFloor)
@@ -305,7 +279,6 @@ public class PlayerControl : NetworkBehaviour
             }
             else
             {
-                // Code to boost kura if it is <m_IsSpeedBoosted>
                 if (m_IsSpeedBoosted && m_CurSpeedBoostTime > 0)
                 {
                     m_CurSpeedBoostTime -= Time.fixedDeltaTime;
@@ -320,13 +293,10 @@ public class PlayerControl : NetworkBehaviour
 
                 if (onFloor)
                 {
-                    // This finds the platform that kura is currently standing on and returns it's tag, direction relative to kura, and name on the scene
-                    Tuple<string, int, string> feetPlatform = FindFeetPlatform();
+                    Tuple<GameObject, int> feetPlatform = FindFeetPlatform();
 
-                    // This finds the data values asociated to the <feetPlatform>
-                    PlatformScreaptebleObject platformData = GameObject.Find(feetPlatform.Item3).GetComponent<PlatformBasicScript>().platformData;
+                    PlatformScreaptebleObject platformData = feetPlatform.Item1.GetComponent<PlatformBasicScript>().platformData;
 
-                    // note for me: m_MinFlyVelocity probably should be an atribute of a platform, ask yarik
                     if (m_RigidBody2d.velocity.x < m_MinFlyVelocity)
                     {
                         m_PlayerData.state.Value = PlayerData.KuraState.Run;
@@ -337,12 +307,6 @@ public class PlayerControl : NetworkBehaviour
                     }
                     else
                     {
-                        // Flap run is a mechanic to allow to easily chain flying:
-                        // eg. you run on top platform on max running speed, then flip, gain some more speed in the air,
-                        // land on the bottom platform, then you have a little grace period of <m_MaxFlapRunTime> when you don't lose speed,
-                        // so you can flip and maintain all you speed
-                        // by effectively chaining flips you can more effectively gain speed in the air
-                        // (maybe stupid idea but who knows :P)
                         if (m_CurFlapRunTime <= platformData.MaxFlapRunTime)
                         {
                             m_PlayerData.state.Value = PlayerData.KuraState.FlapRun;
@@ -365,8 +329,6 @@ public class PlayerControl : NetworkBehaviour
                 }
             }
 
-            // Now that we've decided what state kura is in, we apply forces and stuff to it
-
             if (m_PlayerData.state.Value == PlayerData.KuraState.Stand)
             {
 
@@ -377,24 +339,23 @@ public class PlayerControl : NetworkBehaviour
             }
             else if (m_PlayerData.state.Value == PlayerData.KuraState.Run)
             {
-                Tuple<string, int, string> feetPlatform = FindFeetPlatform();
+                Tuple<GameObject, int> feetPlatform = FindFeetPlatform();
 
-                PlatformScreaptebleObject platformData = GameObject.Find(feetPlatform.Item3).GetComponent<PlatformBasicScript>().platformData;
+                PlatformScreaptebleObject platformData = feetPlatform.Item1.GetComponent<PlatformBasicScript>().platformData;
 
-                if (feetPlatform.Item1 == "simplePlatform")
+                if (feetPlatform.Item1.tag == "simplePlatform")
                 {
                     m_RigidBody2d.AddForce(Vector2.right * platformData.RunForce);
                 }
             }
             else if (m_PlayerData.state.Value == PlayerData.KuraState.ReadyRun)
             {
-                Tuple<string, int, string> feetPlatform = FindFeetPlatform();
+                Tuple<GameObject, int> feetPlatform = FindFeetPlatform();
 
-                PlatformScreaptebleObject platformData = GameObject.Find(feetPlatform.Item3).GetComponent<PlatformBasicScript>().platformData;
+                PlatformScreaptebleObject platformData = feetPlatform.Item1.GetComponent<PlatformBasicScript>().platformData;
 
-                if (feetPlatform.Item1 == "simplePlatform")
+                if (feetPlatform.Item1.tag == "simplePlatform")
                 {
-                    // Implementaion of m_ChillThresholdVelocity (see line 38)
                     if (Math.Abs(platformData.MaxRunVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
                     {
                         if (m_RigidBody2d.velocity.x < platformData.MaxRunVelocity)
@@ -425,13 +386,13 @@ public class PlayerControl : NetworkBehaviour
         }
     }
 
-    // Function that finds the feet platform, it just returns the first platform that is below kura's legs
+    // Function that finds the feet platform, returns the first platform that is below kura's legs
     // (relative to current kura gravity)
-    private Tuple<string, int, string> FindFeetPlatform()
+    private Tuple<GameObject, int> FindFeetPlatform()
     {
-        // this probably should return all feet platforms, but irrelevant for now
+        // NOTE: this probably should return all feet platforms, but irrelevant for now
 
-        foreach(Tuple<string, int, string> platform in m_TouchingPlatforms)
+        foreach(Tuple<GameObject, int> platform in m_TouchingObjects)
         {
             if ((m_GravityDirection == 1 && platform.Item2 == 2) ||
                 (m_GravityDirection == -1 && platform.Item2 == 0))
@@ -456,7 +417,7 @@ public class PlayerControl : NetworkBehaviour
 
         // Adds the encountered object to the list
         int dir = FindCollisionDirection(collision);
-        m_TouchingPlatforms.Add(new Tuple<string, int, string>(collision.gameObject.tag, dir, collision.gameObject.name));
+        m_TouchingObjects.Add(new Tuple<GameObject, int>(collision.gameObject, dir));
 
         // Resets <m_CurFlapRunTime>
         if ((m_GravityDirection == 1 && dir == 2) ||
@@ -469,7 +430,6 @@ public class PlayerControl : NetworkBehaviour
         {
             Debug.DrawLine(new Vector3(contact.point.x, contact.point.y, transform.position.z), transform.position, Color.green, 2, false);
         }
-        //Debug.Break();
     }
 
     // Just finds which direction the hit object is relative to kura (not relative to kura's direction, aka. absolute)
@@ -503,10 +463,9 @@ public class PlayerControl : NetworkBehaviour
         if (!IsServer) return;
 
         // Remove the object kura is not touching anymore from the list
-        m_TouchingPlatforms.RemoveAt(m_TouchingPlatforms.FindIndex(e => e.Item3 == collision.gameObject.name));
+        m_TouchingObjects.RemoveAt(m_TouchingObjects.FindIndex(e => e.Item1 == collision.gameObject));
     }
 
-    // This is called by a boost when encountered (see SpeedBoostScript.cs (15))
     public void Boost(SpeedBoostScriptableObject speedBoostData)
     {
         m_IsSpeedBoosted = true;

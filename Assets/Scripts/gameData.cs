@@ -8,48 +8,46 @@ using Unity.Collections;
 using UnityEngine.UI;
 using System.Linq;
 
+// NOTE: SINGLETON THIS
+
 // This class is for storing the general information about the game, such as:
 // The lobby code, references to all the players, is the game running bool, etc.
 public class GameData : NetworkBehaviour
 {
-    // <NetworkVariable>s are generally variables that update often and other scripts use them often, they are automatically syncronized
-    // among all the clients (by the way they can only be changed by the Server(Host)
-    // and for a client to change them, you need a [SeverRPC] (see PlayerControl.cs (211)))
+    // Hide in inspector because inspector bug with NetworkVariable
+    [HideInInspector]
     public NetworkVariable<int> numPlayersInGame = new NetworkVariable<int>();
+    [HideInInspector]
     public NetworkVariable<bool> isGameRunning = new NetworkVariable<bool>(false);
+    [HideInInspector]
     public NetworkVariable<FixedString128Bytes> lobbyCode = new NetworkVariable<FixedString128Bytes>("IF YOU SEE THIS THEN YOU'RE OFFLINE, YARIK FORGOT TO CHANGE UNITY TRANSFORM PROTOCOL TYPE");
 
-    // Non-<NetworkVariable> variables usually don't update on run-time,
-    // so they are the same when the clients starts so it doesn't need to sync
     public int maxPlayers = 4;
 
-    // These variables are used to give players that spawn in links to UI elements, so we don't have to run GameObject.Find() every time
-    public GameObject startButtonGameObject;
+    // NOTE: SINGLETON THIS
 
-    public TextMeshProUGUI playerIDText;
+    [System.Serializable]
+    public struct SceneObjectsCache
+    {
+        public GameObject startButtonGameObject;
+        public TextMeshProUGUI playerIDText;
+        public TextMeshProUGUI winnerText;
+        public TextMeshProUGUI playerRunTimeText;
+        public TextMeshProUGUI lobbyIDText;
+        public TextMeshProUGUI kuraStatetext;
+        public GameObject miniMapGameObject;
+        public GameObject SpactatorModeButton;
+        public GameObject SpactatorModeHolder;
+    }
 
-    public TextMeshProUGUI winnerText;
+    public SceneObjectsCache sceneObjectsCache;
 
-    public TextMeshProUGUI playerRunTimeText;
-
-    public TextMeshProUGUI lobbyIDText;
-
-    public TextMeshProUGUI kuraStatetext;
-
-    public GameObject miniMapGameObject;
-
-    public GameObject SpactatorModeButton;
-    public GameObject SpactatorModeHolder;
-
-
-    public List<GameObject> m_PlayerDataList = new List<GameObject>();
+    public List<PlayerData> playerDataList = new List<PlayerData>();
 
     // All positions that a player can spawn in
-    [SerializeField]
     private List<Vector3> m_SpawnPosTransformList = new List<Vector3>();
 
-    // Currently available positions to spawn, position is removed when player spawns there, and the list is reset to full when map spawns
-    [SerializeField]
+    // Currently available positions to spawn, position is removed when player spawns there
     private List<Vector3> m_CurGameSpawnPosTransformList;
 
     public int numFinishedPlayers = 0;
@@ -67,6 +65,8 @@ public class GameData : NetworkBehaviour
 
         Shuffle<Vector3>(m_CurGameSpawnPosTransformList);
     }
+
+    // NOTE: DISCOMBOBULATE
 
     public void CalcNumPlayersInGame()
     {
@@ -87,7 +87,6 @@ public class GameData : NetworkBehaviour
         isGameRunning.Value = true;
     }
 
-    // Just algorhythm to shuffle a list, copied from internet 
     public static void Shuffle<T>(in IList<T> list)
     {
         System.Random rng = new System.Random();
@@ -103,42 +102,17 @@ public class GameData : NetworkBehaviour
         }
     }
 
-
-    public int FindSpactatorModeIndex(int playerIndex, int currentIndex, int shiftDirection)
+    public int FindSpactatorModeIndex(int currentIndex)
     {
-        int index = -1;
         if(currentIndex == -1)
         {
-            int i = 0;
-            foreach(GameObject player in m_PlayerDataList) 
+            for (int i = 1; i <= playerDataList.Count; i++) 
             {
-                
-                if(!player.GetComponent<PlayerData>().finishedgame.Value)
-                {
-                    index = i;
-                    return index;
-                }
-                i++;
-            }
-        }else
-        {
-            for(int i=1;i<m_PlayerDataList.Count;i++)
-            {
-                if(!m_PlayerDataList.ElementAt((currentIndex+i)%m_PlayerDataList.Count).GetComponent<PlayerData>().finishedgame.Value)
-                {
-                    return i + currentIndex;
-                }
+                if (!playerDataList[(currentIndex + i) % playerDataList.Count].finishedGame.Value)
+                    return currentIndex + i;
             }
         }
-
-        
-
-
-
-        return index;
+        return currentIndex;
     }
-
-
-
 }
  

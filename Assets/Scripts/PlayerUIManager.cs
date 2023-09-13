@@ -8,7 +8,7 @@ using Unity.Collections;
 using UnityEngine.UI;
 using System;
 
-// This class manages the UI of the player
+// Class to manage the UI of the player
 public class PlayerUIManager : NetworkBehaviour
 {
     private PlayerData m_PlayerData;
@@ -28,6 +28,7 @@ public class PlayerUIManager : NetworkBehaviour
     private TextMeshProUGUI m_KuraStatetext;
 
     private GameObject m_SpactatorModeButton;
+
     private GameObject m_SpactatorModeHolder;
 
     [SerializeField]
@@ -44,19 +45,20 @@ public class PlayerUIManager : NetworkBehaviour
 
     private void Start()
     {
-        m_GameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
+        m_GameData = GameObject.FindObjectOfType<GameData>();
 
         m_PlayerData = GetComponent<PlayerData>();
 
-        m_StartGameButton = m_GameData.startButtonGameObject;
-        m_PlayerIDText = m_GameData.playerIDText;
-        m_WinnerText = m_GameData.winnerText;
-        m_RunTimeText = m_GameData.playerRunTimeText;
-        m_LobbyIDText = m_GameData.lobbyIDText;
-        m_KuraStatetext = m_GameData.kuraStatetext;
-        m_MiniMapGameObject = m_GameData.miniMapGameObject;
-        m_SpactatorModeButton = m_GameData.SpactatorModeButton;
-        m_SpactatorModeHolder = m_GameData.SpactatorModeHolder;
+        m_StartGameButton = m_GameData.sceneObjectsCache.startButtonGameObject;
+        m_PlayerIDText = m_GameData.sceneObjectsCache.playerIDText;
+        m_WinnerText = m_GameData.sceneObjectsCache.winnerText;
+        m_RunTimeText = m_GameData.sceneObjectsCache.playerRunTimeText;
+        m_LobbyIDText = m_GameData.sceneObjectsCache.lobbyIDText;
+        m_KuraStatetext = m_GameData.sceneObjectsCache.kuraStatetext;
+        m_MiniMapGameObject = m_GameData.sceneObjectsCache.miniMapGameObject;
+        m_SpactatorModeButton = m_GameData.sceneObjectsCache.SpactatorModeButton;
+        m_SpactatorModeHolder = m_GameData.sceneObjectsCache.SpactatorModeHolder;
+
         if (IsHost)
         {
             m_StartGameButton.SetActive(true);
@@ -86,19 +88,12 @@ public class PlayerUIManager : NetworkBehaviour
 
             m_MiniMapGameObject.SetActive(true);
             m_SpactatorModeButton.GetComponent<Button>().onClick.AddListener(ActivateSpactatorMode);
-
         }
 
-        // <NetworkVariable>s have the ability to call functions when their value is changed (this is pretty cool yo)
-        // This is how you bind a function to call when the value changes,
-        // the function will always be given the previous value of the <NetworkVariable> and the current
         m_GameData.isGameRunning.OnValueChanged += OnIsGameRunningChanged;
         m_PlayerData.placeInGame.OnValueChanged += OnPlaceInGameChanged;
         m_PlayerData.state.OnValueChanged += OnKuraStateChanged;
     }
-
-    // The following functions get called when a value that's displayed on the UI is changed and change the UI,
-    // Pretty self-explanatory
 
     private void OnIsGameRunningChanged(bool previous, bool current)
     {
@@ -136,23 +131,22 @@ public class PlayerUIManager : NetworkBehaviour
     {
         m_SpactatorModeButton.SetActive(false);
         m_SpactatorModeHolder.gameObject.SetActive(true);
-        UpdateGameStateServerRpc(PlayerData.GameState.SpactatorMode);
-        m_PlayerData.currentSpactatorModeIndex = m_GameData.FindSpactatorModeIndex(m_PlayerData.playerID.Value, -1, 1);
+        UpdateGameModeServerRpc(PlayerData.KuraGameMode.SpactatorMode);
+        m_PlayerData.currentSpactatorModeIndex = m_GameData.FindSpactatorModeIndex(m_PlayerData.currentSpactatorModeIndex);
 
         m_MainCamera.gameObject.SetActive(false);
-        m_GameData.m_PlayerDataList[m_PlayerData.currentSpactatorModeIndex].GetComponent<PlayerData>().MainCamera.SetActive(true);
+        m_GameData.playerDataList[m_PlayerData.currentSpactatorModeIndex].MainCamera.SetActive(true);
     }
 
     [ServerRpc]
-    public void UpdateGameStateServerRpc(PlayerData.GameState GameState)
+    public void UpdateGameModeServerRpc(PlayerData.KuraGameMode KuraGameMode)
     {
-        m_PlayerData.gameState.Value = GameState;
+        m_PlayerData.gameMode.Value = KuraGameMode;
     }
 
     private void Update()
     {
         String temp = Math.Floor(m_PlayerData.playerRunTime.Value / 60f).ToString() + ":" + Math.Floor(m_PlayerData.playerRunTime.Value % 60f).ToString() + "." + Math.Floor(m_PlayerData.playerRunTime.Value * 10) % 10 + Math.Floor(m_PlayerData.playerRunTime.Value * 100) % 10;
-        m_GameData.playerRunTimeText.text = temp;
-
+        m_GameData.sceneObjectsCache.playerRunTimeText.text = temp;
     }
 }

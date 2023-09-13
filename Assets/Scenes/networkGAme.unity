@@ -286,15 +286,15 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 2020881692}
   - {fileID: 1351579880}
   - {fileID: 1376665265}
-  - {fileID: 2020881692}
   - {fileID: 1494586202}
   - {fileID: 1470569736}
-  - {fileID: 1921264881}
   - {fileID: 1299542030}
-  - {fileID: 1085468947}
+  - {fileID: 1921264881}
   - {fileID: 1711747348}
+  - {fileID: 1085468947}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2251,7 +2251,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 694019753}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.5, y: -6.8, z: -0.030226037}
+  m_LocalPosition: {x: 477.6, y: -6.8, z: -0.030226037}
   m_LocalScale: {x: 1, y: 200, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5391,18 +5391,17 @@ MonoBehaviour:
         byte0124: 0
         byte0125: 0
   maxPlayers: 4
-  startButtonGameObject: {fileID: 2020881691}
-  playerIDText: {fileID: 1351579881}
-  winnerText: {fileID: 1376665266}
-  playerRunTimeText: {fileID: 1494586203}
-  lobbyIDText: {fileID: 1470569737}
-  kuraStatetext: {fileID: 1299542031}
-  miniMapGameObject: {fileID: 1921264880}
-  SpactatorModeButton: {fileID: 1711747347}
-  SpactatorModeHolder: {fileID: 1085468946}
-  m_PlayerDataList: []
-  m_SpawnPosTransformList: []
-  m_CurGameSpawnPosTransformList: []
+  sceneObjectsCache:
+    startButtonGameObject: {fileID: 2020881691}
+    playerIDText: {fileID: 1351579881}
+    winnerText: {fileID: 1376665266}
+    playerRunTimeText: {fileID: 1494586203}
+    lobbyIDText: {fileID: 1470569737}
+    kuraStatetext: {fileID: 1299542031}
+    miniMapGameObject: {fileID: 1921264880}
+    SpactatorModeButton: {fileID: 1711747347}
+    SpactatorModeHolder: {fileID: 1085468946}
+  playerDataList: []
   numFinishedPlayers: 0
 --- !u!114 &1360156883
 MonoBehaviour:
