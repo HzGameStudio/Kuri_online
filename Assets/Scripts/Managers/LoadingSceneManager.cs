@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public enum SceneName : byte
 {
     Bootstrap,
+    GameMenu,
     MainGame
 };
 
@@ -90,11 +91,7 @@ public class LoadingSceneManager : SingletonPersistent<LoadingSceneManager>
         if (!NetworkManager.Singleton.IsServer)
             return;
 
-        Debug.Log("1");
-
         Enum.TryParse(sceneName, out m_sceneActive);
-
-        Debug.Log("2");
 
         // Maybe ZIGAN this later
         /*
@@ -106,6 +103,8 @@ public class LoadingSceneManager : SingletonPersistent<LoadingSceneManager>
         switch (m_sceneActive)
         {
             case SceneName.Bootstrap:
+                break;
+            case SceneName.GameMenu:
                 break;
             case SceneName.MainGame:
                 MainManager.Instance.MainSceneInitialize(clientId);

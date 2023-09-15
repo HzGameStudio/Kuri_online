@@ -45,7 +45,6 @@ public class PlayerUIManager : NetworkBehaviour
     {
         m_PlayerData = GetComponent<PlayerData>();
 
-        m_StartGameButton = MainManager.Instance.sceneObjectsCache.startButtonGameObject;
         m_PlayerIDText = MainManager.Instance.sceneObjectsCache.playerIDText;
         m_WinnerText = MainManager.Instance.sceneObjectsCache.winnerText;
         m_RunTimeText = MainManager.Instance.sceneObjectsCache.playerRunTimeText;
@@ -54,11 +53,6 @@ public class PlayerUIManager : NetworkBehaviour
         m_MiniMapGameObject = MainManager.Instance.sceneObjectsCache.miniMapGameObject;
         m_SpactatorModeButton = MainManager.Instance.sceneObjectsCache.SpactatorModeButton;
         m_SpactatorModeHolder = MainManager.Instance.sceneObjectsCache.SpactatorModeHolder;
-
-        if (IsHost)
-        {
-            m_StartGameButton.SetActive(true);
-        }
 
         if (IsClient && IsOwner)
         {
@@ -86,7 +80,6 @@ public class PlayerUIManager : NetworkBehaviour
             m_SpactatorModeButton.GetComponent<Button>().onClick.AddListener(ActivateSpactatorMode);
         }
 
-        MainManager.Instance.isGameRunning.OnValueChanged += OnIsGameRunningChanged;
         m_PlayerData.placeInGame.OnValueChanged += OnPlaceInGameChanged;
         m_PlayerData.state.OnValueChanged += OnKuraStateChanged;
     }

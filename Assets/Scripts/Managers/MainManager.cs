@@ -12,7 +12,6 @@ using System;
 [Serializable]
 public struct MainSceneObjectsCache
 {
-    public GameObject startButtonGameObject;
     public TextMeshProUGUI playerIDText;
     public TextMeshProUGUI winnerText;
     public TextMeshProUGUI playerRunTimeText;
@@ -28,8 +27,6 @@ public class MainManager : SingletonNetwork<MainManager>
     // Hide in inspector because inspector bug with NetworkVariable
     [HideInInspector]
     public NetworkVariable<int> numPlayersInGame = new NetworkVariable<int>();
-    [HideInInspector]
-    public NetworkVariable<bool> isGameRunning = new NetworkVariable<bool>(false);
 
     public MainSceneObjectsCache sceneObjectsCache;
 
@@ -53,12 +50,6 @@ public class MainManager : SingletonNetwork<MainManager>
         Vector3 pos = m_CurGameSpawnPosTransformList[0];
         m_CurGameSpawnPosTransformList.RemoveAt(0);
         return pos;
-    }
-
-    // This function is bound to the <StartButton>
-    public void StartGame()
-    {
-        isGameRunning.Value = true;
     }
 
     public static void Shuffle<T>(in IList<T> list)
@@ -91,8 +82,6 @@ public class MainManager : SingletonNetwork<MainManager>
 
     public void MainSceneInitialize(ulong clientId)
     {
-        Debug.Log("3");
-
         numPlayersInGame.Value++;
 
         playerIds.Add(clientId);

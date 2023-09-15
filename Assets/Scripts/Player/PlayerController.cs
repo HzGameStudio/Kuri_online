@@ -136,8 +136,6 @@ public class PlayerControl : NetworkBehaviour
 
     private void UpdateServer()
     {
-        if (!(MainManager.Instance.isGameRunning.Value)) return;
-
         if(m_PlayerData.gameMode.Value == PlayerData.KuraGameMode.ClasicMode)
         {
             if (m_PlayerData.finishedGame.Value) return;
@@ -212,8 +210,6 @@ public class PlayerControl : NetworkBehaviour
 
     private void UpdateClient()
     {
-        if (!(MainManager.Instance.isGameRunning.Value)) return;
-
         if (m_PlayerData.gameMode.Value == PlayerData.KuraGameMode.ClasicMode)
         {
             if (m_PlayerData.finishedGame.Value == false)
@@ -246,8 +242,6 @@ public class PlayerControl : NetworkBehaviour
 
     private void FixedUpdateServer()
     {
-        if (!(MainManager.Instance.isGameRunning.Value)) return;
-
         if (m_PlayerData.gameMode.Value == PlayerData.KuraGameMode.ClasicMode)
         { 
 
