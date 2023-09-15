@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5098437705173822520}
+  - component: {fileID: 7334490366560743117}
   - component: {fileID: 8956468217450333795}
   - component: {fileID: 9190069969309698085}
   - component: {fileID: 8595126824625513832}
   - component: {fileID: 2942958772246355283}
-  - component: {fileID: 8336295429402342718}
   - component: {fileID: 6670277049965737840}
   - component: {fileID: 4287416972423254773}
   m_Layer: 0
@@ -39,6 +39,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7334490366560743117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 675961631460784860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3eb26a8114096c48a030dfac016a4b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 4733296966647671285}
+  serverCube: {fileID: 0}
+  clientCube: {fileID: 0}
 --- !u!212 &8956468217450333795
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -121,7 +136,6 @@ MonoBehaviour:
   InLocalSpace: 0
   Interpolate: 1
   SlerpPosition: 0
-  authorityMode: 1
 --- !u!114 &8595126824625513832
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -169,19 +183,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &8336295429402342718
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 675961631460784860}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cde10b5bbcd97544ba805ea60559a86c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Camera: {fileID: 4733296966647671285}
 --- !u!114 &6670277049965737840
 MonoBehaviour:
   m_ObjectHideFlags: 0

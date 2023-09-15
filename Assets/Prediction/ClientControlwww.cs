@@ -4,7 +4,7 @@ using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.Scripting.APIUpdating;
 
-public class ClientControlwww : NetworkBehaviour
+public class ClientControl : NetworkBehaviour
 {
     [SerializeField] GameObject Camera;
 
