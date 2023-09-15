@@ -13,8 +13,6 @@ public class PlayerUIManager : NetworkBehaviour
 {
     private PlayerData m_PlayerData;
 
-    private GameData m_GameData;
-
     private GameObject m_StartGameButton;
 
     private TextMeshProUGUI m_PlayerIDText;
@@ -45,19 +43,17 @@ public class PlayerUIManager : NetworkBehaviour
 
     private void Start()
     {
-        m_GameData = GameObject.FindObjectOfType<GameData>();
-
         m_PlayerData = GetComponent<PlayerData>();
 
-        m_StartGameButton = m_GameData.sceneObjectsCache.startButtonGameObject;
-        m_PlayerIDText = m_GameData.sceneObjectsCache.playerIDText;
-        m_WinnerText = m_GameData.sceneObjectsCache.winnerText;
-        m_RunTimeText = m_GameData.sceneObjectsCache.playerRunTimeText;
-        m_LobbyIDText = m_GameData.sceneObjectsCache.lobbyIDText;
-        m_KuraStatetext = m_GameData.sceneObjectsCache.kuraStatetext;
-        m_MiniMapGameObject = m_GameData.sceneObjectsCache.miniMapGameObject;
-        m_SpactatorModeButton = m_GameData.sceneObjectsCache.SpactatorModeButton;
-        m_SpactatorModeHolder = m_GameData.sceneObjectsCache.SpactatorModeHolder;
+        m_StartGameButton = MainManager.Instance.sceneObjectsCache.startButtonGameObject;
+        m_PlayerIDText = MainManager.Instance.sceneObjectsCache.playerIDText;
+        m_WinnerText = MainManager.Instance.sceneObjectsCache.winnerText;
+        m_RunTimeText = MainManager.Instance.sceneObjectsCache.playerRunTimeText;
+        m_LobbyIDText = MainManager.Instance.sceneObjectsCache.lobbyIDText;
+        m_KuraStatetext = MainManager.Instance.sceneObjectsCache.kuraStatetext;
+        m_MiniMapGameObject = MainManager.Instance.sceneObjectsCache.miniMapGameObject;
+        m_SpactatorModeButton = MainManager.Instance.sceneObjectsCache.SpactatorModeButton;
+        m_SpactatorModeHolder = MainManager.Instance.sceneObjectsCache.SpactatorModeHolder;
 
         if (IsHost)
         {
@@ -72,7 +68,7 @@ public class PlayerUIManager : NetworkBehaviour
             m_RunTimeText.gameObject.SetActive(true);
 
             m_LobbyIDText.gameObject.SetActive(true);
-            m_LobbyIDText.text = m_GameData.lobbyCode.Value.Value;
+            m_LobbyIDText.text = GameManager.Instance.lobbyCode.Value.Value;
 
             m_KuraStatetext.gameObject.SetActive(true);
 
@@ -90,7 +86,7 @@ public class PlayerUIManager : NetworkBehaviour
             m_SpactatorModeButton.GetComponent<Button>().onClick.AddListener(ActivateSpactatorMode);
         }
 
-        m_GameData.isGameRunning.OnValueChanged += OnIsGameRunningChanged;
+        MainManager.Instance.isGameRunning.OnValueChanged += OnIsGameRunningChanged;
         m_PlayerData.placeInGame.OnValueChanged += OnPlaceInGameChanged;
         m_PlayerData.state.OnValueChanged += OnKuraStateChanged;
     }
@@ -132,10 +128,10 @@ public class PlayerUIManager : NetworkBehaviour
         m_SpactatorModeButton.SetActive(false);
         m_SpactatorModeHolder.gameObject.SetActive(true);
         UpdateGameModeServerRpc(PlayerData.KuraGameMode.SpactatorMode);
-        m_PlayerData.currentSpactatorModeIndex = m_GameData.FindSpactatorModeIndex(m_PlayerData.currentSpactatorModeIndex);
+        m_PlayerData.currentSpactatorModeIndex = MainManager.Instance.FindSpactatorModeIndex(m_PlayerData.currentSpactatorModeIndex);
 
         m_MainCamera.gameObject.SetActive(false);
-        m_GameData.playerDataList[m_PlayerData.currentSpactatorModeIndex].MainCamera.SetActive(true);
+        MainManager.Instance.playerDataList[m_PlayerData.currentSpactatorModeIndex].MainCamera.SetActive(true);
     }
 
     [ServerRpc]
@@ -147,6 +143,6 @@ public class PlayerUIManager : NetworkBehaviour
     private void Update()
     {
         String temp = Math.Floor(m_PlayerData.playerRunTime.Value / 60f).ToString() + ":" + Math.Floor(m_PlayerData.playerRunTime.Value % 60f).ToString() + "." + Math.Floor(m_PlayerData.playerRunTime.Value * 10) % 10 + Math.Floor(m_PlayerData.playerRunTime.Value * 100) % 10;
-        m_GameData.sceneObjectsCache.playerRunTimeText.text = temp;
+        MainManager.Instance.sceneObjectsCache.playerRunTimeText.text = temp;
     }
 }

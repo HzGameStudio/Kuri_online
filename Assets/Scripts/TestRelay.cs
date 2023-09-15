@@ -8,17 +8,17 @@ using Unity.Services.Core;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using TMPro;
+using System;
 
 // Class that creates the relay, starts host / client
-public class TestRelay : NetworkBehaviour
+public class TestRelay : SingletonNetwork<TestRelay>
 {
-    private string m_EnterLobbyCode = "Enter code";
-
     [SerializeField]
     private GameObject m_NetworkManager;
 
     [SerializeField]
-    private GameData m_GameData;
+    private TextMeshProUGUI m_LobbyCodeInputField;
 
     private async void Start()
     {
@@ -36,7 +36,7 @@ public class TestRelay : NetworkBehaviour
         try
         { 
             // MaxPlayers -1, because it asks for amount of players not including host
-            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(m_GameData.maxPlayers - 1);
+            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(GameManager.Instance.maxPlayers - 1);
 
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
@@ -48,7 +48,9 @@ public class TestRelay : NetworkBehaviour
 
             NetworkManager.Singleton.StartHost();
 
-            m_GameData.lobbyCode.Value = joinCode;
+            GameManager.Instance.lobbyCode.Value = joinCode;
+
+            LoadingSceneManager.Instance.LoadScene(SceneName.MainGame, true);
         }
         catch (RelayServiceException ex)
         {
@@ -75,42 +77,29 @@ public class TestRelay : NetworkBehaviour
         }
     }
 
-    private void OnGUI()
+    public void ButtonCreateRelay()
     {
-        GUILayout.BeginArea(new Rect(100, 100, 1000, 1000));
-
-        GUI.skin.button.fontSize = 36;
-        GUI.skin.textField.fontSize = 36;
-
-        if (!NetworkManager.Singleton.IsClient && !NetworkManager.Singleton.IsServer)
+        // You can Manually change the <Protocol Type> parameter in the <Unity Transform> component on the <NetworkManager> object,
+        // <Relay Unity Transform> is for playing online with the relay, <Unity Transform> is for testing offline, only works when playing on one computer
+        if (m_NetworkManager.GetComponent<UnityTransport>().Protocol == UnityTransport.ProtocolType.RelayUnityTransport)
+            CreateRelay();
+        else
         {
-            if (GUILayout.Button("Host", GUILayout.Width(600), GUILayout.Height(200)))
-            {
-                // You can Manually change the <Protocol Type> parameter in the <Unity Transform> component on the <NetworkManager> object,
-                // <Relay Unity Transform> is for playing online with the relay, <Unity Transform> is for testing offline, only works when playing on one computer
-                if (m_NetworkManager.GetComponent<UnityTransport>().Protocol == UnityTransport.ProtocolType.RelayUnityTransport)
-                    CreateRelay();
-                else
-                {
-                    AuthenticationService.Instance.SignOut();
+            AuthenticationService.Instance.SignOut();
 
-                    NetworkManager.Singleton.StartHost();
-                }
-            }
-            m_EnterLobbyCode = GUILayout.TextField(m_EnterLobbyCode, GUILayout.Width(600), GUILayout.Height(200));
-            if (GUILayout.Button("Client", GUILayout.Width(600), GUILayout.Height(200)))
-            {
-                if (m_NetworkManager.GetComponent<UnityTransport>().Protocol == UnityTransport.ProtocolType.RelayUnityTransport)
-                    JoinRelay(m_EnterLobbyCode);
-                else
-                {
-                    AuthenticationService.Instance.SignOut();
-
-                    NetworkManager.Singleton.StartClient();
-                }
-            }
+            NetworkManager.Singleton.StartHost();
         }
+    }
 
-        GUILayout.EndArea();
+    public void ButtonJoinRelay()
+    {
+        if (m_NetworkManager.GetComponent<UnityTransport>().Protocol == UnityTransport.ProtocolType.RelayUnityTransport)
+            JoinRelay(m_LobbyCodeInputField.text.Substring(0,6));
+        else
+        {
+            AuthenticationService.Instance.SignOut();
+
+            NetworkManager.Singleton.StartClient();
+        }
     }
 }

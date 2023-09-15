@@ -6,22 +6,17 @@ using UnityEngine;
 
 public class FinishScript : NetworkBehaviour
 {
-    private GameData m_GameData;
-
-    void Start()
-    {
-        m_GameData = GameObject.FindGameObjectWithTag("gameManager").GetComponent<GameData>();
-    }
-
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (IsServer)
         {
             if (collision.gameObject.CompareTag("player"))
             {
-                m_GameData.numFinishedPlayers++;
-                collision.gameObject.GetComponent<PlayerData>().placeInGame.Value = m_GameData.numFinishedPlayers;
-                collision.gameObject.GetComponent<PlayerData>().finishedGame.Value = true;
+                MainManager.Instance.numFinishedPlayers++;
+
+                PlayerData playerData = collision.gameObject.GetComponent<PlayerData>();
+                playerData.placeInGame.Value = MainManager.Instance.numFinishedPlayers;
+                playerData.finishedGame.Value = true;
             }
         }
     }

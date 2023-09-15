@@ -61,9 +61,8 @@ public class PlayerControl : NetworkBehaviour
     [SerializeField]
     private GameObject m_BlueKura;
 
-    private GameData m_GameData;
-
     private PlayerData m_PlayerData;
+
     private PlayerUIManager m_PlayerUIManagre;
 
     // Logic
@@ -104,9 +103,7 @@ public class PlayerControl : NetworkBehaviour
         m_PlayerData = GetComponent<PlayerData>();
         m_PlayerUIManagre = GetComponent<PlayerUIManager>();
 
-        m_GameData = GameObject.FindObjectOfType<GameData>();
-
-        m_GameData.playerDataList.Add(m_PlayerData);
+        MainManager.Instance.playerDataList.Add(m_PlayerData);
 
         //this makes you see yourself as a blue kura
         //while other players are red 
@@ -119,12 +116,6 @@ public class PlayerControl : NetworkBehaviour
         {
             m_RedKura.SetActive(true);
             m_BlueKura.SetActive(false);
-        }
-
-        if (IsServer)
-        {
-            transform.position = m_GameData.GetSpawnPosition();
-            m_PlayerData.spawnPosition.Value = transform.position;
         }
 
         m_PlayerData.finishedGame.OnValueChanged += OnFinishedGameChanged;
@@ -145,7 +136,7 @@ public class PlayerControl : NetworkBehaviour
 
     private void UpdateServer()
     {
-        if (!(m_GameData.isGameRunning.Value)) return;
+        if (!(MainManager.Instance.isGameRunning.Value)) return;
 
         if(m_PlayerData.gameMode.Value == PlayerData.KuraGameMode.ClasicMode)
         {
@@ -221,7 +212,7 @@ public class PlayerControl : NetworkBehaviour
 
     private void UpdateClient()
     {
-        if (!(m_GameData.isGameRunning.Value)) return;
+        if (!(MainManager.Instance.isGameRunning.Value)) return;
 
         if (m_PlayerData.gameMode.Value == PlayerData.KuraGameMode.ClasicMode)
         {
@@ -255,7 +246,7 @@ public class PlayerControl : NetworkBehaviour
 
     private void FixedUpdateServer()
     {
-        if (!(m_GameData.isGameRunning.Value)) return;
+        if (!(MainManager.Instance.isGameRunning.Value)) return;
 
         if (m_PlayerData.gameMode.Value == PlayerData.KuraGameMode.ClasicMode)
         { 

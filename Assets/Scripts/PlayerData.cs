@@ -56,16 +56,4 @@ public class PlayerData : NetworkBehaviour
     public NetworkVariable<KuraGameMode> gameMode = new NetworkVariable<KuraGameMode>(KuraGameMode.ClasicMode);
     public NetworkVariable<Vector3> spawnPosition = new NetworkVariable<Vector3>();
     public NetworkVariable<float> playerHealth = new NetworkVariable<float>(playerStartHealth);
-
-    private GameData m_GameData;
-
-    private void Start()
-    {
-        m_GameData = GameObject.FindObjectOfType<GameData>();
-        if (IsServer)
-        {
-            m_GameData.CalcNumPlayersInGame();
-            playerID.Value = m_GameData.numPlayersInGame.Value;
-        }
-    }
 }
