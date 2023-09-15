@@ -11,11 +11,21 @@ using UnityEngine;
 using TMPro;
 using System;
 
-// Class that creates the relay, starts host / client
-public class TestRelay : SingletonNetwork<TestRelay>
+public class PredictionRelay : MonoBehaviour
 {
     [SerializeField]
     private TextMeshProUGUI m_LobbyCodeInputField;
+
+    public string lobbyCode;
+
+    [SerializeField]
+    public GameObject createButton;
+    [SerializeField]
+    public GameObject joinButton;
+    [SerializeField]
+    public GameObject joinfield;
+    [SerializeField]
+    public TextMeshProUGUI lobbyCodeField;
 
     private async void Start()
     {
@@ -28,12 +38,16 @@ public class TestRelay : SingletonNetwork<TestRelay>
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
     }
 
-    private async void CreateRelay()
+    public async void CreateRelay()
     {
+        Debug.Log("aaaaaaaaaaaaaaaaaaaaaaa");
+
         try
-        { 
+        {
+            Debug.Log("aaaa");
+
             // MaxPlayers -1, because it asks for amount of players not including host
-            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(GameManager.Instance.maxPlayers - 1);
+            Allocation allocation = await RelayService.Instance.CreateAllocationAsync(3);
 
             string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 
@@ -45,9 +59,9 @@ public class TestRelay : SingletonNetwork<TestRelay>
 
             NetworkManager.Singleton.StartHost();
 
-            GameManager.Instance.lobbyCode.Value = joinCode;
+            lobbyCode = joinCode;
 
-            LoadingSceneManager.Instance.LoadScene(SceneName.GameMenu, true);
+            lobbyCodeField.text = joinCode;
         }
         catch (RelayServiceException ex)
         {
@@ -55,12 +69,12 @@ public class TestRelay : SingletonNetwork<TestRelay>
         }
     }
 
-    private async void JoinRelay(string joinCode)
+    public async void JoinRelay(string joinCode)
     {
         try
         {
-            Debug.Log("Joining relay with " +  joinCode);
-            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+            Debug.Log("Joining relay with " + joinCode);
+            JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(m_LobbyCodeInputField.text.Substring(0,6));
 
             RelayServerData relayServerData = new RelayServerData(joinAllocation, "udp");
 
@@ -71,32 +85,6 @@ public class TestRelay : SingletonNetwork<TestRelay>
         catch (RelayServiceException ex)
         {
             Debug.LogError(ex);
-        }
-    }
-
-    public void ButtonCreateRelay()
-    {
-        // You can Manually change the <Protocol Type> parameter in the <Unity Transform> component on the <NetworkManager> object,
-        // <Relay Unity Transform> is for playing online with the relay, <Unity Transform> is for testing offline, only works when playing on one computer
-        if (NetworkManager.Singleton.GetComponent<UnityTransport>().Protocol == UnityTransport.ProtocolType.RelayUnityTransport)
-            CreateRelay();
-        else
-        {
-            AuthenticationService.Instance.SignOut();
-
-            NetworkManager.Singleton.StartHost();
-        }
-    }
-
-    public void ButtonJoinRelay()
-    {
-        if (NetworkManager.Singleton.GetComponent<UnityTransport>().Protocol == UnityTransport.ProtocolType.RelayUnityTransport)
-            JoinRelay(m_LobbyCodeInputField.text.Substring(0,6));
-        else
-        {
-            AuthenticationService.Instance.SignOut();
-
-            NetworkManager.Singleton.StartClient();
         }
     }
 }

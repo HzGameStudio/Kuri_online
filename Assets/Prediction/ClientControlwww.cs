@@ -6,7 +6,6 @@ using UnityEngine.Scripting.APIUpdating;
 
 public class ClientControlwww : NetworkBehaviour
 {
-
     [SerializeField] GameObject Camera;
 
     private Rigidbody2D rb;
@@ -29,6 +28,11 @@ public class ClientControlwww : NetworkBehaviour
         if(IsOwner)
         {
             transform.position =new Vector3(transform.position.x + Random.Range(5, 10), transform.position.y, transform.position.z);
+
+            var relay = GameObject.FindObjectOfType<PredictionRelay>();
+            relay.joinButton.SetActive(false);
+            relay.createButton.SetActive(false);
+            relay.joinfield.SetActive(false);
         }
     }
 
