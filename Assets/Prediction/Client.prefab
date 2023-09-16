@@ -51,6 +51,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3eb26a8114096c48a030dfac016a4b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_MaxFlips: 1
+  m_FlipTagList:
+  - simplePlatform
+  - player
   Camera: {fileID: 4733296966647671285}
   serverCube: {fileID: 0}
   clientCube: {fileID: 0}
@@ -171,7 +175,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 0
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2

@@ -11,7 +11,9 @@ public class ClientPredictionController : NetworkBehaviour
     private int m_MaxFlips = 1;
 
     private int m_GravityDirection = 1;
- 
+
+
+    private bool m_InputRequest = false; 
 
     [SerializeField]
     private string[] m_FlipTagList = { "simplePlatform", "player" };
@@ -118,6 +120,15 @@ public class ClientPredictionController : NetworkBehaviour
         {
             transform.position += transform.forward * 20f;
         }
+
+        if(IsOwner)
+        {
+            if(Input.GetKeyDown(KeyCode.W))
+            {
+                m_InputRequest = true;
+            }
+        }
+            
     }
 
     void FixedUpdate()
@@ -277,13 +288,13 @@ public class ClientPredictionController : NetworkBehaviour
 
                 m_NFlips--;
             }
+            m_InputRequest = false;
         }
     }
 
     bool GetInput()
     {
-        if (Input.GetKeyDown(KeyCode.W)) return true;
-        return false;
+        return m_InputRequest;
     }
 
 
