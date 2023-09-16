@@ -32,7 +32,6 @@ using UnityEngine;
         public Vector3 position;
         public Quaternion rotation;
         public Vector3 velocity;
-        public Vector3 angularVelocity;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
@@ -41,12 +40,11 @@ using UnityEngine;
             serializer.SerializeValue(ref position);
             serializer.SerializeValue(ref rotation);
             serializer.SerializeValue(ref velocity);
-            serializer.SerializeValue(ref angularVelocity);
         }
     }
 
     [SerializeField] GameObject Camera;
-        Rigidbody rb;
+        Rigidbody2D rb;
     float reconciliationThreshold = 1f;
 
         const float thresholdSpeed = 10f;
@@ -75,7 +73,7 @@ using UnityEngine;
         void Awake()
         {
 
-            rb = GetComponent<Rigidbody>();
+            rb = GetComponent<Rigidbody2D>();
             //clientNetworkTransform = GetComponent<ClientNetworkTransform>();
 
 
@@ -88,7 +86,11 @@ using UnityEngine;
             serverStateBuffer = new CircularBuffer<StatePayload>(k_bufferSize);
             serverInputQueue = new Queue<InputPayload>();
 
-
+            
+            PredictionRelay rl = GameObject.FindObjectOfType<PredictionRelay>();
+            rl.joinButton.SetActive(false);
+            rl.createButton.SetActive(false);
+            rl.joinfield.SetActive(false);
         }
         
         public override void OnNetworkSpawn() {
@@ -202,7 +204,6 @@ using UnityEngine;
             transform.position = rewindState.position;
             transform.rotation = rewindState.rotation;
             rb.velocity = rewindState.velocity;
-            rb.angularVelocity = rewindState.angularVelocity;
 
             if (!rewindState.Equals(lastServerState)) return;
             
@@ -235,7 +236,6 @@ using UnityEngine;
                 position = transform.position,
                 rotation = transform.rotation,
                 velocity = rb.velocity,
-                angularVelocity = rb.angularVelocity
             };
         }
 
