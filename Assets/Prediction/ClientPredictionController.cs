@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Windows;
 // Network variables should be value objects
 
 
@@ -18,7 +19,7 @@ public class ClientPredictionController : NetworkBehaviour
     [SerializeField]
     private string[] m_FlipTagList = { "simplePlatform", "player" };
 
-    private int m_NFlips = 1;
+    [SerializeField]private int m_NFlips = 1;
     public struct InputPayload : INetworkSerializable
     {
         public int tick;
@@ -88,7 +89,10 @@ public class ClientPredictionController : NetworkBehaviour
         rb = GetComponent<Rigidbody2D>();
         //clientNetworkTransform = GetComponent<ClientNetworkTransform>();
 
-
+        PredictionRelay rl = GameObject.FindObjectOfType<PredictionRelay>();
+        rl.joinButton.SetActive(false);
+        rl.createButton.SetActive(false);
+        rl.joinfield.SetActive(false);
 
 
         networkTimer = new NetworkTimer(k_serverTickRate);
@@ -116,14 +120,14 @@ public class ClientPredictionController : NetworkBehaviour
     {
         networkTimer.Update(Time.deltaTime);
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (UnityEngine.Input.GetKeyDown(KeyCode.Q))
         {
             transform.position += transform.forward * 20f;
         }
 
         if(IsOwner)
         {
-            if(Input.GetKeyDown(KeyCode.W))
+            if(UnityEngine.Input.GetKeyDown(KeyCode.W))
             {
                 m_InputRequest = true;
             }
@@ -152,9 +156,25 @@ public class ClientPredictionController : NetworkBehaviour
             inputPayload = serverInputQueue.Dequeue();
 
             bufferIndex = inputPayload.tick % k_bufferSize;
+           //Debug.Log("ServerTick" + bufferIndex.ToString());
 
-            StatePayload statePayload = ProcessMovement(inputPayload);
-            serverStateBuffer.Add(statePayload, bufferIndex);
+
+            if (IsServer && !IsOwner)
+            {
+                StatePayload statePayload = ProcessMovement(inputPayload);
+                serverStateBuffer.Add(statePayload, bufferIndex);
+            }
+            else
+            {
+                new StatePayload()
+                {
+                    tick = inputPayload.tick,
+                    networkObjectId = NetworkObjectId,
+                    position = transform.position,
+                    rotation = transform.rotation,
+                    velocity = rb.velocity,
+                };
+            }
         }
 
         if (bufferIndex == -1) return;
@@ -180,6 +200,8 @@ public class ClientPredictionController : NetworkBehaviour
 
         var currentTick = networkTimer.CurrentTick;
         var bufferIndex = currentTick % k_bufferSize;
+
+        //Debug.Log("ClientTick" + bufferIndex.ToString());
 
         InputPayload inputPayload = new InputPayload()
         {
@@ -212,6 +234,7 @@ public class ClientPredictionController : NetworkBehaviour
     {
         if (!ShouldReconcile()) return;
 
+        Debug.Log("Reconcil");
         float positionError;
         int bufferIndex;
 
@@ -282,11 +305,14 @@ public class ClientPredictionController : NetworkBehaviour
             // Flip
             if (m_NFlips > 0)
             {
+                Debug.Log(m_NFlips);
                 m_GravityDirection *= -1;
                 rb.gravityScale = m_GravityDirection;
+                Debug.Log(m_GravityDirection);
                 //m_Transform.localScale = new Vector3(m_Transform.localScale.x, m_Transform.localScale.y * -1, m_Transform.localScale.z);
-
+                
                 m_NFlips--;
+                Debug.Log(m_NFlips);
             }
             m_InputRequest = false;
         }
