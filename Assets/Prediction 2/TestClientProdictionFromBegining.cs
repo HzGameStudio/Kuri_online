@@ -44,14 +44,18 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
             return;
         }
 
-        HandleState.TransformStateRW transformState = new()
+        if(IsHost)
         {
-            tick = tick,
-            finalPos = transform.position,
-            isMoving = true
-        };
+            HandleState.TransformStateRW transformState = new()
+            {
+                tick = tick,
+                finalPos = transform.position,
+                isMoving = true
+            };
 
-        currentServerTransformState.Value = transformState;
+            currentServerTransformState.Value = transformState;
+        }
+        
     }
 
     private void OnEnable()
@@ -98,6 +102,7 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
     [ServerRpc]
     private void MovePlayerWithServerTickServerRPC(int tick, bool moveInput_input)
     {
+        //host check 
         if (!IsOwner)
             Move(moveInput_input);
 
@@ -105,7 +110,8 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
         {
             tick = tick,
             finalPos = transform.position,
-            isMoving = moveInput_input
+            isMoving = moveInput_input,
+            gravityDirection = rb.gravityScale,
         };
 
         //Debug.Log(transformState.finalPos);
@@ -116,14 +122,19 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
 
     public void SimulateOtherPlayers()
     {
+        if (IsServer) return;
         tickDeltaTime += Time.deltaTime;
 
         if (tickDeltaTime > tickRate)
         {
-            //Debug.Log(currentServerTransformState.Value.finalPos);
-            //Debug.Log(OwnerClientId);
-            if (currentServerTransformState.Value.isMoving)
-                transform.position = currentServerTransformState.Value.finalPos;
+            //check for reconsil
+
+
+            //if dont need to reconcil
+            if (currentServerTransformState.Value.isMoving || true)
+                Debug.Log(currentServerTransformState.Value.gravityDirection);
+                rb.gravityScale = currentServerTransformState.Value.gravityDirection;
+                //transform.position = currentServerTransformState.Value.finalPos;
 
             tickDeltaTime -= tickRate;
 
@@ -136,7 +147,7 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
 
     private void Update()
     {
-        if(IsOwner)
+        if (IsOwner)
         {
             if (UnityEngine.Input.GetKeyDown(KeyCode.W))
             {
@@ -157,7 +168,7 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
 
     void Move(bool flip)
     {
-        if(flip)
+        if (flip)
         {
             rb.gravityScale = rb.gravityScale * (-1);
             requestMovement = false;
@@ -168,7 +179,7 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
     {
         //Debug.Log("onvaluechanged" + OwnerClientId.ToString());
         //if (OwnerClientId == 2)
-           // Debug.Log(previousValue.finalPos.ToString() + ' ' +  newValue.finalPos.ToString());
+        // Debug.Log(previousValue.finalPos.ToString() + ' ' +  newValue.finalPos.ToString());
         previousTransformState = previousValue;
     }
 }

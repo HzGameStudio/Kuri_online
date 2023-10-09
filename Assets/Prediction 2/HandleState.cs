@@ -16,7 +16,10 @@ public class HandleState
     {
         public int tick;
         public Vector3 finalPos;
+        public float gravityDirection;
         public bool isMoving;
+
+
         
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T: IReaderWriter
         {
@@ -25,6 +28,7 @@ public class HandleState
                 var reader = serializer.GetFastBufferReader();
                 reader.ReadValueSafe(out tick);
                 reader.ReadValueSafe(out finalPos);
+                reader.ReadValueSafe(out gravityDirection);
                 reader.ReadValueSafe(out isMoving);
             } 
             else
@@ -32,6 +36,7 @@ public class HandleState
                 var writer = serializer.GetFastBufferWriter();
                 writer.WriteValueSafe(tick);
                 writer.WriteValueSafe(finalPos);
+                writer.WriteValueSafe(gravityDirection);
                 writer.WriteValueSafe(isMoving);
             }
         }
