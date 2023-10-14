@@ -13,7 +13,11 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
 {
     Rigidbody2D rb;
 
+    public float kuraXVelosity = 3;
+
     bool requestMovement = false;
+
+    const float ServerClientPositionTreshold = 1f;
 
     [SerializeField] GameObject MainCamera;
 
@@ -31,6 +35,7 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
 
     public HandleState.TransformStateRW previousTransformState;
 
+    public NetworkVariable<bool> needToCahngeGravity = new NetworkVariable<bool>(false);
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -71,8 +76,12 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
         {
             int bufferIndex = tick % buffer;
 
-            MovePlayerWithServerTickServerRPC(tick, moveInput_input);
             Move(moveInput_input);
+
+            MovePlayerWithServerTickServerRPC(tick, moveInput_input, transform.position);
+
+            //will need to change this later cause even if input is true gravity could not change
+            needToCahngeGravity.Value = moveInput_input;
 
             HandleState.InputState inputState = new()
             {
@@ -100,12 +109,15 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void MovePlayerWithServerTickServerRPC(int tick, bool moveInput_input)
+    private void MovePlayerWithServerTickServerRPC(int tick, bool moveInput_input, Vector3 currentClientPosition)
     {
         //host check 
         if (!IsOwner)
             Move(moveInput_input);
-
+        if(Vector3.Distance(transform.position, currentClientPosition)>ServerClientPositionTreshold)
+        {
+            transform.position = currentClientPosition;
+        }
         HandleState.TransformStateRW transformState = new()
         {
             tick = tick,
@@ -127,16 +139,20 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
 
         if (tickDeltaTime > tickRate)
         {
+            
+            //here we need probably add some kind of optimisation 
+            //cause to change gravity every tick is kring;
+            Debug.Log(currentServerTransformState.Value.gravityDirection);
+            rb.gravityScale = currentServerTransformState.Value.gravityDirection;
+            rb.AddForce(new Vector2(kuraXVelosity, 0));
+
             //check for reconsil
-
-
-            //if dont need to reconcil
-            if (currentServerTransformState.Value.isMoving || true)
-                Debug.Log(currentServerTransformState.Value.gravityDirection);
-                rb.gravityScale = currentServerTransformState.Value.gravityDirection;
-                //transform.position = currentServerTransformState.Value.finalPos;
-
+            if (Vector3.Distance(transform.position, currentServerTransformState.Value.finalPos) > ServerClientPositionTreshold)
+            {
+                transform.position = currentServerTransformState.Value.finalPos;
+            }
             tickDeltaTime -= tickRate;
+            
 
             if (tick == buffer)
                 tick = 0;
@@ -172,7 +188,9 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
         {
             rb.gravityScale = rb.gravityScale * (-1);
             requestMovement = false;
+
         }
+        rb.AddForce(new Vector2(kuraXVelosity, 0));
     }
 
     private void OnServerStateChanged(HandleState.TransformStateRW previousValue, HandleState.TransformStateRW newValue)
