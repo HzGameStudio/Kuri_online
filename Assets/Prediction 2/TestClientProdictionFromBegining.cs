@@ -39,6 +39,12 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        PredictionRelay rl = GameObject.FindObjectOfType<PredictionRelay>();
+        rl.joinButton.SetActive(false);
+        rl.createButton.SetActive(false);
+        rl.joinfield.SetActive(false);
+
     }
 
     public override void OnNetworkSpawn()
