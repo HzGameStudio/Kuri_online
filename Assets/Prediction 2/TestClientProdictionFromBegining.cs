@@ -66,6 +66,8 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
 
             currentServerTransformState.Value = transformState;
         }
+
+        
         
     }
 
@@ -120,10 +122,12 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
         //host check 
         if (!IsOwner)
             Move(moveInput_input);
-        if(Vector3.Distance(transform.position, currentClientPosition)>ServerClientPositionTreshold)
-        {
+
+        //if(Vector3.Distance(transform.position, currentClientPosition)>ServerClientPositionTreshold)
+        //{
             transform.position = currentClientPosition;
-        }
+        //}
+
         HandleState.TransformStateRW transformState = new()
         {
             tick = tick,
@@ -143,6 +147,18 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
         if (IsServer) return;
         tickDeltaTime += Time.deltaTime;
 
+        rb.gravityScale = currentServerTransformState.Value.gravityDirection;
+        transform.position = currentServerTransformState.Value.finalPos;
+
+        tickDeltaTime -= tickRate;
+
+
+        if (tick == buffer)
+            tick = 0;
+        else
+            tick++;
+
+        /*
         if (tickDeltaTime > tickRate)
         {
             
@@ -165,6 +181,7 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
             else
                 tick++;
         }
+        */
     }
 
     private void Update()
@@ -194,9 +211,8 @@ public class TestClientProdictionFromBegining : NetworkBehaviour
         {
             rb.gravityScale = rb.gravityScale * (-1);
             requestMovement = false;
-
         }
-        rb.AddForce(new Vector2(kuraXVelosity, 0));
+        rb.totalForce = new Vector2(kuraXVelosity, 0);
     }
 
     private void OnServerStateChanged(HandleState.TransformStateRW previousValue, HandleState.TransformStateRW newValue)
