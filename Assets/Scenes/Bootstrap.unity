@@ -1827,7 +1827,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 599daf3b57cef464a8d6be68c3a0e2cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_NetworkManager: {fileID: 7080946887699773572}
   m_LobbyCodeInputField: {fileID: 656641665}
 --- !u!114 &5329523487955228567
 MonoBehaviour:
@@ -1848,7 +1847,7 @@ MonoBehaviour:
     Prefabs:
       NetworkPrefabsLists:
       - {fileID: 11400000, guid: 030e86a6118153c49a7af541ae74cb8f, type: 2}
-    TickRate: 30
+    TickRate: 50
     ClientConnectionBufferTimeout: 10
     ConnectionApproval: 0
     ConnectionData: 

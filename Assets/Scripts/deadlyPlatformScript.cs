@@ -12,7 +12,7 @@ public class deadlyPlatformScript : MonoBehaviour
         if(collision.gameObject.CompareTag("player"))
         {
             Debug.Log("Damage");
-            collision.gameObject.GetComponent<PlayerControl>().GetDamage(damage);
+            collision.gameObject.GetComponent<PlayerControl>().Damage(damage);
         }
     }
 }

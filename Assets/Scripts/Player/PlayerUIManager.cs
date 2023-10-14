@@ -121,10 +121,16 @@ public class PlayerUIManager : NetworkBehaviour
         m_SpactatorModeButton.SetActive(false);
         m_SpactatorModeHolder.gameObject.SetActive(true);
         UpdateGameModeServerRpc(PlayerData.KuraGameMode.SpactatorMode);
-        m_PlayerData.currentSpactatorModeIndex = MainManager.Instance.FindSpactatorModeIndex(m_PlayerData.currentSpactatorModeIndex);
+        UpdateSpectatorModeIndexServerRPC(MainManager.Instance.FindSpactatorModeIndex(m_PlayerData.currentSpactatorModeIndex));
 
         m_MainCamera.gameObject.SetActive(false);
         MainManager.Instance.playerDataList[m_PlayerData.currentSpactatorModeIndex].MainCamera.SetActive(true);
+    }
+
+    [ServerRpc]
+    void UpdateSpectatorModeIndexServerRPC(int index)
+    {
+        m_PlayerData.currentSpactatorModeIndex = index;
     }
 
     [ServerRpc]

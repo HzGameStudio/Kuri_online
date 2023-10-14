@@ -5039,7 +5039,6 @@ MonoBehaviour:
   numPlayersInGame:
     m_InternalValue: 0
   sceneObjectsCache:
-    startButtonGameObject: {fileID: 0}
     playerIDText: {fileID: 1351579881}
     winnerText: {fileID: 1376665266}
     playerRunTimeText: {fileID: 1494586203}
@@ -5051,7 +5050,7 @@ MonoBehaviour:
   playerIds: 
   playerDataList: []
   numFinishedPlayers: 0
-  m_PlayerPrefab: {fileID: 598193417818329421, guid: 3abaae34ff7919e4d8fefdb6f11ec432, type: 3}
+  m_PlayerPrefab: {fileID: 5610264772952694332, guid: 3abaae34ff7919e4d8fefdb6f11ec432, type: 3}
 --- !u!1 &1376665264
 GameObject:
   m_ObjectHideFlags: 0
