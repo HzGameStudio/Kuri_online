@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using TMPro;
+using Unity.VisualScripting;
 
 // Class to stores general data about the player, it is also the only class that other classes can take data from
 // <PlayerUIManager> and <PlayerControl> should not be accessed by other classes
@@ -48,13 +49,21 @@ public class PlayerData : NetworkBehaviour
     [SerializeField]
     public GameObject MainCamera;
 
+    [DoNotSerialize, HideInInspector]
     public NetworkVariable<bool> finishedGame = new NetworkVariable<bool>(false);
+    [DoNotSerialize, HideInInspector]
     public NetworkVariable<int> playerID = new NetworkVariable<int>(-1);
+    [DoNotSerialize, HideInInspector]
     public NetworkVariable<int> placeInGame = new NetworkVariable<int>(-1);
+    [DoNotSerialize, HideInInspector]
     public NetworkVariable<float> playerRunTime = new NetworkVariable<float>(0);
+    [DoNotSerialize, HideInInspector]
     public NetworkVariable<KuraState> state = new NetworkVariable<KuraState>(KuraState.Fall);
+    [DoNotSerialize, HideInInspector]
     public NetworkVariable<KuraGameMode> gameMode = new NetworkVariable<KuraGameMode>(KuraGameMode.ClasicMode);
+    [DoNotSerialize, HideInInspector]
     public NetworkVariable<Vector3> spawnPosition = new NetworkVariable<Vector3>();
+    [DoNotSerialize, HideInInspector]
     public NetworkVariable<float> playerHealth = new NetworkVariable<float>(playerStartHealth);
 
     public void Update()

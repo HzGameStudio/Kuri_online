@@ -97,8 +97,11 @@ public class PlayerControl : NetworkBehaviour
 
     private float m_CurFlapRunTime = 0f;
 
+    [DoNotSerialize, HideInInspector]
     public NetworkVariable<Vector3> m_KuraPositionFromClient = new NetworkVariable<Vector3>();
+    [DoNotSerialize, HideInInspector]
     public NetworkVariable<int> m_KuraGravityDirectionFromClient = new NetworkVariable<int>();
+    [DoNotSerialize, HideInInspector]
     public NetworkVariable<Vector3> m_KuraVelocityFromClient = new NetworkVariable<Vector3>();
 
     private void Start()
@@ -172,6 +175,8 @@ public class PlayerControl : NetworkBehaviour
                     m_Transform.localScale = new Vector3(m_Transform.localScale.x, Math.Abs(m_Transform.localScale.y) * m_GravityDirection, m_Transform.localScale.z);
 
                     m_NFlips--;
+
+                    Debug.Log(this.GetType().ToString());
                 }
             }
         }
@@ -232,6 +237,8 @@ public class PlayerControl : NetworkBehaviour
 
     public void Damage(float damage)
     {
+        if (!IsOwner)
+            return;
         ChangePlayerHealthServerRPC(m_PlayerData.playerHealth.Value + damage);
         CheckHealth();
     }
@@ -278,6 +285,7 @@ public class PlayerControl : NetworkBehaviour
     {
         if (IsClient && IsOwner)
         {
+            CheckHealth();
             FixedUpdateClient();
 
             UpdatePositionOnServerRPC(transform.position, m_GravityDirection, m_RigidBody2d.velocity);
