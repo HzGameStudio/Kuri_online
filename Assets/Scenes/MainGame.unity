@@ -1133,7 +1133,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5277954101265765865, guid: 630cafd4c3702264abf605c07b0344a9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 141.62
+      value: 102.231926
       objectReference: {fileID: 0}
     - target: {fileID: 5277954101265765865, guid: 630cafd4c3702264abf605c07b0344a9, type: 3}
       propertyPath: m_LocalScale.y
@@ -1141,7 +1141,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5277954101265765865, guid: 630cafd4c3702264abf605c07b0344a9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.1
+      value: 31.7
       objectReference: {fileID: 0}
     - target: {fileID: 5277954101265765865, guid: 630cafd4c3702264abf605c07b0344a9, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1878,7 +1878,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5277954101265765865, guid: 630cafd4c3702264abf605c07b0344a9, type: 3}
       propertyPath: m_LocalScale.x
-      value: 141.62
+      value: 102.16412
       objectReference: {fileID: 0}
     - target: {fileID: 5277954101265765865, guid: 630cafd4c3702264abf605c07b0344a9, type: 3}
       propertyPath: m_LocalScale.y
@@ -1886,7 +1886,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5277954101265765865, guid: 630cafd4c3702264abf605c07b0344a9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 12.1
+      value: 31.9
       objectReference: {fileID: 0}
     - target: {fileID: 5277954101265765865, guid: 630cafd4c3702264abf605c07b0344a9, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1943,8 +1943,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 694019756}
-  - component: {fileID: 694019755}
   - component: {fileID: 694019754}
+  - component: {fileID: 694019755}
   - component: {fileID: 694019757}
   m_Layer: 0
   m_Name: Finish
@@ -4076,7 +4076,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b26f7f6dd9a5e4c4a963c4f764616935, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: -200
+  damage: 200
 --- !u!61 &1189388806
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5045,10 +5045,10 @@ MonoBehaviour:
     lobbyIDText: {fileID: 1470569737}
     kuraStatetext: {fileID: 1299542031}
     miniMapGameObject: {fileID: 1921264880}
-    SpactatorModeButton: {fileID: 1711747347}
-    SpactatorModeHolder: {fileID: 1085468946}
+    SpectatorModeButton: {fileID: 1711747347}
+    SpectatorModeHolder: {fileID: 1085468946}
   playerIds: 
-  playerDataList: []
+  PlayerMainList: []
   numFinishedPlayers: 0
   m_PlayerPrefab: {fileID: 5610264772952694332, guid: 3abaae34ff7919e4d8fefdb6f11ec432, type: 3}
 --- !u!1 &1376665264
@@ -6247,7 +6247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b26f7f6dd9a5e4c4a963c4f764616935, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: -200
+  damage: 200
 --- !u!61 &1672514898
 BoxCollider2D:
   m_ObjectHideFlags: 0

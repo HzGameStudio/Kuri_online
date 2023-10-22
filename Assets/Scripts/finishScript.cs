@@ -14,9 +14,7 @@ public class FinishScript : NetworkBehaviour
             {
                 MainManager.Instance.numFinishedPlayers++;
 
-                PlayerData playerData = collision.gameObject.GetComponent<PlayerData>();
-                playerData.placeInGame.Value = MainManager.Instance.numFinishedPlayers;
-                playerData.finishedGame.Value = true;
+                collision.gameObject.GetComponent<PlayerMain>().Finish();
             }
         }
     }

@@ -405,6 +405,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: LoadingManager
       objectReference: {fileID: 0}
+    - target: {fileID: 7820661804308544898, guid: 99a9b12340d2cee40b71f56f726d47eb, type: 3}
+      propertyPath: m_loadingStepTime
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 7820661804308544898, guid: 99a9b12340d2cee40b71f56f726d47eb, type: 3}
+      propertyPath: m_loadingStepValue
+      value: 0.02
+      objectReference: {fileID: 0}
     - target: {fileID: 7820661804308544958, guid: 99a9b12340d2cee40b71f56f726d47eb, type: 3}
       propertyPath: m_Pivot.x
       value: 0

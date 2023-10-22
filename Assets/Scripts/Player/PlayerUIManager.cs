@@ -11,9 +11,7 @@ using System;
 // Class to manage the UI of the player
 public class PlayerUIManager : NetworkBehaviour
 {
-    private PlayerData m_PlayerData;
-
-    private GameObject m_StartGameButton;
+    private PlayerMain m_PlayerMain;
 
     private TextMeshProUGUI m_PlayerIDText;
 
@@ -29,6 +27,8 @@ public class PlayerUIManager : NetworkBehaviour
 
     private GameObject m_SpactatorModeHolder;
 
+    private GameObject m_MiniMapGameObject;
+
     [SerializeField]
     public GameObject CameraHolder;
 
@@ -38,12 +38,9 @@ public class PlayerUIManager : NetworkBehaviour
     [SerializeField]
     private Camera m_MiniMapCamera;
 
-    [SerializeField]
-    private GameObject m_MiniMapGameObject;
-
     private void Start()
     {
-        m_PlayerData = GetComponent<PlayerData>();
+        m_PlayerMain = GetComponent<PlayerMain>();
 
         m_PlayerIDText = MainManager.Instance.sceneObjectsCache.playerIDText;
         m_WinnerText = MainManager.Instance.sceneObjectsCache.winnerText;
@@ -51,13 +48,13 @@ public class PlayerUIManager : NetworkBehaviour
         m_LobbyIDText = MainManager.Instance.sceneObjectsCache.lobbyIDText;
         m_KuraStatetext = MainManager.Instance.sceneObjectsCache.kuraStatetext;
         m_MiniMapGameObject = MainManager.Instance.sceneObjectsCache.miniMapGameObject;
-        m_SpactatorModeButton = MainManager.Instance.sceneObjectsCache.SpactatorModeButton;
-        m_SpactatorModeHolder = MainManager.Instance.sceneObjectsCache.SpactatorModeHolder;
+        m_SpactatorModeButton = MainManager.Instance.sceneObjectsCache.SpectatorModeButton;
+        m_SpactatorModeHolder = MainManager.Instance.sceneObjectsCache.SpectatorModeHolder;
 
         if (IsClient && IsOwner)
         {
             m_PlayerIDText.gameObject.SetActive(true);
-            m_PlayerIDText.text = m_PlayerData.playerID.Value.ToString();
+            m_PlayerIDText.text = m_PlayerMain.localData.playerID.ToString();
 
             m_RunTimeText.gameObject.SetActive(true);
 
@@ -77,71 +74,54 @@ public class PlayerUIManager : NetworkBehaviour
             }
 
             m_MiniMapGameObject.SetActive(true);
-            m_SpactatorModeButton.GetComponent<Button>().onClick.AddListener(ActivateSpactatorMode);
         }
-
-        m_PlayerData.placeInGame.OnValueChanged += OnPlaceInGameChanged;
-        m_PlayerData.state.OnValueChanged += OnKuraStateChanged;
-    }
-
-    private void OnIsGameRunningChanged(bool previous, bool current)
-    {
-        if (current == true)
-        {
-            m_StartGameButton.SetActive(false);
-        }
-    }
-
-    private void OnPlaceInGameChanged(int previous, int current)
-    {
-        if (IsClient && IsOwner)
-        {
-            if (m_PlayerData.placeInGame.Value != -1)
-            {
-                m_WinnerText.gameObject.SetActive(true);
-                m_WinnerText.text = "YOU WON " + m_PlayerData.placeInGame.Value.ToString() + " PLACE!!!";
-                m_SpactatorModeButton.SetActive(true);
-                m_PlayerIDText.gameObject.SetActive(false);
-                m_LobbyIDText.gameObject.SetActive(false);
-                m_KuraStatetext.gameObject.SetActive(false);
-            }
-        }
-    }
-
-    private void OnKuraStateChanged(PlayerData.KuraState previous, PlayerData.KuraState current)
-    {
-        if (IsClient && IsOwner)
-        {
-            m_KuraStatetext.text = m_PlayerData.state.Value.ToString();
-        }
-    }
-
-    public void ActivateSpactatorMode()
-    {
-        m_SpactatorModeButton.SetActive(false);
-        m_SpactatorModeHolder.gameObject.SetActive(true);
-        UpdateGameModeServerRpc(PlayerData.KuraGameMode.SpactatorMode);
-        UpdateSpectatorModeIndexServerRPC(MainManager.Instance.FindSpactatorModeIndex(m_PlayerData.currentSpactatorModeIndex));
-
-        m_MainCamera.gameObject.SetActive(false);
-        MainManager.Instance.playerDataList[m_PlayerData.currentSpactatorModeIndex].MainCamera.SetActive(true);
-    }
-
-    [ServerRpc]
-    void UpdateSpectatorModeIndexServerRPC(int index)
-    {
-        m_PlayerData.currentSpactatorModeIndex = index;
-    }
-
-    [ServerRpc]
-    public void UpdateGameModeServerRpc(PlayerData.KuraGameMode KuraGameMode)
-    {
-        m_PlayerData.gameMode.Value = KuraGameMode;
     }
 
     private void Update()
     {
-        String temp = Math.Floor(m_PlayerData.playerRunTime.Value / 60f).ToString() + ":" + Math.Floor(m_PlayerData.playerRunTime.Value % 60f).ToString() + "." + Math.Floor(m_PlayerData.playerRunTime.Value * 10) % 10 + Math.Floor(m_PlayerData.playerRunTime.Value * 100) % 10;
-        MainManager.Instance.sceneObjectsCache.playerRunTimeText.text = temp;
+        m_KuraStatetext.text = m_PlayerMain.localData.state.ToString();
+
+        m_RunTimeText.text = Math.Floor(m_PlayerMain.localData.playerRunTime / 60f).ToString() + ":" + Math.Floor(m_PlayerMain.localData.playerRunTime % 60f).ToString() + "." + Math.Floor(m_PlayerMain.localData.playerRunTime * 10) % 10 + Math.Floor(m_PlayerMain.localData.playerRunTime * 100) % 10;
+    }
+
+    public void Finish()
+    {
+        m_WinnerText.gameObject.SetActive(true);
+        m_WinnerText.text = "YOU WON " + m_PlayerMain.localData.placeInGame.ToString() + " PLACE!!!";
+        m_SpactatorModeButton.SetActive(true);
+
+        m_PlayerIDText.gameObject.SetActive(false);
+        m_LobbyIDText.gameObject.SetActive(false);
+        m_KuraStatetext.gameObject.SetActive(false);
+    }
+
+    public void ActivateSpectatorMode()
+    {
+        m_SpactatorModeButton.SetActive(false);
+        m_SpactatorModeHolder.gameObject.SetActive(true);
+    }
+
+    public void ChangeSpectateCamera(int prev)
+    {
+        if (m_PlayerMain.localData.spectatorIndex == -1)
+            return;
+        
+        // deactive own camera (for when spectator mode is activating)
+        m_MainCamera.gameObject.SetActive(false);
+
+        if (prev != -1)
+            MainManager.Instance.PlayerMainList[prev].DeactivateCamera();
+
+        MainManager.Instance.PlayerMainList[m_PlayerMain.localData.spectatorIndex].ActivateCamera();
+    }
+
+    public void ActivateCamera()
+    {
+        m_MainCamera.gameObject.SetActive(true);
+    }
+
+    public void DeactivateCamera()
+    {
+        m_MainCamera.gameObject.SetActive(false);
     }
 }

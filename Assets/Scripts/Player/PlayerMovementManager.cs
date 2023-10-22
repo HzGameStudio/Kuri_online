@@ -10,10 +10,34 @@ using System.Linq;
 using Unity.VisualScripting;
 using System.Runtime.CompilerServices;
 using UnityEngine.PlayerLoop;
+using UnityEngine.UIElements;
 
 // Class to controls kura's movement
-public class PlayerControl : NetworkBehaviour
+public class PlayerMovementManager : NetworkBehaviour
 {
+    public struct KuraTransfromData : INetworkSerializable
+    {
+        public KuraTransfromData (Vector3 positionIn,
+                           int gravityDirectionIn,
+                           Vector3 velocityIn)
+        {
+            position = positionIn;
+            gravityDirection = gravityDirectionIn;
+            velocity = velocityIn;
+        }
+
+        public Vector3 position;
+        public int gravityDirection;
+        public Vector3 velocity;
+
+        public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
+        {
+            serializer.SerializeValue(ref position);
+            serializer.SerializeValue(ref gravityDirection);
+            serializer.SerializeValue(ref velocity);
+        }
+    }
+
     // Boost tracking veriables
     private bool m_IsSpeedBoosted = false;
     private float m_CurSpeedBoostTime = 0;
@@ -54,7 +78,7 @@ public class PlayerControl : NetworkBehaviour
 
     // square transform, not player transform
     [SerializeField]
-    private Transform m_Transform;
+    private Transform m_SkinTransform;
 
     [SerializeField]
     private GameObject m_RedKura;
@@ -62,9 +86,9 @@ public class PlayerControl : NetworkBehaviour
     [SerializeField]
     private GameObject m_BlueKura;
 
-    private PlayerData m_PlayerData;
+    private PlayerMain m_PlayerMain;
 
-    private PlayerUIManager m_PlayerUIManagre;
+    private PlayerUIManager m_PlayerUIManager;
 
     // Logic
 
@@ -98,20 +122,14 @@ public class PlayerControl : NetworkBehaviour
     private float m_CurFlapRunTime = 0f;
 
     [DoNotSerialize, HideInInspector]
-    public NetworkVariable<Vector3> m_KuraPositionFromClient = new NetworkVariable<Vector3>();
-    [DoNotSerialize, HideInInspector]
-    public NetworkVariable<int> m_KuraGravityDirectionFromClient = new NetworkVariable<int>();
-    [DoNotSerialize, HideInInspector]
-    public NetworkVariable<Vector3> m_KuraVelocityFromClient = new NetworkVariable<Vector3>();
+    private NetworkVariable<KuraTransfromData> transformFromClient = new NetworkVariable<KuraTransfromData>();
 
     private void Start()
     {
         //Time.timeScale = 0.5f;
 
-        m_PlayerData = GetComponent<PlayerData>();
-        m_PlayerUIManagre = GetComponent<PlayerUIManager>();
-
-        MainManager.Instance.playerDataList.Add(m_PlayerData);
+        m_PlayerMain = GetComponent<PlayerMain>();
+        m_PlayerUIManager = GetComponent<PlayerUIManager>();
 
         //this makes you see yourself as a blue kura
         //while other players are red 
@@ -126,11 +144,7 @@ public class PlayerControl : NetworkBehaviour
             m_BlueKura.SetActive(false);
         }
 
-        m_PlayerData.finishedGame.OnValueChanged += OnFinishedGameChanged;
-
-        m_KuraPositionFromClient.OnValueChanged += OnKuraPositionFromClientChanged;
-        m_KuraGravityDirectionFromClient.OnValueChanged += OnKuraGravityFromClientChanged;
-        m_KuraVelocityFromClient.OnValueChanged += OnKuraVelocityFromClientChanged;
+        transformFromClient.OnValueChanged += OnKuraTransformDataFromClientChanged;
     }
 
     private void Update()
@@ -143,139 +157,92 @@ public class PlayerControl : NetworkBehaviour
         }
     }
 
-    // separate process input and move 
-    /*
-      m_GravityDirection *= -1;
-                    m_RigidBody2d.gravityScale = m_GravityDirection * m_GravityMultiplier;
-
-                    // change kura skin orientation
-                    m_Transform.localScale = new Vector3(m_Transform.localScale.x, m_Transform.localScale.y * -1, m_Transform.localScale.z);
-    */
     private void ProcessLocalPlayerInput()
     {
-        if(m_PlayerData.gameMode.Value == PlayerData.KuraGameMode.ClasicMode)
-        {
-            if (m_PlayerData.finishedGame.Value)
-                return;
+        if (!(m_PlayerMain.localData.gameMode == KuraGameMode.ClasicMode))
+            return;
 
-            //CheckHealth();
+        if (m_PlayerMain.localData.finishedGame)
+            return;
 
-            // Process client's request to jump
-            if (m_Request)
-            {
-                m_Request = false;
+        if (!m_Request)
+            return;
 
-                // Flip
-                if (m_NFlips > 0)
-                {
-                    m_GravityDirection *= -1;
-                    m_RigidBody2d.gravityScale = m_GravityDirection * m_GravityMultiplier;
+        // Process client's request to jump
+        m_Request = false;
 
-                    // change kura skin orientation
-                    m_Transform.localScale = new Vector3(m_Transform.localScale.x, Math.Abs(m_Transform.localScale.y) * m_GravityDirection, m_Transform.localScale.z);
+        //Debug.Log("aaaaa 4");
+        // Flip
+        if (m_NFlips <= 0)
+            return;
 
-                    m_NFlips--;
+        //Debug.Log("aaaaa 5");
 
-                    Debug.Log(this.GetType().ToString());
-                }
-            }
-        }
+        m_NFlips--;
+
+        m_GravityDirection *= -1;
+
+        //if (IsOwner) Debug.Log("ccccc 3");
+
+        Flip(m_GravityDirection);
     }
 
-    void OnKuraPositionFromClientChanged(Vector3 previous, Vector3 current)
+    private void Flip(int gravityDirection)
     {
-        if (!(IsOwner || IsServer))
-        {
-            transform.position = current;
-        }
+        //if (IsOwner) Debug.Log("aaaaa 6");
+        m_RigidBody2d.gravityScale = gravityDirection * m_GravityMultiplier;
+
+        //if (IsOwner) Debug.Log("aaaaa 7");
+
+        // change kura skin orientation
+        m_SkinTransform.localScale = new Vector3(m_SkinTransform.localScale.x, Math.Abs(m_SkinTransform.localScale.y) * gravityDirection, m_SkinTransform.localScale.z);
     }
 
-    void OnKuraGravityFromClientChanged(int previous, int current)
-    {
-        if (!(IsOwner || IsServer))
-        {
-            m_RigidBody2d.gravityScale = current * m_GravityMultiplier;
-
-            // change kura skin orientation
-            m_Transform.localScale = new Vector3(m_Transform.localScale.x, Math.Abs(m_Transform.localScale.y) * current, m_Transform.localScale.z);
-        }
-    }
-
-    void OnKuraVelocityFromClientChanged(Vector3 previous, Vector3 current)
-    {
-        if (!(IsOwner || IsServer))
-        {
-            m_RigidBody2d.velocity = current;
-        }
-    }
-
-    private void TakeDamageFromPlatmorm()
+    private void TakePeriodicDamageFromPlatmorm()
     {
         PlatformBasicScript platformData;
         foreach(Tuple<GameObject, int> platform in m_TouchingObjects)
         {
-            if(true)
+            // check if it's a platform (doesn't work right now ?)
+            if (false)
+                return;
+
+            platformData = platform.Item1.GetComponent<PlatformBasicScript>();
+            if(platformData.isDamageTimerRuning)
             {
-                platformData = platform.Item1.GetComponent<PlatformBasicScript>();
-                if(platformData.isDamageTimerRuning)
+                platformData.currentTime += Time.fixedDeltaTime;
+                if(platformData.currentTime >= platformData.platformData.deltaTimeDamage)
                 {
-                    platformData.currentTime += Time.fixedDeltaTime;
-                    if(platformData.currentTime >= platformData.platformData.deltaTimeDamage)
-                    {
-                        platformData.isDamageTimerRuning = false;
-                        platformData.currentTime = 0;
-                    }
+                    platformData.isDamageTimerRuning = false;
+                    platformData.currentTime = 0;
                 }
-                else
-                {
-                    Damage(platformData.platformData.instanteDamage);
-                    platformData.isDamageTimerRuning = true;
-                }
+            }
+            else
+            {
+                m_PlayerMain.Damage(platformData.platformData.damage);
+                platformData.isDamageTimerRuning = true;
             }
         }
     }
 
-    public void Damage(float damage)
+    public void Respawn()
     {
-        if (!IsOwner)
-            return;
-        ChangePlayerHealthServerRPC(m_PlayerData.playerHealth.Value + damage);
-        CheckHealth();
-    }
-
-    private void CheckHealth()
-    {
-        if(m_PlayerData.playerHealth.Value < 0)
-        {
-            //Dead
-            Respawn();
-        }
-    }
-
-    private void Respawn()
-    { 
-        transform.position = m_PlayerData.spawnPosition.Value;
-        ChangePlayerHealthServerRPC(PlayerData.playerStartHealth);
-    }
-
-    [ServerRpc]
-    void ChangePlayerHealthServerRPC(float health)
-    {
-        m_PlayerData.playerHealth.Value = health;
+        transform.position = m_PlayerMain.localData.spawnPosition;
     }
 
     private void TakeInput()
     {
-        if (m_PlayerData.gameMode.Value == PlayerData.KuraGameMode.ClasicMode)
+        if (!(m_PlayerMain.localData.gameMode == KuraGameMode.ClasicMode))
+            return;
+
+        if (m_PlayerMain.localData.finishedGame)
+            return;
+
+        // Request to flip
+        if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
         {
-            if (m_PlayerData.finishedGame.Value == false)
-            {
-                // Request to flip
-                if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
-                {
-                    m_Request = true;
-                }
-            }
+            //Debug.Log("bbbbb 4");
+            m_Request = true;
         }
 
         Debug.DrawLine(transform.position, new Vector3(transform.position.x + m_RigidBody2d.velocity.x, transform.position.y, transform.position.z), Color.red, 1 / 300f);
@@ -285,38 +252,39 @@ public class PlayerControl : NetworkBehaviour
     {
         if (IsClient && IsOwner)
         {
-            CheckHealth();
-            FixedUpdateClient();
+            ProcessMovement();
 
-            UpdatePositionOnServerRPC(transform.position, m_GravityDirection, m_RigidBody2d.velocity);
+            TakePeriodicDamageFromPlatmorm();
+
+            UpdatePositionOnServerRPC(new KuraTransfromData(transform.position, m_GravityDirection, m_RigidBody2d.velocity));
         }
     }
 
     [ServerRpc]
-    void UpdatePositionOnServerRPC(Vector3 pos, int gravity_direction, Vector3 velocity)
+    void UpdatePositionOnServerRPC(KuraTransfromData localTransformData)
     {
-        m_KuraPositionFromClient.Value = pos;
-        m_KuraGravityDirectionFromClient.Value = gravity_direction;
-        m_KuraVelocityFromClient.Value = velocity;
+        transformFromClient.Value = localTransformData;
 
-        transform.position = pos;
-        m_RigidBody2d.gravityScale = gravity_direction * m_GravityMultiplier;
+        if (IsOwner)
+            return;
 
-        // change kura skin orientation
-        m_Transform.localScale = new Vector3(m_Transform.localScale.x, Math.Abs(m_Transform.localScale.y) * gravity_direction, m_Transform.localScale.z);
+        transform.position = localTransformData.position;
+        m_RigidBody2d.velocity = localTransformData.velocity;
+        m_GravityDirection = localTransformData.gravityDirection;
 
-        m_RigidBody2d.velocity = velocity;
+        //if (IsOwner) Debug.Log("ccccc 1");
+
+        Flip(localTransformData.gravityDirection);
     }
 
-    private void FixedUpdateClient()
+    private void ProcessMovement()
     {
-        if (m_PlayerData.gameMode.Value == PlayerData.KuraGameMode.ClasicMode)
+        if (m_PlayerMain.localData.gameMode == KuraGameMode.ClasicMode)
         { 
-            if (m_PlayerData.finishedGame.Value) return;
+            if (m_PlayerMain.localData.finishedGame)
+                return;
 
-            PlayerData.KuraState state;
-
-            TakeDamageFromPlatmorm();
+            KuraState state;
 
             bool onFloor = m_TouchingObjects.Any(platform => (m_GravityDirection == 1 && platform.Item2 == 2) ||
                                                                (m_GravityDirection == -1 && platform.Item2 == 0));
@@ -326,9 +294,9 @@ public class PlayerControl : NetworkBehaviour
             if (kissWall)
             {
                 if (onFloor)
-                    state = PlayerData.KuraState.Stand;
+                    state = KuraState.Stand;
                 else
-                    state = PlayerData.KuraState.Fall;
+                    state = KuraState.Fall;
             }
             else
             {
@@ -352,45 +320,45 @@ public class PlayerControl : NetworkBehaviour
 
                     if (m_RigidBody2d.velocity.x < m_MinFlyVelocity)
                     {
-                        state = PlayerData.KuraState.Run;
+                        state = KuraState.Run;
                     }
                     else if (m_RigidBody2d.velocity.x <= platformData.MaxRunVelocity)
                     {
-                        state = PlayerData.KuraState.ReadyRun;
+                        state = KuraState.ReadyRun;
                     }
                     else
                     {
                         if (m_CurFlapRunTime <= platformData.MaxFlapRunTime)
                         {
-                            state = PlayerData.KuraState.FlapRun;
+                            state = KuraState.FlapRun;
                             m_CurFlapRunTime += Time.fixedDeltaTime;
                         }
                         else
                         {
-                            state = PlayerData.KuraState.ReadyRun;
+                            state = KuraState.ReadyRun;
                         }
                     }
                 }
                 else
                 {
                     if (m_RigidBody2d.velocity.x < m_MinFlyVelocity)
-                        state = PlayerData.KuraState.Fall;
+                        state = KuraState.Fall;
                     else if (m_RigidBody2d.velocity.x <= m_MaxFlyVelocity)
-                        state = PlayerData.KuraState.Fly;
+                        state = KuraState.Fly;
                     else
-                        state = PlayerData.KuraState.Glide;
+                        state = KuraState.Glide;
                 }
             }
 
-            if (state == PlayerData.KuraState.Stand)
+            if (state == KuraState.Stand)
             {
 
             }
-            else if (state == PlayerData.KuraState.Fall)
+            else if (state == KuraState.Fall)
             {
 
             }
-            else if (state == PlayerData.KuraState.Run)
+            else if (state == KuraState.Run)
             {
                 Tuple<GameObject, int> feetPlatform = FindFeetPlatform();
 
@@ -401,7 +369,7 @@ public class PlayerControl : NetworkBehaviour
                     m_RigidBody2d.AddForce(Vector2.right * platformData.RunForce);
                 }
             }
-            else if (state == PlayerData.KuraState.ReadyRun)
+            else if (state == KuraState.ReadyRun)
             {
                 Tuple<GameObject, int> feetPlatform = FindFeetPlatform();
 
@@ -418,16 +386,16 @@ public class PlayerControl : NetworkBehaviour
                     }
                 }
             }
-            else if (state == PlayerData.KuraState.FlapRun)
+            else if (state == KuraState.FlapRun)
             {
 
             }
-            else if (state == PlayerData.KuraState.Fly)
+            else if (state == KuraState.Fly)
             {
                 if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
                     m_RigidBody2d.AddForce(Vector2.right * m_FlyForce);
             }
-            else if (state == PlayerData.KuraState.Glide)
+            else if (state == KuraState.Glide)
             {
                 if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
                     m_RigidBody2d.AddForce(Vector2.left * m_FlyBrakeForce);
@@ -437,14 +405,8 @@ public class PlayerControl : NetworkBehaviour
                 Debug.Log("No kura state ???");
             }
 
-            UpdateKuraStateOnServerRPC(state);
+            m_PlayerMain.localData.state = state;
         }
-    }
-
-    [ServerRpc]
-    void UpdateKuraStateOnServerRPC(PlayerData.KuraState state)
-    {
-        m_PlayerData.state.Value = state;
     }
 
     // Function that finds the feet platform, returns the first platform that is below kura's legs
@@ -467,12 +429,13 @@ public class PlayerControl : NetworkBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!(IsClient && IsOwner)) return;
+        if (!(IsClient && IsOwner))
+            return;
 
         // Check if the platform hit is eligible to give a flip
         if (Array.Exists(m_FlipTagList, element => collision.gameObject.CompareTag(element)))
         {
-            m_NFlips ++;
+            m_NFlips++;
             m_NFlips = Math.Min(m_NFlips, m_MaxFlips);
         }
 
@@ -521,7 +484,8 @@ public class PlayerControl : NetworkBehaviour
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (!(IsClient && IsOwner)) return;
+        if (!(IsClient && IsOwner))
+            return;
 
         // Remove the object kura is not touching anymore from the list
         m_TouchingObjects.RemoveAt(m_TouchingObjects.FindIndex(e => e.Item1 == collision.gameObject));
@@ -535,13 +499,27 @@ public class PlayerControl : NetworkBehaviour
     }
 
     // Stop kura when it finishes
-    private void OnFinishedGameChanged(bool previous, bool current)
+    public void Finish()
     {
-        if ((IsClient && IsOwner))
-        {
-            m_RigidBody2d.gravityScale = 0;
-            m_RigidBody2d.velocity = Vector2.zero;
-            transform.position += new Vector3(UnityEngine.Random.Range(m_FinishTPDistance.x, m_FinishTPDistance.y), 0f, 0f);
-        }
+        if (!(IsClient && IsOwner))
+            return;
+
+        m_RigidBody2d.gravityScale = 0;
+        m_RigidBody2d.velocity = Vector2.zero;
+        transform.position += new Vector3(UnityEngine.Random.Range(m_FinishTPDistance.x, m_FinishTPDistance.y), 0f, 0f);
+    }
+
+    void OnKuraTransformDataFromClientChanged(KuraTransfromData previous, KuraTransfromData current)
+    {
+        if (IsOwner || IsServer)
+            return;
+
+        transform.position = current.position;
+        m_RigidBody2d.velocity = current.velocity;
+        m_GravityDirection = current.gravityDirection;
+
+        //if (IsOwner) Debug.Log("ccccc 2");
+
+        Flip(current.gravityDirection);
     }
 }

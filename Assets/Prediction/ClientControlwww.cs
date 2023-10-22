@@ -47,7 +47,6 @@ public class ClientControl : NetworkBehaviour
 
     void Move(Vector2 input)
     {
-        float acseleration = 9;
         rb.AddForce(input * 5f);
     }
 

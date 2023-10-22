@@ -689,27 +689,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 5610264772952694332}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d03b72cfff461cf43b7b7e49283654d7, type: 3}
+  m_Script: {fileID: 11500000, guid: e1ae76d7f6ff3604fa4c89fcbb5a793f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentSpactatorModeIndex: 0
-  MainCamera: {fileID: 7514377989035492464}
-  finishedGame:
-    m_InternalValue: 0
-  playerID:
-    m_InternalValue: -1
-  placeInGame:
-    m_InternalValue: -1
-  playerRunTime:
-    m_InternalValue: 0
-  state:
-    m_InternalValue: 1
-  gameMode:
-    m_InternalValue: 0
-  spawnPosition:
-    m_InternalValue: {x: 0, y: 0, z: 0}
-  playerHealth:
-    m_InternalValue: 100
 --- !u!114 &5484463939785066817
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -725,7 +707,6 @@ MonoBehaviour:
   CameraHolder: {fileID: 1618779326091119150}
   m_MainCamera: {fileID: 7989961002060566627}
   m_MiniMapCamera: {fileID: 3383014660475100679}
-  m_MiniMapGameObject: {fileID: 0}
 --- !u!114 &7794840999984759703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -747,7 +728,7 @@ MonoBehaviour:
   m_GravityMultiplier: 2
   m_BoxCollider2D: {fileID: 6058774516315531929}
   m_RigidBody2d: {fileID: 6603135422187617233}
-  m_Transform: {fileID: 6055612317633711326}
+  m_SkinTransform: {fileID: 6055612317633711326}
   m_RedKura: {fileID: 3978256245191091843}
   m_BlueKura: {fileID: 1876569059197966394}
   m_FlipTagList:
@@ -755,8 +736,6 @@ MonoBehaviour:
   - player
   m_MaxFlips: 1
   m_FinishTPDistance: {x: 2, y: 10}
-  m_KuraPositionFromClient:
-    m_InternalValue: {x: 0, y: 0, z: 0}
 --- !u!50 &6603135422187617233
 Rigidbody2D:
   serializedVersion: 4

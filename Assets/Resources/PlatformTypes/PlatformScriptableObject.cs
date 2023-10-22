@@ -18,7 +18,7 @@ public class PlatformScreaptebleObject : ScriptableObject
 
     public float RunBrakeForce;
 
-    public float instanteDamage;
+    public float damage;
 
     public float deltaTimeDamage; //time betwen to damages
 }

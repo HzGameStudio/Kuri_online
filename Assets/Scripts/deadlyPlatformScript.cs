@@ -9,10 +9,10 @@ public class deadlyPlatformScript : MonoBehaviour
     {
         if (collision == null) return;
 
-        if(collision.gameObject.CompareTag("player"))
+        if (collision.gameObject.CompareTag("player"))
         {
             Debug.Log("Damage");
-            collision.gameObject.GetComponent<PlayerControl>().Damage(damage);
+            collision.gameObject.GetComponent<PlayerMain>().Damage(damage);
         }
     }
 }

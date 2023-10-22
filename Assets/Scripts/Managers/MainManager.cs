@@ -18,8 +18,8 @@ public struct MainSceneObjectsCache
     public TextMeshProUGUI lobbyIDText;
     public TextMeshProUGUI kuraStatetext;
     public GameObject miniMapGameObject;
-    public GameObject SpactatorModeButton;
-    public GameObject SpactatorModeHolder;
+    public GameObject SpectatorModeButton;
+    public GameObject SpectatorModeHolder;
 }
 
 public class MainManager : SingletonNetwork<MainManager>
@@ -32,7 +32,7 @@ public class MainManager : SingletonNetwork<MainManager>
 
     public List<ulong> playerIds = new List<ulong>();
 
-    public List<PlayerData> playerDataList = new List<PlayerData>();
+    public List<PlayerMain> PlayerMainList = new List<PlayerMain>();
 
     // All positions that a player can spawn in
     private List<Vector3> m_SpawnPosTransformList = new List<Vector3>();
@@ -71,9 +71,9 @@ public class MainManager : SingletonNetwork<MainManager>
     {
         if(currentIndex == -1)
         {
-            for (int i = 1; i <= playerDataList.Count; i++) 
+            for (int i = 1; i <= PlayerMainList.Count; i++) 
             {
-                if (!playerDataList[(currentIndex + i) % playerDataList.Count].finishedGame.Value)
+                if (!PlayerMainList[(currentIndex + i) % PlayerMainList.Count].serverData.Value.finishedGame)
                     return currentIndex + i;
             }
         }
@@ -85,6 +85,8 @@ public class MainManager : SingletonNetwork<MainManager>
         numPlayersInGame.Value++;
 
         playerIds.Add(clientId);
+
+        Debug.Log("Adding client " + clientId);
 
         // Check if is the last client
         if (numPlayersInGame.Value != NetworkManager.Singleton.ConnectedClients.Count)
@@ -104,9 +106,15 @@ public class MainManager : SingletonNetwork<MainManager>
 
         Shuffle<Vector3>(m_CurGameSpawnPosTransformList);
 
+        Debug.Log("Players in game " + numPlayersInGame.Value);
+
         for (int i = 0; i < numPlayersInGame.Value; i++)
         {
             Vector3 spawnPos = GetSpawnPosition();
+
+            Debug.Log("Spawn pos " + spawnPos);
+
+            Debug.Log("Player ID " + playerIds[i]);
 
             GameObject go = NetworkObjectSpawner.SpawnNewNetworkObjectAsPlayerObject(
                 m_PlayerPrefab,
@@ -114,9 +122,19 @@ public class MainManager : SingletonNetwork<MainManager>
                 playerIds[i],
                 true);
 
-            PlayerData pd = go.GetComponent<PlayerData>();
-            pd.playerID.Value = i + 1;
-            pd.spawnPosition.Value = spawnPos;
+            Debug.Log("Game object " + go);
+
+            PlayerMain pm = go.GetComponent<PlayerMain>();
+
+            ClientRpcParams clientRpcParams = new ClientRpcParams
+            {
+                Send = new ClientRpcSendParams
+                {
+                    TargetClientIds = new ulong[] { playerIds[i] }
+                }
+            };
+
+            pm.SendKuraDataToClientRPC(i + 1, spawnPos, clientRpcParams);
         }
     }
 }
