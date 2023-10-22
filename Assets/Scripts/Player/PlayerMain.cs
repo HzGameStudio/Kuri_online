@@ -7,8 +7,6 @@ using Unity.VisualScripting;
 using System;
 using UnityEngine.UI;
 
-
-
 public enum KuraState
 {
     //Kissing a wall, ground
@@ -109,6 +107,7 @@ public class PlayerMain : NetworkBehaviour
         MainManager.Instance.PlayerMainList.Add(this);
 
         MainManager.Instance.sceneObjectsCache.SpectatorModeButton.GetComponent<Button>().onClick.AddListener(ActivateSpactatorMode);
+        MainManager.Instance.sceneObjectsCache.SpectatorModeHolder.GetComponentInChildren<Button>().onClick.AddListener(SpectateNextPlayer);
     }
 
     public override void OnNetworkSpawn()

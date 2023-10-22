@@ -154,6 +154,24 @@ public class PlayerMovementManager : NetworkBehaviour
             TakeInput();
 
             ProcessLocalPlayerInput();
+
+            Debug.DrawLine(transform.position, new Vector3(transform.position.x + m_RigidBody2d.velocity.x, transform.position.y, transform.position.z), Color.red, 1 / 300f);
+        }
+    }
+
+    private void TakeInput()
+    {
+        if (!(m_PlayerMain.localData.gameMode == KuraGameMode.ClasicMode))
+            return;
+
+        if (m_PlayerMain.localData.finishedGame)
+            return;
+
+        // Request to flip
+        if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
+        {
+            //Debug.Log("bbbbb 4");
+            m_Request = true;
         }
     }
 
@@ -228,24 +246,6 @@ public class PlayerMovementManager : NetworkBehaviour
     public void Respawn()
     {
         transform.position = m_PlayerMain.localData.spawnPosition;
-    }
-
-    private void TakeInput()
-    {
-        if (!(m_PlayerMain.localData.gameMode == KuraGameMode.ClasicMode))
-            return;
-
-        if (m_PlayerMain.localData.finishedGame)
-            return;
-
-        // Request to flip
-        if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
-        {
-            //Debug.Log("bbbbb 4");
-            m_Request = true;
-        }
-
-        Debug.DrawLine(transform.position, new Vector3(transform.position.x + m_RigidBody2d.velocity.x, transform.position.y, transform.position.z), Color.red, 1 / 300f);
     }
 
     private void FixedUpdate()
@@ -513,6 +513,8 @@ public class PlayerMovementManager : NetworkBehaviour
     {
         if (IsOwner || IsServer)
             return;
+
+        // move the following lines to function (to not duplicate code)
 
         transform.position = current.position;
         m_RigidBody2d.velocity = current.velocity;

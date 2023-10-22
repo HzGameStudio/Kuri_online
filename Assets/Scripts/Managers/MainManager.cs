@@ -8,6 +8,7 @@ using Unity.Collections;
 using UnityEngine.UI;
 using System.Linq;
 using System;
+using static UnityEditor.PlayerSettings;
 
 [Serializable]
 public struct MainSceneObjectsCache
@@ -69,13 +70,10 @@ public class MainManager : SingletonNetwork<MainManager>
 
     public int FindSpactatorModeIndex(int currentIndex)
     {
-        if(currentIndex == -1)
+        for (int i = 1; i <= PlayerMainList.Count; i++) 
         {
-            for (int i = 1; i <= PlayerMainList.Count; i++) 
-            {
-                if (!PlayerMainList[(currentIndex + i) % PlayerMainList.Count].serverData.Value.finishedGame)
-                    return currentIndex + i;
-            }
+            if (!PlayerMainList[(currentIndex + i) % PlayerMainList.Count].serverData.Value.finishedGame)
+                return (currentIndex + i) % PlayerMainList.Count;
         }
         return currentIndex;
     }

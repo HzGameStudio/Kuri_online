@@ -79,10 +79,12 @@ public class PlayerUIManager : NetworkBehaviour
 
     private void Update()
     {
+        if (!(IsClient && IsOwner))
+            return;
+
         m_KuraStatetext.text = m_PlayerMain.localData.state.ToString();
 
-        m_RunTimeText.text = Math.Floor(m_PlayerMain.localData.playerRunTime / 60f).ToString() + ":" + Math.Floor(m_PlayerMain.localData.playerRunTime % 60f).ToString() + "." + Math.Floor(m_PlayerMain.localData.playerRunTime * 10) % 10 + Math.Floor(m_PlayerMain.localData.playerRunTime * 100) % 10;
-    }
+        m_RunTimeText.text = Math.Floor(m_PlayerMain.localData.playerRunTime / 60f).ToString() + ":" + Math.Floor(m_PlayerMain.localData.playerRunTime % 60f).ToString() + "." + Math.Floor(m_PlayerMain.localData.playerRunTime * 10) % 10 + Math.Floor(m_PlayerMain.localData.playerRunTime * 100) % 10;    }
 
     public void Finish()
     {
