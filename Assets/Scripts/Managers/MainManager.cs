@@ -8,7 +8,6 @@ using Unity.Collections;
 using UnityEngine.UI;
 using System.Linq;
 using System;
-using static UnityEditor.PlayerSettings;
 
 [Serializable]
 public struct MainSceneObjectsCache

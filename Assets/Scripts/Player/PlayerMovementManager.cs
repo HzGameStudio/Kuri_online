@@ -19,21 +19,25 @@ public class PlayerMovementManager : NetworkBehaviour
     {
         public KuraTransfromData (Vector3 positionIn,
                            int gravityDirectionIn,
+                           float gravityMultiplierIn,
                            Vector3 velocityIn)
         {
             position = positionIn;
             gravityDirection = gravityDirectionIn;
+            gravityMultiplier = gravityMultiplierIn;
             velocity = velocityIn;
         }
 
         public Vector3 position;
         public int gravityDirection;
+        public float gravityMultiplier;
         public Vector3 velocity;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref position);
             serializer.SerializeValue(ref gravityDirection);
+            serializer.SerializeValue(ref gravityMultiplier);
             serializer.SerializeValue(ref velocity);
         }
     }
@@ -170,7 +174,6 @@ public class PlayerMovementManager : NetworkBehaviour
         // Request to flip
         if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
         {
-            //Debug.Log("bbbbb 4");
             m_Request = true;
         }
     }
@@ -189,28 +192,22 @@ public class PlayerMovementManager : NetworkBehaviour
         // Process client's request to jump
         m_Request = false;
 
-        //Debug.Log("aaaaa 4");
         // Flip
         if (m_NFlips <= 0)
             return;
 
-        //Debug.Log("aaaaa 5");
 
         m_NFlips--;
 
         m_GravityDirection *= -1;
 
-        //if (IsOwner) Debug.Log("ccccc 3");
 
         Flip(m_GravityDirection);
     }
 
     private void Flip(int gravityDirection)
     {
-        //if (IsOwner) Debug.Log("aaaaa 6");
         m_RigidBody2d.gravityScale = gravityDirection * m_GravityMultiplier;
-
-        //if (IsOwner) Debug.Log("aaaaa 7");
 
         // change kura skin orientation
         m_SkinTransform.localScale = new Vector3(m_SkinTransform.localScale.x, Math.Abs(m_SkinTransform.localScale.y) * gravityDirection, m_SkinTransform.localScale.z);
@@ -243,11 +240,6 @@ public class PlayerMovementManager : NetworkBehaviour
         }
     }
 
-    public void Respawn()
-    {
-        transform.position = m_PlayerMain.localData.spawnPosition;
-    }
-
     private void FixedUpdate()
     {
         if (IsClient && IsOwner)
@@ -256,25 +248,8 @@ public class PlayerMovementManager : NetworkBehaviour
 
             TakePeriodicDamageFromPlatmorm();
 
-            UpdatePositionOnServerRPC(new KuraTransfromData(transform.position, m_GravityDirection, m_RigidBody2d.velocity));
+            UpdatePositionOnServerRPC(new KuraTransfromData(transform.position, m_GravityDirection, m_GravityMultiplier, m_RigidBody2d.velocity));
         }
-    }
-
-    [ServerRpc]
-    void UpdatePositionOnServerRPC(KuraTransfromData localTransformData)
-    {
-        transformFromClient.Value = localTransformData;
-
-        if (IsOwner)
-            return;
-
-        transform.position = localTransformData.position;
-        m_RigidBody2d.velocity = localTransformData.velocity;
-        m_GravityDirection = localTransformData.gravityDirection;
-
-        //if (IsOwner) Debug.Log("ccccc 1");
-
-        Flip(localTransformData.gravityDirection);
     }
 
     private void ProcessMovement()
@@ -491,6 +466,11 @@ public class PlayerMovementManager : NetworkBehaviour
         m_TouchingObjects.RemoveAt(m_TouchingObjects.FindIndex(e => e.Item1 == collision.gameObject));
     }
 
+    public void Respawn()
+    {
+        transform.position = m_PlayerMain.localData.spawnPosition;
+    }
+
     public void Boost(SpeedBoostScriptableObject speedBoostData)
     {
         m_IsSpeedBoosted = true;
@@ -504,9 +484,37 @@ public class PlayerMovementManager : NetworkBehaviour
         if (!(IsClient && IsOwner))
             return;
 
-        m_RigidBody2d.gravityScale = 0;
+        Debug.Log("Movement script");
+
+        m_GravityMultiplier = 0.0f;
+        m_RigidBody2d.gravityScale = m_GravityMultiplier;
+
         m_RigidBody2d.velocity = Vector2.zero;
         transform.position += new Vector3(UnityEngine.Random.Range(m_FinishTPDistance.x, m_FinishTPDistance.y), 0f, 0f);
+    }
+
+    void ApplyTransformLocally(KuraTransfromData localTransformData)
+    {
+        transform.position = localTransformData.position;
+        m_RigidBody2d.velocity = localTransformData.velocity;
+
+        m_GravityDirection = localTransformData.gravityDirection;
+        m_GravityMultiplier = localTransformData.gravityMultiplier;
+        m_RigidBody2d.gravityScale = m_GravityDirection * m_GravityMultiplier;
+
+
+        Flip(localTransformData.gravityDirection);
+    }
+
+    [ServerRpc]
+    void UpdatePositionOnServerRPC(KuraTransfromData localTransformData)
+    {
+        transformFromClient.Value = localTransformData;
+
+        if (IsOwner)
+            return;
+
+        ApplyTransformLocally(localTransformData);
     }
 
     void OnKuraTransformDataFromClientChanged(KuraTransfromData previous, KuraTransfromData current)
@@ -516,12 +524,6 @@ public class PlayerMovementManager : NetworkBehaviour
 
         // move the following lines to function (to not duplicate code)
 
-        transform.position = current.position;
-        m_RigidBody2d.velocity = current.velocity;
-        m_GravityDirection = current.gravityDirection;
-
-        //if (IsOwner) Debug.Log("ccccc 2");
-
-        Flip(current.gravityDirection);
+        ApplyTransformLocally(current);
     }
 }

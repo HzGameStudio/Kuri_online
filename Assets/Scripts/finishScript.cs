@@ -8,14 +8,11 @@ public class FinishScript : NetworkBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (IsServer)
+        if (collision.gameObject.CompareTag("player"))
         {
-            if (collision.gameObject.CompareTag("player"))
-            {
-                MainManager.Instance.numFinishedPlayers++;
+            MainManager.Instance.numFinishedPlayers++;
 
-                collision.gameObject.GetComponent<PlayerMain>().Finish();
-            }
+            collision.gameObject.GetComponent<PlayerMain>().Finish();
         }
     }
 }

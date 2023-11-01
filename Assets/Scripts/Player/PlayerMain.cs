@@ -208,7 +208,6 @@ public class PlayerMain : NetworkBehaviour
     [ClientRpc]
     public void SendKuraDataToClientRPC(int ID, Vector3 pos, ClientRpcParams clientRpcParams = default)
     {
-        Debug.Log("RPC");
         localData.playerID = ID;
         localData.spawnPosition = pos;
     }
