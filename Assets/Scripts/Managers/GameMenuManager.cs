@@ -12,6 +12,9 @@ public class GameMenuManager : SingletonNetwork<GameMenuManager>
     [SerializeField]
     private TextMeshProUGUI m_LobbyCodeText;
 
+    [SerializeField]
+    private TextMeshProUGUI m_NumPlayersText;
+
     private IEnumerator Start()
     {
         // Wait for the network Scene Manager to start
@@ -28,10 +31,20 @@ public class GameMenuManager : SingletonNetwork<GameMenuManager>
         }
 
         m_LobbyCodeText.text = GameManager.Instance.lobbyCode.Value.ToString();
+
+        NetworkManager.Singleton.OnClientConnectedCallback += UpdateNumPlayersText;
+        NetworkManager.Singleton.OnClientDisconnectCallback += UpdateNumPlayersText;
+
+        UpdateNumPlayersText(0);
     }
 
     public void StartGame()
     {
         LoadingSceneManager.Instance.LoadScene(SceneName.MainGame, true);
+    }
+
+    private void UpdateNumPlayersText(ulong clientID)
+    {
+        m_NumPlayersText.text = "Connected players: " + NetworkManager.Singleton.ConnectedClients.Count.ToString();
     }
 }
