@@ -20,6 +20,7 @@ public struct MainSceneObjectsCache
     public GameObject miniMapGameObject;
     public GameObject SpectatorModeButton;
     public GameObject SpectatorModeHolder;
+    public GameObject restartButton;
 }
 
 public class MainManager : SingletonNetwork<MainManager>

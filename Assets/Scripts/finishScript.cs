@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FinishScript : NetworkBehaviour
 {
@@ -13,6 +14,12 @@ public class FinishScript : NetworkBehaviour
             MainManager.Instance.numFinishedPlayers++;
 
             collision.gameObject.GetComponent<PlayerMain>().Finish();
+
+            if (IsServer)
+            {
+                if (MainManager.Instance.numFinishedPlayers == MainManager.Instance.numPlayersInGame.Value)
+                    MainManager.Instance.sceneObjectsCache.restartButton.SetActive(true);
+            }
         }
     }
 }

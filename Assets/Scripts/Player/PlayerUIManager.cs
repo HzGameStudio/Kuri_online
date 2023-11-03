@@ -38,6 +38,8 @@ public class PlayerUIManager : NetworkBehaviour
     [SerializeField]
     private Camera m_MiniMapCamera;
 
+    private GameObject m_RestartButton;
+
     private void Start()
     {
         m_PlayerMain = GetComponent<PlayerMain>();
@@ -50,6 +52,7 @@ public class PlayerUIManager : NetworkBehaviour
         m_MiniMapGameObject = MainManager.Instance.sceneObjectsCache.miniMapGameObject;
         m_SpactatorModeButton = MainManager.Instance.sceneObjectsCache.SpectatorModeButton;
         m_SpactatorModeHolder = MainManager.Instance.sceneObjectsCache.SpectatorModeHolder;
+        m_RestartButton = MainManager.Instance.sceneObjectsCache.restartButton;
 
         if (IsClient && IsOwner)
         {

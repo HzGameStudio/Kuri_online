@@ -108,6 +108,7 @@ public class PlayerMain : NetworkBehaviour
 
         MainManager.Instance.sceneObjectsCache.SpectatorModeButton.GetComponent<Button>().onClick.AddListener(ActivateSpactatorMode);
         MainManager.Instance.sceneObjectsCache.SpectatorModeHolder.GetComponentInChildren<Button>().onClick.AddListener(SpectateNextPlayer);
+        MainManager.Instance.sceneObjectsCache.restartButton.GetComponent<Button>().onClick.AddListener(RestartGame);
     }
 
     public override void OnNetworkSpawn()
@@ -197,6 +198,11 @@ public class PlayerMain : NetworkBehaviour
     public void DeactivateCamera()
     {
         m_PlayerUIManager.DeactivateCamera();
+    }
+
+    public void RestartGame()
+    {
+        LoadingSceneManager.Instance.LoadScene(SceneName.GameMenu, true);
     }
 
     [ServerRpc]
