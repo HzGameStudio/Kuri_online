@@ -120,7 +120,7 @@ public class PlayerMain : NetworkBehaviour
 
     private void Update()
     {
-        if (IsClient && IsOwner)
+        if (IsClient && IsOwner && !localData.finishedGame)
         {
             localData.playerRunTime += Time.deltaTime;
         }
