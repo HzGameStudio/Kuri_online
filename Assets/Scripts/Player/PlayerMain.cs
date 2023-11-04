@@ -7,6 +7,14 @@ using Unity.VisualScripting;
 using System;
 using UnityEngine.UI;
 
+
+public struct SpawnPointData
+{
+    int gravityDerection;
+    Vector3 velosity;
+    Vector3 position;
+
+}
 public enum KuraState
 {
     //Kissing a wall, ground
@@ -216,5 +224,20 @@ public class PlayerMain : NetworkBehaviour
     {
         localData.playerID = ID;
         localData.spawnPosition = pos;
+    }
+
+    public bool isLocalPlayer()
+    {
+        return IsClient && IsOwner;
+    }
+    public bool SetCheckPoint(Vector3 spawPos)
+    {
+        if (!(IsClient && IsOwner))
+            return false;
+
+        localData.spawnPosition = spawPos;
+
+        return true;
+
     }
 }
