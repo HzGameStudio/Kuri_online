@@ -178,6 +178,7 @@ public class PlayerMain : NetworkBehaviour
     {
         localData.health = localData.startHealth;
         m_PlayerMovementManager.Respawn();
+        //here we should use struct and assign velosity and gravity
     }
 
     public void ActivateSpactatorMode()

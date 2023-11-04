@@ -10,6 +10,8 @@ public class CheckPointScript : MonoBehaviour
 
     public SpriteRenderer textureSprite;
 
+    //the spawn data shpuld be added
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision == null) return;
