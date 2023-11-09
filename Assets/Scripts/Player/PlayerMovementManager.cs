@@ -468,7 +468,9 @@ public class PlayerMovementManager : NetworkBehaviour
 
     public void Respawn()
     {
-        transform.position = m_PlayerMain.localData.spawnPosition;
+        transform.position = m_PlayerMain.localData.spawnData.position;
+        m_RigidBody2d.velocity = m_PlayerMain.localData.spawnData.velocity;
+        m_RigidBody2d.gravityScale = m_PlayerMain.localData.spawnData.gravityMultiplier * m_PlayerMain.localData.spawnData.gravityDirection;
     }
 
     public void Boost(SpeedBoostScriptableObject speedBoostData)

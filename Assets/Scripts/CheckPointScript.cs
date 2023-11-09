@@ -5,6 +5,9 @@ using UnityEngine;
 public class CheckPointScript : MonoBehaviour
 {
     public Transform spawnPosition;
+    public Vector3 velocity = Vector3.zero; 
+    public float gravityM = 1;
+    public int gravityD = 1;
 
     private bool isActive = false;
 
@@ -18,7 +21,7 @@ public class CheckPointScript : MonoBehaviour
 
         if (collision.gameObject.CompareTag("player"))
         {
-            if(collision.gameObject.GetComponent<PlayerMain>().SetCheckPoint(spawnPosition.position))
+            if(collision.gameObject.GetComponent<PlayerMain>().SetCheckPoint(spawnPosition.position, velocity, gravityM, gravityD))
             {
                 isActive = true;
                 textureSprite.color = Color.green;

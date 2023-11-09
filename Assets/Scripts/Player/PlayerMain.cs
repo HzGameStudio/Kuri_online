@@ -48,10 +48,10 @@ public struct KuraData : INetworkSerializable
     public float playerRunTime;
     public KuraState state;
     public KuraGameMode gameMode;
-    public Vector3 spawnPosition;
     public float health;
     public float startHealth;
     public int spectatorIndex;
+    public PlayerMovementManager.KuraTransfromData spawnData;
 
     public KuraData(bool finishedGameIn,
                     int playerIDIn,
@@ -59,10 +59,10 @@ public struct KuraData : INetworkSerializable
                     float playerRunTimeIn,
                     KuraState stateIn,
                     KuraGameMode gameModeIn,
-                    Vector3 spawnPositionIn,
                     float healthIn,
                     float startHealthIn,
-                    int spectatorIndexIn)
+                    int spectatorIndexIn,
+                    PlayerMovementManager.KuraTransfromData spawnDataIn)
     {
         finishedGame = finishedGameIn;
         playerID = playerIDIn;
@@ -70,10 +70,10 @@ public struct KuraData : INetworkSerializable
         playerRunTime = playerRunTimeIn;
         state = stateIn;
         gameMode = gameModeIn;
-        spawnPosition = spawnPositionIn;
         health = healthIn;
         startHealth = startHealthIn;
         spectatorIndex = spectatorIndexIn;
+        spawnData = spawnDataIn;
     }
 
     public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
@@ -84,10 +84,10 @@ public struct KuraData : INetworkSerializable
         serializer.SerializeValue(ref playerRunTime);
         serializer.SerializeValue(ref state);
         serializer.SerializeValue(ref gameMode);
-        serializer.SerializeValue(ref spawnPosition);
         serializer.SerializeValue(ref health);
         serializer.SerializeValue(ref startHealth);
         serializer.SerializeValue(ref spectatorIndex);
+        serializer.SerializeValue(ref spawnData);
     }
 }
 
@@ -107,7 +107,7 @@ public class PlayerMain : NetworkBehaviour
 
     private void Awake()
     {
-        localData = new KuraData(false, -1, -1, 0, KuraState.Fall, KuraGameMode.ClasicMode, Vector3.zero, 100, 100, -1);
+        localData = new KuraData(false, -1, -1, 0, KuraState.Fall, KuraGameMode.ClasicMode, 100, 100, -1, new PlayerMovementManager.KuraTransfromData(Vector3.zero, 1, 1, Vector3.zero));
 
         m_PlayerMovementManager = gameObject.GetComponent<PlayerMovementManager>();
         m_PlayerUIManager = gameObject.GetComponent<PlayerUIManager>();
@@ -224,19 +224,22 @@ public class PlayerMain : NetworkBehaviour
     public void SendKuraDataToClientRPC(int ID, Vector3 pos, ClientRpcParams clientRpcParams = default)
     {
         localData.playerID = ID;
-        localData.spawnPosition = pos;
+        localData.spawnData.position = pos;
     }
 
     public bool isLocalPlayer()
     {
         return IsClient && IsOwner;
     }
-    public bool SetCheckPoint(Vector3 spawPos)
+    public bool SetCheckPoint(Vector3 spawPos, Vector3 velocity, float gravity, int gravity_dir)
     {
         if (!(IsClient && IsOwner))
             return false;
 
-        localData.spawnPosition = spawPos;
+        localData.spawnData.position = spawPos;
+        localData.spawnData.velocity = velocity;
+        localData.spawnData.gravityMultiplier = gravity;
+        localData.spawnData.gravityDirection = gravity_dir;
 
         return true;
 
