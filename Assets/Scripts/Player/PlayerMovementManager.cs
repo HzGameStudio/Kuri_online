@@ -470,7 +470,9 @@ public class PlayerMovementManager : NetworkBehaviour
     {
         transform.position = m_PlayerMain.localData.spawnData.position;
         m_RigidBody2d.velocity = m_PlayerMain.localData.spawnData.velocity;
-        m_RigidBody2d.gravityScale = m_PlayerMain.localData.spawnData.gravityMultiplier * m_PlayerMain.localData.spawnData.gravityDirection;
+        m_GravityDirection = m_PlayerMain.localData.spawnData.gravityDirection;
+        m_GravityMultiplier = m_PlayerMain.localData.spawnData.gravityMultiplier;
+        Flip(m_GravityDirection); 
     }
 
     public void Boost(SpeedBoostScriptableObject speedBoostData)

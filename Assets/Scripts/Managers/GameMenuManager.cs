@@ -32,10 +32,9 @@ public class GameMenuManager : SingletonNetwork<GameMenuManager>
 
         m_LobbyCodeText.text = GameManager.Instance.lobbyCode.Value.ToString();
 
-        NetworkManager.Singleton.OnClientConnectedCallback += UpdateNumPlayersText;
-        NetworkManager.Singleton.OnClientDisconnectCallback += UpdateNumPlayersText;
+        GameManager.Instance.connectedPlayers.OnValueChanged += UpdateNumPlayersText;
 
-        UpdateNumPlayersText(0);
+        UpdateNumPlayersText(0, GameManager.Instance.connectedPlayers.Value);
     }
 
     public void StartGame()
@@ -43,8 +42,8 @@ public class GameMenuManager : SingletonNetwork<GameMenuManager>
         LoadingSceneManager.Instance.LoadScene(SceneName.MainGame, true);
     }
 
-    private void UpdateNumPlayersText(ulong clientID)
+    private void UpdateNumPlayersText(int previous, int current)
     {
-        m_NumPlayersText.text = "Connected players: " + NetworkManager.Singleton.ConnectedClients.Count.ToString();
+        m_NumPlayersText.text = "Connected players: " + current.ToString();
     }
 }
