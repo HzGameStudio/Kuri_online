@@ -6,7 +6,7 @@ public class CheckPointScript : MonoBehaviour
 {
     public Transform spawnPosition;
     public Vector3 velocity = Vector3.zero; 
-    public float gravityM = 1;
+    public float gravityM = 2;
     public int gravityD = 1;
 
     private bool isActive = false;
