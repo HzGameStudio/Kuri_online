@@ -50,6 +50,8 @@ public class MainManager : SingletonNetwork<MainManager>
     {
         Vector3 pos = m_CurGameSpawnPosTransformList[0];
         m_CurGameSpawnPosTransformList.RemoveAt(0);
+        if (m_CurGameSpawnPosTransformList.Count == 0)
+            m_CurGameSpawnPosTransformList = m_SpawnPosTransformList;
         return pos;
     }
 
