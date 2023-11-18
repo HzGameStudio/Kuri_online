@@ -11,6 +11,7 @@ using Unity.VisualScripting;
 using System.Runtime.CompilerServices;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
+using UnityEditor;
 
 // Class to controls kura's movement
 public class PlayerMovementManager : NetworkBehaviour
@@ -176,6 +177,17 @@ public class PlayerMovementManager : NetworkBehaviour
         {
             m_Request = true;
         }
+
+        // how to save map, for map builder
+        /*
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            Debug.Log("Creating map");
+            string path = "Assets/Resources/Maps/Map 0.prefab";
+            path = AssetDatabase.GenerateUniqueAssetPath(path);
+            PrefabUtility.SaveAsPrefabAsset(GameObject.FindGameObjectWithTag("Map"), path);
+        }
+        */
     }
 
     private void ProcessLocalPlayerInput()

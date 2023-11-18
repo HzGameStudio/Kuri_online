@@ -15,6 +15,9 @@ public class GameMenuManager : SingletonNetwork<GameMenuManager>
     [SerializeField]
     private TextMeshProUGUI m_NumPlayersText;
 
+    [SerializeField]
+    private GameObject m_ChooseMap;
+
     private IEnumerator Start()
     {
         // Wait for the network Scene Manager to start
@@ -29,6 +32,10 @@ public class GameMenuManager : SingletonNetwork<GameMenuManager>
         {
             m_StartGameButton.SetActive(true);
         }
+        else
+        {
+            m_ChooseMap.SetActive(false);
+        }
 
         m_LobbyCodeText.text = GameManager.Instance.lobbyCode.Value.ToString();
 
@@ -39,6 +46,9 @@ public class GameMenuManager : SingletonNetwork<GameMenuManager>
 
     public void StartGame()
     {
+        if (MapManager.Instance.SelectedMapName == "")
+            return;
+
         LoadingSceneManager.Instance.LoadScene(SceneName.MainGame, true);
     }
 

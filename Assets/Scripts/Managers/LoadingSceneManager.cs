@@ -86,6 +86,7 @@ public class LoadingSceneManager : SingletonPersistent<LoadingSceneManager>
     // Here we set up what to do for each scene, like changing the music
     private void OnLoadComplete(ulong clientId, string sceneName, LoadSceneMode loadSceneMode)
     {
+        Debug.Log("mogus");
         // We only care the host/server is loading because every manager handles
         // their information and behavior on the server runtime
         if (!NetworkManager.Singleton.IsServer)
@@ -99,14 +100,19 @@ public class LoadingSceneManager : SingletonPersistent<LoadingSceneManager>
             return;
         */
 
+        Debug.Log("amogus");
+
         // What to initially do on every scene when it finishes loading
         switch (m_sceneActive)
         {
             case SceneName.Bootstrap:
                 break;
             case SceneName.GameMenu:
+                Debug.Log("aoaoaoaoaoao");
+                MapManager.Instance.ScanForMaps();
                 break;
             case SceneName.MainGame:
+                MapManager.Instance.StartGame();
                 MainManager.Instance.MainSceneInitialize(clientId);
                 break;
         }

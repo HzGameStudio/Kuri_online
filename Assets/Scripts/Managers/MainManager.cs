@@ -92,6 +92,11 @@ public class MainManager : SingletonNetwork<MainManager>
         if (numPlayersInGame.Value != NetworkManager.Singleton.ConnectedClients.Count)
             return;
 
+        // Initialize and sync map
+        Debug.Log("Spawning map");
+        GameObject map = (GameObject)Resources.Load("Maps/" + MapManager.Instance.SelectedMapName);
+        NetworkObjectSpawner.SpawnNewNetworkObject(map);
+
         // Get list of all spawn position on map
         GameObject[] SpawnPointList = GameObject.FindGameObjectsWithTag("spawnPoint");
 

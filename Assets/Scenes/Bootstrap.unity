@@ -975,6 +975,8 @@ MonoBehaviour:
         byte0124: 0
         byte0125: 0
   maxPlayers: 4
+  connectedPlayers:
+    m_InternalValue: 0
 --- !u!114 &754015826
 MonoBehaviour:
   m_ObjectHideFlags: 0

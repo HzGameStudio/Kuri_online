@@ -5,15 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - simplePlatform
-  - player
-  - Bullet
-  - gameManager
-  - finish
-  - playerID
-  - winerText
   - spawnPoint
-  - startButton
-  - playerRunTime
+  - Map
+  - ChooseMapPanel
   layers:
   - Default
   - TransparentFX
