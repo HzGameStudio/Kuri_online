@@ -84,8 +84,8 @@ public class PlayerUIManager : NetworkBehaviour
         m_WinnerText.text = "YOU WON " + m_PlayerMain.localData.placeInGame.ToString() + " PLACE!!!";
         m_SpactatorModeButton.SetActive(true);
 
-        m_PlayerIDText.gameObject.SetActive(false);
-        m_LobbyIDText.gameObject.SetActive(false);
+       // m_PlayerIDText.gameObject.SetActive(false);
+       // m_LobbyIDText.gameObject.SetActive(false);
         m_KuraStatetext.gameObject.SetActive(false);
     }
 
@@ -93,6 +93,9 @@ public class PlayerUIManager : NetworkBehaviour
     {
         m_SpactatorModeButton.SetActive(false);
         m_SpactatorModeHolder.gameObject.SetActive(true);
+
+        finishedGameUIDeactivate();
+
     }
 
     public void ChangeSpectateCamera(int prev)
@@ -117,5 +120,13 @@ public class PlayerUIManager : NetworkBehaviour
     public void DeactivateCamera()
     {
         m_CameraHolder.gameObject.SetActive(false);
+    }
+
+    private void finishedGameUIDeactivate()
+    {
+        m_WinnerText.gameObject.SetActive(false);
+        m_RunTimeText.gameObject.SetActive(false);
+
+
     }
 }

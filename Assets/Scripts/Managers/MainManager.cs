@@ -23,8 +23,11 @@ public struct MainSceneObjectsCache
     public GameObject restartButton;
 }
 
+
+
 public class MainManager : SingletonNetwork<MainManager>
 {
+
     // Hide in inspector because inspector bug with NetworkVariable
     [HideInInspector]
     public NetworkVariable<int> numPlayersInGame = new NetworkVariable<int>();
