@@ -2371,7 +2371,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7578819730990405718, guid: 6af9cd5f490443a45a13385901306d52, type: 3}
       propertyPath: m_SortingOrder
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5372,7 +5372,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7578819730990405718, guid: 6af9cd5f490443a45a13385901306d52, type: 3}
       propertyPath: m_SortingOrder
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -5757,9 +5757,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2074600335}
     m_Modifications:
+    - target: {fileID: 78517562063465662, guid: 630cafd4c3702264abf605c07b0344a9, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2787973504301336020, guid: 630cafd4c3702264abf605c07b0344a9, type: 3}
       propertyPath: m_Name
       value: normalPlatform
+      objectReference: {fileID: 0}
+    - target: {fileID: 5176317955923318901, guid: 630cafd4c3702264abf605c07b0344a9, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5277954101265765865, guid: 630cafd4c3702264abf605c07b0344a9, type: 3}
       propertyPath: m_RootOrder
@@ -13246,7 +13254,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 5
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 0.8104286, g: 0, b: 1, a: 1}
   m_FlipX: 0
