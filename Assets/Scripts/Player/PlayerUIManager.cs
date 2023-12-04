@@ -30,13 +30,7 @@ public class PlayerUIManager : NetworkBehaviour
     private GameObject m_MiniMapGameObject;
 
     [SerializeField]
-    public GameObject CameraHolder;
-
-    [SerializeField]
-    private Camera m_MainCamera;
-
-    [SerializeField]
-    private Camera m_MiniMapCamera;
+    private GameObject m_CameraHolder;
 
     private GameObject m_RestartButton;
 
@@ -66,14 +60,9 @@ public class PlayerUIManager : NetworkBehaviour
 
             m_KuraStatetext.gameObject.SetActive(true);
 
-            if (!m_MainCamera.gameObject.activeInHierarchy)
+            if (!m_CameraHolder.gameObject.activeInHierarchy)
             {
-                m_MainCamera.gameObject.SetActive(true);
-            }
-
-            if (!m_MiniMapCamera.gameObject.activeInHierarchy)
-            {
-                m_MiniMapCamera.gameObject.SetActive(true);
+                m_CameraHolder.gameObject.SetActive(true);
             }
 
             m_MiniMapGameObject.SetActive(true);
@@ -112,7 +101,7 @@ public class PlayerUIManager : NetworkBehaviour
             return;
         
         // deactive own camera (for when spectator mode is activating)
-        m_MainCamera.gameObject.SetActive(false);
+        m_CameraHolder.gameObject.SetActive(false);
 
         if (prev != -1)
             MainManager.Instance.PlayerMainList[prev].DeactivateCamera();
@@ -122,11 +111,11 @@ public class PlayerUIManager : NetworkBehaviour
 
     public void ActivateCamera()
     {
-        m_MainCamera.gameObject.SetActive(true);
+        m_CameraHolder.gameObject.SetActive(true);
     }
 
     public void DeactivateCamera()
     {
-        m_MainCamera.gameObject.SetActive(false);
+        m_CameraHolder.gameObject.SetActive(false);
     }
 }

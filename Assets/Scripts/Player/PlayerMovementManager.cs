@@ -278,7 +278,7 @@ public class PlayerMovementManager : NetworkBehaviour
                 if (m_IsSpeedBoosted && m_CurSpeedBoostTime > 0)
                 {
                     m_CurSpeedBoostTime -= Time.fixedDeltaTime;
-                    m_RigidBody2d.AddForce(Vector2.right * m_CurSpeedBoostForce);
+                    m_RigidBody2d.totalForce = new Vector2(m_CurSpeedBoostForce, m_RigidBody2d.totalForce.y);
                 }
                 else
                 {
@@ -341,7 +341,7 @@ public class PlayerMovementManager : NetworkBehaviour
 
                 if (feetPlatform.Item1.tag == "simplePlatform")
                 {
-                    m_RigidBody2d.AddForce(Vector2.right * platformData.RunForce);
+                    m_RigidBody2d.totalForce = new Vector2(platformData.RunForce, m_RigidBody2d.totalForce.y);
                 }
             }
             else if (state == KuraState.ReadyRun)
@@ -355,9 +355,9 @@ public class PlayerMovementManager : NetworkBehaviour
                     if (Math.Abs(platformData.MaxRunVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
                     {
                         if (m_RigidBody2d.velocity.x < platformData.MaxRunVelocity)
-                            m_RigidBody2d.AddForce(Vector2.right * platformData.ReadyRunForce);
+                            m_RigidBody2d.totalForce = new Vector2(platformData.ReadyRunForce, m_RigidBody2d.totalForce.y);
                         else
-                            m_RigidBody2d.AddForce(Vector2.left * platformData.RunBrakeForce);
+                            m_RigidBody2d.totalForce = new Vector2(-platformData.RunBrakeForce, m_RigidBody2d.totalForce.y);
                     }
                 }
             }
@@ -368,12 +368,12 @@ public class PlayerMovementManager : NetworkBehaviour
             else if (state == KuraState.Fly)
             {
                 if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
-                    m_RigidBody2d.AddForce(Vector2.right * m_FlyForce);
+                    m_RigidBody2d.totalForce = new Vector2(m_FlyForce, m_RigidBody2d.totalForce.y);
             }
             else if (state == KuraState.Glide)
             {
                 if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
-                    m_RigidBody2d.AddForce(Vector2.left * m_FlyBrakeForce);
+                    m_RigidBody2d.totalForce = new Vector2(-m_FlyBrakeForce, m_RigidBody2d.totalForce.y);
             }
             else
             {

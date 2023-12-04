@@ -183,7 +183,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6861191629667403047
 Transform:
   m_ObjectHideFlags: 0
@@ -642,9 +642,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e23094dfcd8560c4b87d2a09bd2fe131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CameraHolder: {fileID: 1618779326091119150}
-  m_MainCamera: {fileID: 7989961002060566627}
-  m_MiniMapCamera: {fileID: 3383014660475100679}
+  m_CameraHolder: {fileID: 1618779326091119150}
 --- !u!114 &7794840999984759703
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1056,7 +1054,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6728642028824893637
 Transform:
   m_ObjectHideFlags: 0
@@ -1155,7 +1153,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8686646756800454454}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 10}
   m_LocalScale: {x: 200, y: 100, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1231,7 +1229,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3433920276041398895
 Transform:
   m_ObjectHideFlags: 0
