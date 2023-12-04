@@ -51,7 +51,9 @@ public class MainManager : SingletonNetwork<MainManager>
         Vector3 pos = m_CurGameSpawnPosTransformList[0];
         m_CurGameSpawnPosTransformList.RemoveAt(0);
         if (m_CurGameSpawnPosTransformList.Count == 0)
-            m_CurGameSpawnPosTransformList = m_SpawnPosTransformList;
+        {
+            m_CurGameSpawnPosTransformList = new List<Vector3>(m_SpawnPosTransformList);
+        }
         return pos;
     }
 
