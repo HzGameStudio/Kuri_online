@@ -46,4 +46,6 @@ public class GameMenuManager : SingletonNetwork<GameMenuManager>
     {
         m_NumPlayersText.text = "Connected players: " + current.ToString();
     }
+
+    
 }

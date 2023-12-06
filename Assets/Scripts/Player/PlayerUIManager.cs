@@ -21,7 +21,7 @@ public class PlayerUIManager : NetworkBehaviour
 
     private TextMeshProUGUI m_LobbyIDText;
 
-    private TextMeshProUGUI m_KuraStatetext;
+    private TextMeshProUGUI m_KuraSpeedtext;
 
     private GameObject m_SpactatorModeButton;
 
@@ -42,7 +42,7 @@ public class PlayerUIManager : NetworkBehaviour
         m_WinnerText = MainManager.Instance.sceneObjectsCache.winnerText;
         m_RunTimeText = MainManager.Instance.sceneObjectsCache.playerRunTimeText;
         m_LobbyIDText = MainManager.Instance.sceneObjectsCache.lobbyIDText;
-        m_KuraStatetext = MainManager.Instance.sceneObjectsCache.kuraStatetext;
+        m_KuraSpeedtext = MainManager.Instance.sceneObjectsCache.kuraSpeedtext;
         m_MiniMapGameObject = MainManager.Instance.sceneObjectsCache.miniMapGameObject;
         m_SpactatorModeButton = MainManager.Instance.sceneObjectsCache.SpectatorModeButton;
         m_SpactatorModeHolder = MainManager.Instance.sceneObjectsCache.SpectatorModeHolder;
@@ -58,7 +58,7 @@ public class PlayerUIManager : NetworkBehaviour
             m_LobbyIDText.gameObject.SetActive(true);
             m_LobbyIDText.text = GameManager.Instance.lobbyCode.Value.Value;
 
-            m_KuraStatetext.gameObject.SetActive(true);
+            m_KuraSpeedtext.gameObject.SetActive(true);
 
             if (!m_CameraHolder.gameObject.activeInHierarchy)
             {
@@ -74,7 +74,7 @@ public class PlayerUIManager : NetworkBehaviour
         if (!(IsClient && IsOwner))
             return;
 
-        m_KuraStatetext.text = m_PlayerMain.localData.state.ToString();
+        m_KuraSpeedtext.text = Math.Floor(m_PlayerMain.GetVelocity().x).ToString();
 
         m_RunTimeText.text = Math.Floor(m_PlayerMain.localData.playerRunTime / 60f).ToString() + ":" + Math.Floor(m_PlayerMain.localData.playerRunTime % 60f).ToString() + "." + Math.Floor(m_PlayerMain.localData.playerRunTime * 10) % 10 + Math.Floor(m_PlayerMain.localData.playerRunTime * 100) % 10;    }
 
@@ -84,9 +84,9 @@ public class PlayerUIManager : NetworkBehaviour
         m_WinnerText.text = "YOU WON " + m_PlayerMain.localData.placeInGame.ToString() + " PLACE!!!";
         m_SpactatorModeButton.SetActive(true);
 
-       // m_PlayerIDText.gameObject.SetActive(false);
-       // m_LobbyIDText.gameObject.SetActive(false);
-        m_KuraStatetext.gameObject.SetActive(false);
+        // m_PlayerIDText.gameObject.SetActive(false);
+        // m_LobbyIDText.gameObject.SetActive(false);
+        m_KuraSpeedtext.gameObject.SetActive(false);
     }
 
     public void ActivateSpectatorMode()

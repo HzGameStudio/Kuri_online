@@ -16,7 +16,7 @@ public struct MainSceneObjectsCache
     public TextMeshProUGUI winnerText;
     public TextMeshProUGUI playerRunTimeText;
     public TextMeshProUGUI lobbyIDText;
-    public TextMeshProUGUI kuraStatetext;
+    public TextMeshProUGUI kuraSpeedtext;
     public GameObject miniMapGameObject;
     public GameObject SpectatorModeButton;
     public GameObject SpectatorModeHolder;

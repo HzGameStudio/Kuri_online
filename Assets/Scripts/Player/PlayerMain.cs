@@ -245,4 +245,9 @@ public class PlayerMain : NetworkBehaviour
         return true;
 
     }
+
+    public Vector2 GetVelocity()
+    {
+        return m_PlayerMovementManager.GetVelocity();
+    }
 }

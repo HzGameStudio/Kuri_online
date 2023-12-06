@@ -8563,12 +8563,12 @@ GameObject:
   - component: {fileID: 1299542032}
   - component: {fileID: 1299542031}
   m_Layer: 5
-  m_Name: KuraStateText
+  m_Name: KuraSpeed
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1299542030
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8586,7 +8586,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 339.9, y: -161.2}
+  m_AnchoredPosition: {x: 317.6, y: -155}
   m_SizeDelta: {x: 120, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1299542031
@@ -9056,7 +9056,7 @@ MonoBehaviour:
     winnerText: {fileID: 1376665266}
     playerRunTimeText: {fileID: 1494586203}
     lobbyIDText: {fileID: 1470569737}
-    kuraStatetext: {fileID: 1299542031}
+    kuraSpeedtext: {fileID: 1299542031}
     miniMapGameObject: {fileID: 1921264880}
     SpectatorModeButton: {fileID: 1711747347}
     SpectatorModeHolder: {fileID: 1085468946}

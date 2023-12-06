@@ -530,4 +530,9 @@ public class PlayerMovementManager : NetworkBehaviour
 
         ApplyTransformLocally(current);
     }
+
+    public Vector2 GetVelocity()
+    {
+        return m_RigidBody2d.velocity;
+    }
 }
