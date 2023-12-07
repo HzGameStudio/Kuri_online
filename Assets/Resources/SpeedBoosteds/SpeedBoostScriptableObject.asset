@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: SpeedBoostScriptableObject
   m_EditorClassIdentifier: 
   boostTime: 0.5
-  boostForce: 15
+  boostForce: 25

@@ -284,6 +284,7 @@ public class PlayerMovementManager : NetworkBehaviour
                 {
                     m_CurSpeedBoostTime -= Time.fixedDeltaTime;
                     m_RigidBody2d.totalForce = new Vector2(m_CurSpeedBoostForce, m_RigidBody2d.totalForce.y);
+                    print("Bust");
                 }
                 else
                 {
@@ -330,7 +331,11 @@ public class PlayerMovementManager : NetworkBehaviour
                 }
             }
 
-            if (state == KuraState.Stand)
+            if(m_IsSpeedBoosted)
+            {
+
+            }
+            else if (state == KuraState.Stand)
             {
 
             }
@@ -377,7 +382,7 @@ public class PlayerMovementManager : NetworkBehaviour
             }
             else if (state == KuraState.Glide)
             {
-                if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity)
+                if (Math.Abs(m_MaxFlyVelocity - m_RigidBody2d.velocity.x) > m_ChillThresholdVelocity) 
                     m_RigidBody2d.totalForce = new Vector2(-m_FlyBrakeForce, m_RigidBody2d.totalForce.y);
             }
             else
