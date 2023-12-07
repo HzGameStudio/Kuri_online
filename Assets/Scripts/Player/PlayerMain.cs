@@ -38,6 +38,8 @@ public struct KuraData : INetworkSerializable
     public int playerID;
     public int placeInGame;
     public float playerRunTime;
+    public float lastCPRunTime;
+    public float perfectRunTime;
     public KuraState state;
     public KuraGameMode gameMode;
     public float health;
@@ -49,6 +51,8 @@ public struct KuraData : INetworkSerializable
                     int playerIDIn,
                     int placeInGameIn,
                     float playerRunTimeIn,
+                    float lastCPRunTimeIn,
+                    float perfectRunTimeIn,
                     KuraState stateIn,
                     KuraGameMode gameModeIn,
                     float healthIn,
@@ -60,6 +64,8 @@ public struct KuraData : INetworkSerializable
         playerID = playerIDIn;
         placeInGame = placeInGameIn;
         playerRunTime = playerRunTimeIn;
+        lastCPRunTime = lastCPRunTimeIn;
+        perfectRunTime = perfectRunTimeIn;
         state = stateIn;
         gameMode = gameModeIn;
         health = healthIn;
@@ -74,6 +80,7 @@ public struct KuraData : INetworkSerializable
         serializer.SerializeValue(ref playerID);
         serializer.SerializeValue(ref placeInGame);
         serializer.SerializeValue(ref playerRunTime);
+        serializer.SerializeValue(ref perfectRunTime);
         serializer.SerializeValue(ref state);
         serializer.SerializeValue(ref gameMode);
         serializer.SerializeValue(ref health);
@@ -99,7 +106,7 @@ public class PlayerMain : NetworkBehaviour
 
     private void Awake()
     {
-        localData = new KuraData(false, -1, -1, 0, KuraState.Fall, KuraGameMode.ClasicMode, 100, 100, -1, new PlayerMovementManager.KuraTransfromData(Vector3.zero, Vector3.zero, 1, 2, 1));
+        localData = new KuraData(false, -1, -1, 0, 0, 0, KuraState.Fall, KuraGameMode.ClasicMode, 100, 100, -1, new PlayerMovementManager.KuraTransfromData(Vector3.zero, Vector3.zero, 1, 2, 1));
 
         m_PlayerMovementManager = gameObject.GetComponent<PlayerMovementManager>();
         m_PlayerUIManager = gameObject.GetComponent<PlayerUIManager>();
@@ -123,6 +130,7 @@ public class PlayerMain : NetworkBehaviour
         if (IsClient && IsOwner && !localData.finishedGame)
         {
             localData.playerRunTime += Time.deltaTime;
+            localData.perfectRunTime += Time.deltaTime;
         }
     }
 
@@ -169,8 +177,8 @@ public class PlayerMain : NetworkBehaviour
     private void Respawn()
     {
         localData.health = localData.startHealth;
+        localData.perfectRunTime = localData.lastCPRunTime;
         m_PlayerMovementManager.Respawn();
-        //here we should use struct and assign velosity and gravity
     }
 
     public void ActivateSpactatorMode()
@@ -230,6 +238,7 @@ public class PlayerMain : NetworkBehaviour
             return false;
 
         localData.spawnData = spawnData;
+        localData.lastCPRunTime = localData.perfectRunTime;
 
         return true;
     }
@@ -243,6 +252,7 @@ public class PlayerMain : NetworkBehaviour
         PlayerMovementManager.KuraTransfromData tr = m_PlayerMovementManager.GetTransformData();
 
         localData.spawnData = tr;
+        localData.lastCPRunTime = localData.perfectRunTime;
 
         return true;
     }

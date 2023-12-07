@@ -18,6 +18,12 @@ public class PlayerMovementManager : NetworkBehaviour
 {
     public struct KuraTransfromData : INetworkSerializable
     {
+        public Vector3 position;
+        public Vector3 velocity;
+        public int gravityDirection;
+        public float gravityMultiplier;
+        public int nFlips;
+
         public KuraTransfromData (Vector3 positionIn,
                            Vector3 velocityIn,
                            int gravityDirectionIn,
@@ -30,12 +36,6 @@ public class PlayerMovementManager : NetworkBehaviour
             gravityMultiplier = gravityMultiplierIn;
             nFlips = nFilpsIn;
         }
-
-        public Vector3 position;
-        public Vector3 velocity;
-        public int gravityDirection;
-        public float gravityMultiplier;
-        public int nFlips;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {

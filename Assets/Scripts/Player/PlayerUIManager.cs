@@ -19,6 +19,8 @@ public class PlayerUIManager : NetworkBehaviour
 
     private TextMeshProUGUI m_RunTimeText;
 
+    private TextMeshProUGUI m_PerfectRunTimeText;
+
     private TextMeshProUGUI m_LobbyIDText;
 
     private TextMeshProUGUI m_KuraSpeedtext;
@@ -41,6 +43,7 @@ public class PlayerUIManager : NetworkBehaviour
         m_PlayerIDText = MainManager.Instance.sceneObjectsCache.playerIDText;
         m_WinnerText = MainManager.Instance.sceneObjectsCache.winnerText;
         m_RunTimeText = MainManager.Instance.sceneObjectsCache.playerRunTimeText;
+        m_PerfectRunTimeText = MainManager.Instance.sceneObjectsCache.perfectRunTimeText;
         m_LobbyIDText = MainManager.Instance.sceneObjectsCache.lobbyIDText;
         m_KuraSpeedtext = MainManager.Instance.sceneObjectsCache.kuraSpeedtext;
         m_MiniMapGameObject = MainManager.Instance.sceneObjectsCache.miniMapGameObject;
@@ -54,6 +57,7 @@ public class PlayerUIManager : NetworkBehaviour
             m_PlayerIDText.text = m_PlayerMain.localData.playerID.ToString();
 
             m_RunTimeText.gameObject.SetActive(true);
+            m_PerfectRunTimeText.gameObject.SetActive(true);
 
             m_LobbyIDText.gameObject.SetActive(true);
             m_LobbyIDText.text = GameManager.Instance.lobbyCode.Value.Value;
@@ -76,7 +80,9 @@ public class PlayerUIManager : NetworkBehaviour
 
         m_KuraSpeedtext.text = Math.Floor(m_PlayerMain.GetVelocity().x).ToString();
 
-        m_RunTimeText.text = Math.Floor(m_PlayerMain.localData.playerRunTime / 60f).ToString() + ":" + Math.Floor(m_PlayerMain.localData.playerRunTime % 60f).ToString() + "." + Math.Floor(m_PlayerMain.localData.playerRunTime * 10) % 10 + Math.Floor(m_PlayerMain.localData.playerRunTime * 100) % 10;    }
+        m_RunTimeText.text = Math.Floor(m_PlayerMain.localData.playerRunTime / 60f).ToString() + ":" + Math.Floor(m_PlayerMain.localData.playerRunTime % 60f).ToString() + "." + Math.Floor(m_PlayerMain.localData.playerRunTime * 10) % 10 + Math.Floor(m_PlayerMain.localData.playerRunTime * 100) % 10;
+        m_PerfectRunTimeText.text = Math.Floor(m_PlayerMain.localData.perfectRunTime / 60f).ToString() + ":" + Math.Floor(m_PlayerMain.localData.perfectRunTime % 60f).ToString() + "." + Math.Floor(m_PlayerMain.localData.perfectRunTime * 10) % 10 + Math.Floor(m_PlayerMain.localData.perfectRunTime * 100) % 10;
+    }
 
     public void Finish()
     {
