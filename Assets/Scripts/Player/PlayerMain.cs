@@ -7,14 +7,6 @@ using Unity.VisualScripting;
 using System;
 using UnityEngine.UI;
 
-
-public struct SpawnPointData
-{
-    int gravityDerection;
-    Vector3 velosity;
-    Vector3 position;
-
-}
 public enum KuraState
 {
     //Kissing a wall, ground
@@ -107,7 +99,7 @@ public class PlayerMain : NetworkBehaviour
 
     private void Awake()
     {
-        localData = new KuraData(false, -1, -1, 0, KuraState.Fall, KuraGameMode.ClasicMode, 100, 100, -1, new PlayerMovementManager.KuraTransfromData(Vector3.zero, 1, 2, Vector3.zero));
+        localData = new KuraData(false, -1, -1, 0, KuraState.Fall, KuraGameMode.ClasicMode, 100, 100, -1, new PlayerMovementManager.KuraTransfromData(Vector3.zero, Vector3.zero, 1, 2, 1));
 
         m_PlayerMovementManager = gameObject.GetComponent<PlayerMovementManager>();
         m_PlayerUIManager = gameObject.GetComponent<PlayerUIManager>();
@@ -232,18 +224,27 @@ public class PlayerMain : NetworkBehaviour
         return IsClient && IsOwner;
     }
 
-    public bool SetCheckPoint(Vector3 spawPos, Vector3 velocity, float gravity_multip, int gravity_dir)
+    public bool SetCheckPoint(PlayerMovementManager.KuraTransfromData spawnData)
     {
         if (!(IsClient && IsOwner))
             return false;
 
-        localData.spawnData.position = spawPos;
-        localData.spawnData.velocity = velocity;
-        localData.spawnData.gravityMultiplier = gravity_multip;
-        localData.spawnData.gravityDirection = gravity_dir;
+        localData.spawnData = spawnData;
 
         return true;
+    }
 
+    // used in CheckPointSaveScript
+    public bool SetCheckPoint()
+    {
+        if (!(IsClient && IsOwner))
+            return false;
+
+        PlayerMovementManager.KuraTransfromData tr = m_PlayerMovementManager.GetTransformData();
+
+        localData.spawnData = tr;
+
+        return true;
     }
 
     public Vector2 GetVelocity()

@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 5213738162859047573}
   - component: {fileID: 7578819730990405718}
   - component: {fileID: 8598534358970592110}
-  - component: {fileID: 196681157160292031}
+  - component: {fileID: 1409045132188880124}
   m_Layer: 0
-  m_Name: CheckPoint
+  m_Name: CheckPointSave
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77,7 +77,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 0.8362427, g: 1, b: 0, a: 1}
+  m_Color: {r: 1, g: 0, b: 0.6565428, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -132,7 +132,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &196681157160292031
+--- !u!114 &1409045132188880124
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -141,14 +141,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 3359975601483033499}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d19ef05528593da479cf2c9fc408c17b, type: 3}
+  m_Script: {fileID: 11500000, guid: ea4e75d865ed2094a9ed10011bab388f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnPosition: {fileID: 6403206432491198490}
-  velocity: {x: 0, y: 0, z: 0}
-  gravityM: 2
-  gravityD: 1
-  nFlips: 1
   textureSprite: {fileID: 7578819730990405718}
 --- !u!1 &6887600909230699398
 GameObject:

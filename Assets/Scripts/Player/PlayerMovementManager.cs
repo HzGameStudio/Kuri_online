@@ -11,6 +11,7 @@ using Unity.VisualScripting;
 using System.Runtime.CompilerServices;
 using UnityEngine.PlayerLoop;
 using UnityEngine.UIElements;
+using System.Data;
 
 // Class to controls kura's movement
 public class PlayerMovementManager : NetworkBehaviour
@@ -18,27 +19,31 @@ public class PlayerMovementManager : NetworkBehaviour
     public struct KuraTransfromData : INetworkSerializable
     {
         public KuraTransfromData (Vector3 positionIn,
+                           Vector3 velocityIn,
                            int gravityDirectionIn,
                            float gravityMultiplierIn,
-                           Vector3 velocityIn)
+                           int nFilpsIn)
         {
             position = positionIn;
+            velocity = velocityIn;
             gravityDirection = gravityDirectionIn;
             gravityMultiplier = gravityMultiplierIn;
-            velocity = velocityIn;
+            nFlips = nFilpsIn;
         }
 
         public Vector3 position;
+        public Vector3 velocity;
         public int gravityDirection;
         public float gravityMultiplier;
-        public Vector3 velocity;
+        public int nFlips;
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {
             serializer.SerializeValue(ref position);
+            serializer.SerializeValue(ref velocity);
             serializer.SerializeValue(ref gravityDirection);
             serializer.SerializeValue(ref gravityMultiplier);
-            serializer.SerializeValue(ref velocity);
+            serializer.SerializeValue(ref nFlips);
         }
     }
 
@@ -248,7 +253,7 @@ public class PlayerMovementManager : NetworkBehaviour
 
             TakePeriodicDamageFromPlatmorm();
 
-            UpdatePositionOnServerRPC(new KuraTransfromData(transform.position, m_GravityDirection, m_GravityMultiplier, m_RigidBody2d.velocity));
+            UpdatePositionOnServerRPC(new KuraTransfromData(transform.position, m_RigidBody2d.velocity, m_GravityDirection, m_GravityMultiplier, m_NFlips));
         }
     }
 
@@ -506,8 +511,21 @@ public class PlayerMovementManager : NetworkBehaviour
         m_GravityMultiplier = localTransformData.gravityMultiplier;
         m_RigidBody2d.gravityScale = m_GravityDirection * m_GravityMultiplier;
 
+        m_NFlips = localTransformData.nFlips;
 
         Flip(localTransformData.gravityDirection);
+    }
+
+    public KuraTransfromData GetTransformData()
+    {
+        KuraTransfromData tr = new KuraTransfromData();
+        tr.gravityDirection = m_GravityDirection;
+        tr.gravityMultiplier = m_GravityMultiplier;
+        tr.position = transform.position;
+        tr.velocity = m_RigidBody2d.velocity;
+        tr.nFlips = m_NFlips;
+
+        return tr;
     }
 
     [ServerRpc]
@@ -518,15 +536,17 @@ public class PlayerMovementManager : NetworkBehaviour
         if (IsOwner)
             return;
 
+        // updates data on server for all kuras except host
+
         ApplyTransformLocally(localTransformData);
     }
 
     void OnKuraTransformDataFromClientChanged(KuraTransfromData previous, KuraTransfromData current)
     {
+        // updates data on all clients except server, all kuras except own kura
+
         if (IsOwner || IsServer)
             return;
-
-        // move the following lines to function (to not duplicate code)
 
         ApplyTransformLocally(current);
     }
