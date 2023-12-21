@@ -12,7 +12,7 @@ public class SpeedBoostScript : MonoBehaviour
         //Debug.Log(collision.gameObject.tag);
         if (collision.gameObject.CompareTag("player"))
         {
-            collision.gameObject.GetComponent<PlayerMovementManager>().Boost(speedBoostData);
+            collision.gameObject.GetComponent<IPlayerMain>().Boost(speedBoostData);
         }
     }
     

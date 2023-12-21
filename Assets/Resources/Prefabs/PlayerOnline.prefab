@@ -252,7 +252,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1439247526188831993
 Transform:
   m_ObjectHideFlags: 0
@@ -566,15 +566,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6889626484177783266}
-  - component: {fileID: 8804956939209465719}
-  - component: {fileID: 5484463939785066817}
-  - component: {fileID: 7794840999984759703}
+  - component: {fileID: 703681220442194656}
   - component: {fileID: 6603135422187617233}
   - component: {fileID: 6058774516315531929}
   - component: {fileID: 7040818748506229415}
   - component: {fileID: 5536031575971357030}
   m_Layer: 8
-  m_Name: player
+  m_Name: PlayerOnline
   m_TagString: player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -597,7 +595,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8804956939209465719
+--- !u!114 &703681220442194656
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -606,72 +604,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 5610264772952694332}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1ae76d7f6ff3604fa4c89fcbb5a793f, type: 3}
+  m_Script: {fileID: 11500000, guid: aecb3028ba249ff49878c45db7f2ce27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  localData:
-    finishedGame: 0
-    playerID: 0
-    placeInGame: 0
-    playerRunTime: 0
-    state: 0
-    gameMode: 0
-    health: 0
-    startHealth: 0
-    spectatorIndex: 0
-  serverData:
-    m_InternalValue:
-      finishedGame: 0
-      playerID: 0
-      placeInGame: 0
-      playerRunTime: 0
-      state: 0
-      gameMode: 0
-      health: 0
-      startHealth: 0
-      spectatorIndex: 0
---- !u!114 &5484463939785066817
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5610264772952694332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e23094dfcd8560c4b87d2a09bd2fe131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_CameraHolder: {fileID: 1618779326091119150}
---- !u!114 &7794840999984759703
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5610264772952694332}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 989c52490af508d408f5f31a55dcd53a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_MinFlyVelocity: -1
-  m_MaxFlyVelocity: 24
-  m_AbsoluteMaxVelocity: 40
-  m_ChillThresholdVelocity: 1
-  m_FlyForce: 5
-  m_FlyBrakeForce: 1
-  m_GravityMultiplier: 2
-  m_BoxCollider2D: {fileID: 6058774516315531929}
-  m_RigidBody2d: {fileID: 6603135422187617233}
-  m_SkinTransform: {fileID: 6055612317633711326}
-  m_RedKura: {fileID: 3978256245191091843}
   m_BlueKura: {fileID: 1876569059197966394}
-  m_FlipTagList:
-  - simplePlatform
-  - player
-  m_MaxFlips: 1
-  m_FinishTPDistance: {x: 2, y: 10}
+  m_RedKura: {fileID: 3978256245191091843}
+  m_Skin: {fileID: 6055612317633711326}
+  m_CameraHolder: {fileID: 1618779326091119150}
 --- !u!50 &6603135422187617233
 Rigidbody2D:
   serializedVersion: 4

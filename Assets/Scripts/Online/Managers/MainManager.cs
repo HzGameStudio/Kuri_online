@@ -1,12 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using TMPro;
-using Unity.Collections;
-using UnityEngine.UI;
-using System.Linq;
 using System;
 
 [Serializable]
@@ -24,23 +19,20 @@ public struct MainSceneObjectsCache
     public GameObject restartButton;
 }
 
-
-
 public class MainManager : SingletonNetwork<MainManager>
 {
-
     // Hide in inspector because inspector bug with NetworkVariable
     [HideInInspector]
-    public NetworkVariable<int> numPlayersInGame = new NetworkVariable<int>();
+    public NetworkVariable<int> numPlayersInGame = new ();
 
     public MainSceneObjectsCache sceneObjectsCache;
 
-    public List<ulong> playerIds = new List<ulong>();
+    public List<ulong> playerIds = new ();
 
-    public List<PlayerMain> PlayerMainList = new List<PlayerMain>();
+    public List<O_PlayerMain> PlayerMainList = new ();
 
     // All positions that a player can spawn in
-    private List<Vector3> m_SpawnPosTransformList = new List<Vector3>();
+    private List<Vector3> m_SpawnPosTransformList = new ();
 
     // Currently available positions to spawn, position is removed when player spawns there
     private List<Vector3> m_CurGameSpawnPosTransformList;
@@ -80,7 +72,7 @@ public class MainManager : SingletonNetwork<MainManager>
     {
         for (int i = 1; i <= PlayerMainList.Count; i++) 
         {
-            if (!PlayerMainList[(currentIndex + i) % PlayerMainList.Count].serverData.Value.finishedGame)
+            if (!PlayerMainList[(currentIndex + i) % PlayerMainList.Count].ServerData.finishedGame)
                 return (currentIndex + i) % PlayerMainList.Count;
         }
         return currentIndex;
@@ -100,8 +92,6 @@ public class MainManager : SingletonNetwork<MainManager>
 
         // Get list of all spawn position on map
         GameObject[] SpawnPointList = GameObject.FindGameObjectsWithTag("spawnPoint");
-
-        Debug.Log(SpawnPointList.Length);
 
         for (int i = 0; i < SpawnPointList.Length; i++)
         {
@@ -128,9 +118,7 @@ public class MainManager : SingletonNetwork<MainManager>
                 playerIds[i],
                 true);
 
-            Debug.Log("Game object " + go);
-
-            PlayerMain pm = go.GetComponent<PlayerMain>();
+            O_PlayerMain pm = go.GetComponent<O_PlayerMain>();
 
             ClientRpcParams clientRpcParams = new ClientRpcParams
             {
@@ -140,7 +128,7 @@ public class MainManager : SingletonNetwork<MainManager>
                 }
             };
 
-            pm.SendKuraDataToClientRPC(i + 1, spawnPos, clientRpcParams);
+            pm.SetInitialDataToClientRPC((int)playerIds[i], spawnPos, clientRpcParams);
         }
     }
 }

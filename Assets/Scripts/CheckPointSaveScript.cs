@@ -15,9 +15,12 @@ public class CheckPointSaveScript : MonoBehaviour
     {
         if (collision == null) return;
 
+        if (isActive)
+            return;
+
         if (collision.gameObject.CompareTag("player"))
         {
-            if(collision.gameObject.GetComponent<PlayerMain>().SetCheckPoint())
+            if(collision.gameObject.GetComponent<IPlayerMain>().SetCheckPoint())
             {
                 isActive = true;
                 textureSprite.color = Color.green;

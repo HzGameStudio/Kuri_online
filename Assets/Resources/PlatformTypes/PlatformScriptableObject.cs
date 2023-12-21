@@ -6,8 +6,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "PlatformScreaptebleObject", menuName = "ScriptableObjects/PlatformScreaptebleObject", order = 1)]
 public class PlatformScreaptebleObject : ScriptableObject
 {
-    public float MaxFlapRunTime;
-
     public string platformType;
 
     public float MaxRunVelocity;

@@ -11,15 +11,7 @@ public class FinishScript : NetworkBehaviour
     {
         if (collision.gameObject.CompareTag("player"))
         {
-            MainManager.Instance.numFinishedPlayers++;
-
-            collision.gameObject.GetComponent<PlayerMain>().Finish();
-
-            if (IsServer)
-            {
-                if (MainManager.Instance.numFinishedPlayers == MainManager.Instance.numPlayersInGame.Value)
-                    MainManager.Instance.sceneObjectsCache.restartButton.SetActive(true);
-            }
+            collision.gameObject.GetComponent<IPlayerMain>().Finish();
         }
     }
 }

@@ -47,7 +47,7 @@ public class TestRelay : SingletonNetwork<TestRelay>
 
             GameManager.Instance.lobbyCode.Value = joinCode;
 
-            LoadingSceneManager.Instance.LoadScene(SceneName.GameMenu, true);
+            LoadingSceneManager.Instance.LoadScene(SceneName.O_GameMenu, true);
         }
         catch (RelayServiceException ex)
         {

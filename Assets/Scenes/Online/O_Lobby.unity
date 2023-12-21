@@ -975,6 +975,8 @@ MonoBehaviour:
         byte0124: 0
         byte0125: 0
   maxPlayers: 4
+  connectedPlayers:
+    m_InternalValue: 0
 --- !u!114 &754015826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1817,7 +1819,7 @@ GameObject:
   - component: {fileID: 1521602597933595742}
   - component: {fileID: 982907442461347202}
   m_Layer: 0
-  m_Name: TestRelay
+  m_Name: Relay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

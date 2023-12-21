@@ -22,9 +22,12 @@ public class CheckPointScript : MonoBehaviour
     {
         if (collision == null) return;
 
+        if (isActive)
+            return;
+
         if (collision.gameObject.CompareTag("player"))
         {
-            if(collision.gameObject.GetComponent<PlayerMain>().SetCheckPoint(new PlayerMovementManager.KuraTransfromData(spawnPosition.position, velocity, gravityD, gravityM, nFlips)))
+            if(collision.gameObject.GetComponent<IPlayerMain>().SetCheckPoint(new KuraTransfromData(spawnPosition.position, velocity, gravityD, gravityM, nFlips)))
             {
                 isActive = true;
                 textureSprite.color = Color.green;

@@ -7,9 +7,9 @@ using UnityEngine.SceneManagement;
 // Important: the names in the enum value should be the same as the scene you're trying to load
 public enum SceneName : byte
 {
-    Bootstrap,
-    GameMenu,
-    MainGame
+    O_Lobby,
+    O_GameMenu,
+    O_MainGame
 };
 
 public class LoadingSceneManager : SingletonPersistent<LoadingSceneManager>
@@ -102,11 +102,11 @@ public class LoadingSceneManager : SingletonPersistent<LoadingSceneManager>
         // What to initially do on every scene when it finishes loading
         switch (m_sceneActive)
         {
-            case SceneName.Bootstrap:
+            case SceneName.O_Lobby:
                 break;
-            case SceneName.GameMenu:
+            case SceneName.O_GameMenu:
                 break;
-            case SceneName.MainGame:
+            case SceneName.O_MainGame:
                 MainManager.Instance.MainSceneInitialize(clientId);
                 break;
         }

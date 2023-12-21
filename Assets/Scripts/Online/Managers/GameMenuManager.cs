@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using TMPro;
@@ -32,20 +31,18 @@ public class GameMenuManager : SingletonNetwork<GameMenuManager>
 
         m_LobbyCodeText.text = GameManager.Instance.lobbyCode.Value.ToString();
 
-        GameManager.Instance.connectedPlayers.OnValueChanged += UpdateNumPlayersText;
-
         UpdateNumPlayersText(0, GameManager.Instance.connectedPlayers.Value);
+
+        GameManager.Instance.connectedPlayers.OnValueChanged += UpdateNumPlayersText;
     }
 
     public void StartGame()
     {
-        LoadingSceneManager.Instance.LoadScene(SceneName.MainGame, true);
+        LoadingSceneManager.Instance.LoadScene(SceneName.O_MainGame, true);
     }
 
     private void UpdateNumPlayersText(int previous, int current)
     {
         m_NumPlayersText.text = "Connected players: " + current.ToString();
     }
-
-    
 }
