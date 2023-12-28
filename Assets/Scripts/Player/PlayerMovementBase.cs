@@ -182,6 +182,9 @@ public abstract class PlayerMovementBase
 
     public void ProcessMovement()
     {
+        if (m_GeneralBase.LocalData.finishedGame)
+            return;
+
         KuraState state = m_GeneralBase.LocalData.state;
 
         if (state == KuraState.Stand)
