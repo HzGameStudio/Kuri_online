@@ -12,6 +12,6 @@ public class ChooseLaunchModeManager : MonoBehaviour
 
     public void StartSingleplayer()
     {
-        //SceneManager.LoadScene();
+        SceneManager.LoadScene("S_GameMenu");
     }
 }

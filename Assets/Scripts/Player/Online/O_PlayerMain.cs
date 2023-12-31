@@ -38,7 +38,7 @@ public class O_PlayerMain : NetworkBehaviour, IPlayerMain
         m_Interaction.ConnectComponents(m_Movement, m_General);
         m_UI.ConnectComponents(m_General, m_Movement);
 
-        //MainManager.Instance.PlayerMainList.Add(this);
+        MainManager.Instance.PlayerMainList.Add(this);
 
         MainManager.Instance.sceneObjectsCache.SpectatorModeButton.GetComponent<Button>().onClick.AddListener(ActivateSpactatorMode);
         MainManager.Instance.sceneObjectsCache.SpectatorModeHolder.GetComponentInChildren<Button>().onClick.AddListener(SpectateNextPlayer);
@@ -57,7 +57,7 @@ public class O_PlayerMain : NetworkBehaviour, IPlayerMain
 
     private void Update()
     {
-        if (m_General.TakeInput())
+        if (IsOwner && m_General.TakeInput())
         {
              m_Movement.ProcessInput();
         }
@@ -131,9 +131,9 @@ public class O_PlayerMain : NetworkBehaviour, IPlayerMain
     #region Public interfaces
     public void Finish()
     {
-        m_General.Finish(IsOwner);
+        m_General.Finish();
         m_Movement.Finish();
-        m_UI.Finish();
+        m_UI.Finish(IsOwner, IsServer);
     }
     public void Damage(float damage) { m_General.Damage(damage, IsOwner); }
     public bool SetCheckPoint(KuraTransfromData spawnData) { return m_General.SetCheckPoint(spawnData, IsOwner); }

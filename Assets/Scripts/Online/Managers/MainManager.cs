@@ -70,6 +70,9 @@ public class MainManager : SingletonNetwork<MainManager>
 
     public int FindSpactatorModeIndex(int currentIndex)
     {
+        for (int i=0; i<PlayerMainList.Count; i++)
+            Debug.Log("List " + PlayerMainList[i]);
+
         for (int i = 1; i <= PlayerMainList.Count; i++) 
         {
             if (!PlayerMainList[(currentIndex + i) % PlayerMainList.Count].ServerData.finishedGame)

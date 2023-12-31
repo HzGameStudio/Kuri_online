@@ -286,8 +286,6 @@ public abstract class PlayerMovementBase
         //if (!(IsClient && IsOwner))
         //    return;
 
-        Debug.Log("Movement script");
-
         m_GravityMultiplier = 0.0f;
         m_RigidBody2D.gravityScale = m_GravityMultiplier;
 

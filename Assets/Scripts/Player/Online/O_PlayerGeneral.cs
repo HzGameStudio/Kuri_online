@@ -37,12 +37,6 @@ public class O_PlayerGeneral : PlayerGeneralBase
             base.UpdateTimers();
     }
 
-    public void Finish(bool IsOwner)
-    {
-        if (IsOwner)
-            base.Finish();
-    }
-
     public void Damage(float damage, bool IsOwner)
     {
         if (IsOwner)
@@ -56,9 +50,13 @@ public class O_PlayerGeneral : PlayerGeneralBase
 
     public int SpectateNextPlayer()
     {
+        Debug.Log("General " + localData.spectatorIndex);
+
         int prev = localData.spectatorIndex;
 
         localData.spectatorIndex = MainManager.Instance.FindSpactatorModeIndex(localData.spectatorIndex);
+
+        Debug.Log("General " + localData.spectatorIndex);
 
         return prev;
     }

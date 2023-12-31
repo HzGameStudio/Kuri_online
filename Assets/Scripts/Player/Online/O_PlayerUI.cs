@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using System;
+using UnityEditor;
 
 public class O_PlayerUI : PlayerUIBase
 {
@@ -67,8 +68,19 @@ public class O_PlayerUI : PlayerUIBase
         m_PerfectRunTimeText.text = Math.Floor(m_GeneralBase.LocalData.perfectRunTime / 60f).ToString() + ":" + Math.Floor(m_GeneralBase.LocalData.perfectRunTime % 60f).ToString() + "." + Math.Floor(m_GeneralBase.LocalData.perfectRunTime * 10) % 10 + Math.Floor(m_GeneralBase.LocalData.perfectRunTime * 100) % 10;
     }
 
-    public void Finish()
+    public void Finish(bool IsOwner, bool IsServer)
     {
+        Debug.Log("UI 1");
+
+        if (IsServer)
+        {
+            if (MainManager.Instance.numFinishedPlayers == MainManager.Instance.numPlayersInGame.Value)
+                m_RestartButton.SetActive(true);
+            Debug.Log("UI 2");
+        }
+
+        if (!IsOwner) return;
+
         m_WinnerText.gameObject.SetActive(true);
         m_WinnerText.text = "YOU WON " + m_GeneralBase.LocalData.placeInGame.ToString() + " PLACE!!!";
         m_SpactatorModeButton.SetActive(true);
@@ -89,14 +101,21 @@ public class O_PlayerUI : PlayerUIBase
 
     public void ChangeSpectateCamera(int prev)
     {
+        Debug.Log("1");
+
         if (m_GeneralBase.LocalData.spectatorIndex == -1)
             return;
+
+        Debug.Log("2");
 
         // deactive own camera (for when spectator mode is activating)
         m_CameraHolder.gameObject.SetActive(false);
 
         if (prev != -1)
+        {
             MainManager.Instance.PlayerMainList[prev].DeactivateCamera();
+            Debug.Log("3");
+        }
 
         MainManager.Instance.PlayerMainList[m_GeneralBase.LocalData.spectatorIndex].ActivateCamera();
     }

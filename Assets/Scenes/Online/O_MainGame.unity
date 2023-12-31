@@ -4221,8 +4221,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   musicSounds:
-  - name: JingleBells
-    clip: {fileID: 8300000, guid: 0b3d8419af64770469009f333397be1b, type: 3}
+  - name: JingleBellsQuiet
+    clip: {fileID: 8300000, guid: 30918805c50ed3641b83bf7d735347de, type: 3}
   sfxSounds:
   - name: Death
     clip: {fileID: 8300000, guid: 5a042be8478c04046a39f187d8c38d8c, type: 3}
@@ -9457,7 +9457,7 @@ AudioSource:
   MinDistance: 1
   MaxDistance: 500
   Pan2D: 0
-  rolloffMode: 0
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
