@@ -131,6 +131,7 @@ public abstract class PlayerGeneralBase
         if (localData.health <= 0)
         {
             //Dead
+            AudioManager.Instance.PlaySFX("Death", 10f);
             Respawn();
         }
     }

@@ -5,8 +5,8 @@ using UnityEngine;
 public class SpawnEmitters : MonoBehaviour
 {
     public Transform SpawnerTransform;
-    public int NumberOfEmitters;
-    public float DeltaX;
+    public int NumberOfEmitters = 115;
+    public float DeltaX = 15;
     public GameObject SnowEmitter;
 
     void Start()
