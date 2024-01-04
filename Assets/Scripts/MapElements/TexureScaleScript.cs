@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D;
 
-public class texureScaleScript : MonoBehaviour
+public class TexureScaleScript : MonoBehaviour
 {
     public Vector3 initialGroudScale = new Vector3(1,1,1);
     public Vector3 initialGrassScale;
