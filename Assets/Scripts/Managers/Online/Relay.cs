@@ -10,16 +10,15 @@ using Unity.Services.Relay.Models;
 using UnityEngine;
 using TMPro;
 using System;
+using System.Threading.Tasks;
 
 // Class that creates the relay, starts host / client
-public class TestRelay : SingletonNetwork<TestRelay>
+public static class Relay
 {
-    [SerializeField]
-    private TextMeshProUGUI m_LobbyCodeInputField;
-
-    private async void Start()
+    public static async Task SignInAnonymously()
     {
-        await UnityServices.InitializeAsync();
+        if (UnityServices.State == ServicesInitializationState.Uninitialized)
+            await UnityServices.InitializeAsync();
 
         AuthenticationService.Instance.SignedIn += () =>
         {
@@ -28,7 +27,7 @@ public class TestRelay : SingletonNetwork<TestRelay>
         await AuthenticationService.Instance.SignInAnonymouslyAsync();
     }
 
-    private async void CreateRelay()
+    public static async Task<bool> CreateRelay()
     {
         try
         { 
@@ -39,7 +38,7 @@ public class TestRelay : SingletonNetwork<TestRelay>
 
             Debug.Log(joinCode);
 
-            RelayServerData relayServerData = new RelayServerData(allocation, "udp");
+            RelayServerData relayServerData = new (allocation, "udp");
 
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
@@ -47,15 +46,17 @@ public class TestRelay : SingletonNetwork<TestRelay>
 
             GameManager.Instance.lobbyCode.Value = joinCode;
 
-            LoadingSceneManager.Instance.LoadScene(SceneName.O_GameMenu, true);
+            return true;
         }
         catch (RelayServiceException ex)
         {
             Debug.LogError(ex);
+
+            return false;
         }
     }
 
-    private async void JoinRelay(string joinCode)
+    public static async Task<bool> JoinRelay(string joinCode)
     {
         try
         {
@@ -67,36 +68,14 @@ public class TestRelay : SingletonNetwork<TestRelay>
             NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 
             NetworkManager.Singleton.StartClient();
+
+            return true;
         }
         catch (RelayServiceException ex)
         {
             Debug.LogError(ex);
-        }
-    }
 
-    public void ButtonCreateRelay()
-    {
-        // You can Manually change the <Protocol Type> parameter in the <Unity Transform> component on the <NetworkManager> object,
-        // <Relay Unity Transform> is for playing online with the relay, <Unity Transform> is for testing offline, only works when playing on one computer
-        if (NetworkManager.Singleton.GetComponent<UnityTransport>().Protocol == UnityTransport.ProtocolType.RelayUnityTransport)
-            CreateRelay();
-        else
-        {
-            AuthenticationService.Instance.SignOut();
-
-            NetworkManager.Singleton.StartHost();
-        }
-    }
-
-    public void ButtonJoinRelay()
-    {
-        if (NetworkManager.Singleton.GetComponent<UnityTransport>().Protocol == UnityTransport.ProtocolType.RelayUnityTransport)
-            JoinRelay(m_LobbyCodeInputField.text.Substring(0,6));
-        else
-        {
-            AuthenticationService.Instance.SignOut();
-
-            NetworkManager.Singleton.StartClient();
+            return false;
         }
     }
 }

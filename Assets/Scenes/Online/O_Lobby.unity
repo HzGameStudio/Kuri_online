@@ -742,9 +742,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1521602597933595742}
-        m_TargetAssemblyTypeName: TestRelay, Assembly-CSharp
-        m_MethodName: ButtonCreateRelay
+      - m_Target: {fileID: 7764676208385039408}
+        m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
+        m_MethodName: Create
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1445,9 +1445,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1521602597933595742}
-        m_TargetAssemblyTypeName: TestRelay, Assembly-CSharp
-        m_MethodName: ButtonJoinRelay
+      - m_Target: {fileID: 7764676208385039408}
+        m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
+        m_MethodName: Join
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1787,26 +1787,6 @@ MonoBehaviour:
     PacketDelayMS: 0
     PacketJitterMS: 0
     PacketDropRate: 0
---- !u!114 &982907442461347202
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1177178270151169979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 311380028
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!1 &1177178270151169979
 GameObject:
   m_ObjectHideFlags: 0
@@ -1816,28 +1796,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7764676208385039407}
-  - component: {fileID: 1521602597933595742}
-  - component: {fileID: 982907442461347202}
+  - component: {fileID: 7764676208385039408}
   m_Layer: 0
-  m_Name: Relay
+  m_Name: LobbyManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1521602597933595742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1177178270151169979}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 599daf3b57cef464a8d6be68c3a0e2cb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_LobbyCodeInputField: {fileID: 656641665}
 --- !u!114 &5329523487955228567
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1923,3 +1889,16 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7764676208385039408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1177178270151169979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f80ce1ecf892cb4f8e5048b8f477539, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_LobbyCodeInputField: {fileID: 656641665}
