@@ -117,8 +117,6 @@ public abstract class PlayerGeneralBase
 
     public void Finish()
     {
-        MainManager.Instance.numFinishedPlayers += 1;
-        localData.placeInGame = MainManager.Instance.numFinishedPlayers;
         localData.finishedGame = true;
     }
 
