@@ -6,9 +6,4 @@ using UnityEngine;
 
 public class O_PlayerInteraction : PlayerInteractionBase
 {
-    public void TakePeriodicDamageFromPlatmorms(bool IsOwner)
-    {
-        if (IsOwner)
-            base.TakePeriodicDamageFromPlatmorms();
-    }
 }

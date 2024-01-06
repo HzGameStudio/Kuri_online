@@ -3,6 +3,8 @@ using UnityEngine;
 using Unity.Netcode;
 using TMPro;
 using System;
+using System.Security.Cryptography;
+using UnityEngine.UI;
 
 [Serializable]
 public struct MainSceneObjectsCache
@@ -41,6 +43,18 @@ public class MainManager : SingletonNetwork<MainManager>
 
     [SerializeField]
     private GameObject m_PlayerPrefab;
+
+    public new void Awake()
+    {
+        base.Awake();
+
+        sceneObjectsCache.restartButton.GetComponent<Button>().onClick.AddListener(RestartGame);
+    }
+
+    public void RestartGame()
+    {
+        LoadingSceneManager.Instance.LoadScene(SceneName.O_GameMenu, true);
+    }
 
     public Vector3 GetSpawnPosition()
     {

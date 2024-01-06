@@ -31,18 +31,6 @@ public class O_PlayerGeneral : PlayerGeneralBase
         }
     }
 
-    public void UpdateTimers(bool IsOwner)
-    {
-        if (IsOwner)
-            base.UpdateTimers();
-    }
-
-    public void Damage(float damage, bool IsOwner)
-    {
-        if (IsOwner)
-            base.Damage(damage);
-    }
-
     public void ActivateSpactatorMode()
     {
         localData.gameMode = KuraGameMode.SpactatorMode;
@@ -50,35 +38,11 @@ public class O_PlayerGeneral : PlayerGeneralBase
 
     public int SpectateNextPlayer()
     {
-        Debug.Log("General " + localData.spectatorIndex);
-
         int prev = localData.spectatorIndex;
 
         localData.spectatorIndex = MainManager.Instance.FindSpactatorModeIndex(localData.spectatorIndex);
 
-        Debug.Log("General " + localData.spectatorIndex);
-
         return prev;
-    }
-
-    public bool SetCheckPoint(KuraTransfromData spawnData, bool IsOwner)
-    {
-        if (IsOwner)
-        {
-            base.SetCheckPoint(spawnData);
-            return true;
-        }
-        return false;
-    }
-
-    public bool SetCheckPoint(bool IsOwner)
-    {
-        if (IsOwner)
-        {
-            base.SetCheckPoint();
-            return true;
-        }
-        return false;
     }
 
     public void UpdateDataOnServerRPC(KuraData localData)
@@ -89,6 +53,6 @@ public class O_PlayerGeneral : PlayerGeneralBase
     public void SetInitialData(int ID, Vector3 pos)
     {
         localData.playerID = ID;
-        localData.spawnData.position = pos;
+        base.SetInitialData(pos);
     }
 }

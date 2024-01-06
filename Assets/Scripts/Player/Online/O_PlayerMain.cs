@@ -35,14 +35,12 @@ public class O_PlayerMain : NetworkBehaviour, IPlayerMain
 
         m_General.ConnectComponents(m_Movement);
         m_Movement.ConnectComponents(m_General, m_Interaction);
-        m_Interaction.ConnectComponents(m_Movement, m_General);
         m_UI.ConnectComponents(m_General, m_Movement);
 
         MainManager.Instance.PlayerMainList.Add(this);
 
         MainManager.Instance.sceneObjectsCache.SpectatorModeButton.GetComponent<Button>().onClick.AddListener(ActivateSpactatorMode);
         MainManager.Instance.sceneObjectsCache.SpectatorModeHolder.GetComponentInChildren<Button>().onClick.AddListener(SpectateNextPlayer);
-        MainManager.Instance.sceneObjectsCache.restartButton.GetComponent<Button>().onClick.AddListener(RestartGame);
     }
 
     public override void OnNetworkSpawn()
@@ -57,13 +55,14 @@ public class O_PlayerMain : NetworkBehaviour, IPlayerMain
 
     private void Update()
     {
-        if (IsOwner && m_General.TakeInput())
+        if (IsOwner)
         {
-             m_Movement.ProcessInput();
-        }
+            if (m_General.TakeInput())
+                m_Movement.ProcessInput();
 
-        m_General.UpdateTimers(IsOwner);
-        m_UI.UpdateUI(IsOwner);
+            m_General.UpdateTimers();
+            m_UI.UpdateUI();
+        }
 
         KuraTransfromData data = m_Movement.GetTransformData();
         Debug.DrawLine(data.position, new Vector3(data.position.x + data.velocity.x, data.position.y, data.position.z), Color.red, 1 / 300f);
@@ -74,7 +73,7 @@ public class O_PlayerMain : NetworkBehaviour, IPlayerMain
         m_General.State = m_Movement.GetNewKuraState();
         m_Movement.ProcessMovement();
 
-        m_Interaction.TakePeriodicDamageFromPlatmorms(IsOwner);
+        m_General.Damage(m_Interaction.GetPeriodicDamageFromPlatmorms());
 
         if (IsOwner)
             SyncDataServerRPC(m_General.LocalData, m_Movement.GetTransformData());
@@ -82,11 +81,23 @@ public class O_PlayerMain : NetworkBehaviour, IPlayerMain
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        m_Interaction.OnCollisionEnter2D(collision);
+        if (!(IsClient && IsOwner))
+            return;
+
+        if (m_Interaction.OnCollisionEnter2D(collision, m_Movement.GetTransformData().position))
+            m_Movement.GiveFlip();
+
+        foreach (ContactPoint2D contact in collision.contacts)
+        {
+            Debug.DrawLine(new Vector3(contact.point.x, contact.point.y, transform.position.z), transform.position, Color.green, 2, false);
+        }
     }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
+        if (!(IsClient && IsOwner))
+            return;
+
         m_Interaction.OnCollisionExit2D(collision);
     }
 
@@ -125,7 +136,8 @@ public class O_PlayerMain : NetworkBehaviour, IPlayerMain
     {
         m_General.SetInitialData(ID, pos);
 
-        m_UI.SetupUI(IsOwner);
+        if (IsOwnedByServer)
+            m_UI.SetupUI();
     }
 
     #region Public interfaces
@@ -135,11 +147,26 @@ public class O_PlayerMain : NetworkBehaviour, IPlayerMain
         m_Movement.Finish();
         m_UI.Finish(IsOwner, IsServer);
     }
-    public void Damage(float damage) { m_General.Damage(damage, IsOwner); }
-    public bool SetCheckPoint(KuraTransfromData spawnData) { return m_General.SetCheckPoint(spawnData, IsOwner); }
-    public bool SetCheckPoint() { return m_General.SetCheckPoint(IsOwner); }
+    public void Damage(float damage)
+    {
+        if (IsOwner)
+            m_General.Damage(damage);
+    }
+    public bool SetCheckPoint(KuraTransfromData spawnData)
+    {
+        if (IsOwner)
+            m_General.SetCheckPoint(spawnData);
+
+        return IsOwner;
+    }
+    public bool SetCheckPoint()
+    {
+        if (IsOwner)
+            m_General.SetCheckPoint();
+
+        return IsOwner;
+    }
     public void Boost(SpeedBoostScriptableObject speedBoostData) { m_Movement.Boost(speedBoostData); }
-    public void RestartGame() { LoadingSceneManager.Instance.LoadScene(SceneName.O_GameMenu, true); }
     #endregion
 
     void OnTFCChanged(KuraTransfromData previous, KuraTransfromData current)

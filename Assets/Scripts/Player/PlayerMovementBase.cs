@@ -67,7 +67,6 @@ public abstract class PlayerMovementBase
     #region Object pointers
     // square transform, not player transform
     private readonly Transform m_SkinTransform;
-    private readonly BoxCollider2D m_BoxCollider2D;
     protected readonly Rigidbody2D m_RigidBody2D;
 
     private PlayerGeneralBase m_GeneralBase;
@@ -90,13 +89,14 @@ public abstract class PlayerMovementBase
     private float m_GravityMultiplier = 2f;
     private int m_NFlips = 1;
 
+    public Vector2 Velocity { get { return m_RigidBody2D.velocity; } }
+
     protected PlayerMovementBase(GameObject kura, Transform skinTransform)
     {
         //Time.timeScale = 0.5f;
 
         m_Kura = kura;
 
-        m_BoxCollider2D = kura.GetComponent<BoxCollider2D>();
         m_RigidBody2D = kura.GetComponent<Rigidbody2D>();
 
         m_SkinTransform = skinTransform;
@@ -106,6 +106,8 @@ public abstract class PlayerMovementBase
     {
         m_GeneralBase = generalBase;
         m_InteractionBase = interactionBase;
+
+        m_GeneralBase.OnRespawn += Respawn;
     }
 
     public void ProcessInput()
@@ -146,7 +148,7 @@ public abstract class PlayerMovementBase
         if (m_GeneralBase.LocalData.state == KuraState.Boosted)
             return KuraState.Boosted;
 
-        bool onFloor = m_InteractionBase.IsOnFloor();
+        bool onFloor = m_InteractionBase.IsOnFloor(m_GravityDirection);
 
         bool kissWall = m_InteractionBase.IsKissWall();
 
@@ -160,7 +162,7 @@ public abstract class PlayerMovementBase
 
         if (onFloor)
         {
-            Tuple<GameObject, int> feetPlatform = m_InteractionBase.GiveFeetPlatform();
+            Tuple<GameObject, int> feetPlatform = m_InteractionBase.GiveFeetPlatform(m_GravityDirection);
 
             PlatformScreaptebleObject platformData = feetPlatform.Item1.GetComponent<PlatformBasicScript>().platformData;
 
@@ -187,6 +189,30 @@ public abstract class PlayerMovementBase
 
         KuraState state = m_GeneralBase.LocalData.state;
 
+        if (state == KuraState.Boosted)
+        {
+            if (m_CurSpeedBoostTime > 0)
+            {
+                m_CurSpeedBoostTime -= Time.fixedDeltaTime;
+                m_RigidBody2D.totalForce = new Vector2(m_CurSpeedBoostForce, m_RigidBody2D.totalForce.y);
+            }
+            else
+            {
+                m_GeneralBase.State = KuraState.None;
+                m_GeneralBase.State = GetNewKuraState();
+
+                m_CurSpeedBoostTime = 0;
+            }
+
+            return;
+        }
+
+        if (m_RigidBody2D.velocity.x > m_AbsoluteMaxVelocity)
+        {
+            m_RigidBody2D.velocity = new Vector2(m_AbsoluteMaxVelocity, m_RigidBody2D.velocity.y);
+            return;
+        }
+
         if (state == KuraState.Stand)
             return;
 
@@ -195,7 +221,7 @@ public abstract class PlayerMovementBase
 
         if (state == KuraState.Run)
         {
-            Tuple<GameObject, int> feetPlatform = m_InteractionBase.GiveFeetPlatform();
+            Tuple<GameObject, int> feetPlatform = m_InteractionBase.GiveFeetPlatform(m_GravityDirection);
             PlatformScreaptebleObject platformData = feetPlatform.Item1.GetComponent<PlatformBasicScript>().platformData;
 
             if (feetPlatform.Item1.tag.CompareTo("simplePlatform") == 0)
@@ -208,7 +234,7 @@ public abstract class PlayerMovementBase
 
         if (state == KuraState.ReadyRun)
         {
-            Tuple<GameObject, int> feetPlatform = m_InteractionBase.GiveFeetPlatform();
+            Tuple<GameObject, int> feetPlatform = m_InteractionBase.GiveFeetPlatform(m_GravityDirection);
             PlatformScreaptebleObject platformData = feetPlatform.Item1.GetComponent<PlatformBasicScript>().platformData;
 
             if (feetPlatform.Item1.tag.CompareTo("simplePlatform") == 0)
@@ -241,30 +267,12 @@ public abstract class PlayerMovementBase
             return;
         }
 
-        if (state == KuraState.Boosted)
-        {
-            if (m_CurSpeedBoostTime > 0)
-            {
-                m_CurSpeedBoostTime -= Time.fixedDeltaTime;
-                m_RigidBody2D.totalForce = new Vector2(m_CurSpeedBoostForce, m_RigidBody2D.totalForce.y);
-            }
-            else
-            {
-                m_GeneralBase.State = KuraState.None;
-                m_GeneralBase.State = GetNewKuraState();
-
-                m_CurSpeedBoostTime = 0;
-            }
-
-            return;
-        }
-
         Debug.Log("No kura state ??? " + m_GeneralBase.LocalData.state);
 
         return;
     }
 
-    public void Respawn()
+    private void Respawn()
     {
         m_Kura.transform.position = m_GeneralBase.LocalData.spawnData.position;
         m_RigidBody2D.velocity = m_GeneralBase.LocalData.spawnData.velocity;
@@ -283,9 +291,6 @@ public abstract class PlayerMovementBase
     // Stop kura when it finishes
     public void Finish()
     {
-        //if (!(IsClient && IsOwner))
-        //    return;
-
         m_GravityMultiplier = 0.0f;
         m_RigidBody2D.gravityScale = m_GravityMultiplier;
 

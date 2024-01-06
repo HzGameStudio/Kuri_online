@@ -7,8 +7,6 @@ public class O_PlayerMovement : PlayerMovementBase
     [DoNotSerialize, HideInInspector]
     private NetworkVariable<KuraTransfromData> m_TransformFromClient;
 
-    public Vector2 Velocity { get { return m_RigidBody2D.velocity; } }
-
     public O_PlayerMovement(GameObject kura, Transform skinTransform) : base(kura, skinTransform) { }
 
     public void OnNetworkSpawn(NetworkVariable<KuraTransfromData> transformFromClient)

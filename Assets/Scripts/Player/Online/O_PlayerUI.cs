@@ -45,23 +45,17 @@ public class O_PlayerUI : PlayerUIBase
         m_Movement = movement;
     }
 
-    public void SetupUI(bool IsOwner)
+    public void SetupUI()
     {
-        if (IsOwner)
-        {
-            m_PlayerIDText.text = m_GeneralBase.LocalData.playerID.ToString();
+        m_PlayerIDText.text = m_GeneralBase.LocalData.playerID.ToString();
 
-            m_LobbyIDText.text = GameManager.Instance.lobbyCode.Value.Value;
+        m_LobbyIDText.text = GameManager.Instance.lobbyCode.Value.Value;
 
-            m_CameraHolder.SetActive(true);
-        }
+        m_CameraHolder.SetActive(true);
     }
 
-    public void UpdateUI(bool IsOwner)
+    public void UpdateUI()
     {
-        if (!IsOwner)
-            return;
-
         m_KuraSpeedtext.text = Math.Floor(m_Movement.Velocity.x).ToString();
 
         m_RunTimeText.text = Math.Floor(m_GeneralBase.LocalData.playerRunTime / 60f).ToString() + ":" + Math.Floor(m_GeneralBase.LocalData.playerRunTime % 60f).ToString() + "." + Math.Floor(m_GeneralBase.LocalData.playerRunTime * 10) % 10 + Math.Floor(m_GeneralBase.LocalData.playerRunTime * 100) % 10;
@@ -70,13 +64,10 @@ public class O_PlayerUI : PlayerUIBase
 
     public void Finish(bool IsOwner, bool IsServer)
     {
-        Debug.Log("UI 1");
-
         if (IsServer)
         {
             if (MainManager.Instance.numFinishedPlayers == MainManager.Instance.numPlayersInGame.Value)
                 m_RestartButton.SetActive(true);
-            Debug.Log("UI 2");
         }
 
         if (!IsOwner) return;
@@ -101,12 +92,8 @@ public class O_PlayerUI : PlayerUIBase
 
     public void ChangeSpectateCamera(int prev)
     {
-        Debug.Log("1");
-
         if (m_GeneralBase.LocalData.spectatorIndex == -1)
             return;
-
-        Debug.Log("2");
 
         // deactive own camera (for when spectator mode is activating)
         m_CameraHolder.gameObject.SetActive(false);
@@ -114,7 +101,6 @@ public class O_PlayerUI : PlayerUIBase
         if (prev != -1)
         {
             MainManager.Instance.PlayerMainList[prev].DeactivateCamera();
-            Debug.Log("3");
         }
 
         MainManager.Instance.PlayerMainList[m_GeneralBase.LocalData.spectatorIndex].ActivateCamera();

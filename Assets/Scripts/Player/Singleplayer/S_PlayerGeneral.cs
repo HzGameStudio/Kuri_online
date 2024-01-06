@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class S_PlayerGeneral : MonoBehaviour
+public class S_PlayerGeneral : PlayerGeneralBase
 {
-    
 }

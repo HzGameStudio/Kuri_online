@@ -78,6 +78,8 @@ public abstract class PlayerGeneralBase
     public KuraData LocalData { get { return localData; } }
     public KuraState State { set { localData.state = value; } }
 
+    public Action OnRespawn;
+
     protected PlayerGeneralBase()
     {
         localData = new KuraData(false, -1, -1, 0, 0, 0, KuraState.None, KuraGameMode.ClasicMode, 100, 100, -1, new (Vector3.zero, Vector3.zero, 1, 2, 1) );
@@ -88,7 +90,7 @@ public abstract class PlayerGeneralBase
         m_MovementBase = movementBase;
     }
 
-    protected void UpdateTimers()
+    public void UpdateTimers()
     {
         if (!localData.finishedGame)
         {
@@ -131,7 +133,12 @@ public abstract class PlayerGeneralBase
         if (localData.health <= 0)
         {
             //Dead
+
+            // TODO: Do a audio manager 
             AudioManager.Instance.PlaySFX("Death", 10f);
+
+            OnRespawn.Invoke();
+
             Respawn();
         }
     }
@@ -140,22 +147,26 @@ public abstract class PlayerGeneralBase
     {
         localData.health = localData.startHealth;
         localData.perfectRunTime = localData.lastCPRunTime;
-        m_MovementBase.Respawn();
     }
 
     // used in CheckPointScript
-    protected void SetCheckPoint(KuraTransfromData spawnData)
+    public void SetCheckPoint(KuraTransfromData spawnData)
     {
         localData.spawnData = spawnData;
         localData.lastCPRunTime = localData.perfectRunTime;
     }
 
     // used in CheckPointSaveScript
-    protected void SetCheckPoint()
+    public void SetCheckPoint()
     {
         KuraTransfromData tr = m_MovementBase.GetTransformData();
 
         localData.spawnData = tr;
         localData.lastCPRunTime = localData.perfectRunTime;
+    }
+
+    public void SetInitialData(Vector3 pos)
+    {
+        localData.spawnData.position = pos;
     }
 }
