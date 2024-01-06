@@ -14,7 +14,7 @@ public class GameManager : SingletonNetworkPersistent<GameManager>
     [HideInInspector]
     public NetworkVariable<FixedString128Bytes> lobbyCode = new NetworkVariable<FixedString128Bytes>("IF YOU SEE THIS THEN YOU'RE OFFLINE, YARIK FORGOT TO CHANGE UNITY TRANSFORM PROTOCOL TYPE");
 
-    public int maxPlayers = 4;
+    public int maxPlayers = 20;
 
     public NetworkVariable<int> connectedPlayers;
 
