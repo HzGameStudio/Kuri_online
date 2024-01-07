@@ -1,10 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
-using UnityEditor.PackageManager;
+
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class S_PlayerMain : MonoBehaviour, IPlayerMain
 {
@@ -16,6 +11,7 @@ public class S_PlayerMain : MonoBehaviour, IPlayerMain
     #endregion
 
     [SerializeField] Transform m_Skin;
+    //coment 
 
     private void Awake()
     {
