@@ -47,15 +47,10 @@ public class S_MainManager : Singleton<S_MainManager>
 
         Shuffle<Vector3>(m_CurGameSpawnPosTransformList);
 
-        sceneObjectsCache.restartButton.GetComponent<Button>().onClick.AddListener(RestartGame);
-
         Instantiate(m_PlayerPrefab, GetSpawnPosition(), Quaternion.identity);
     }
 
-    public void RestartGame()
-    {
-        SceneManager.LoadScene("S_GameMenu");
-    }
+    
 
     public Vector3 GetSpawnPosition()
     {
