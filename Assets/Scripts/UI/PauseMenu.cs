@@ -10,12 +10,13 @@ public class PauseMenu : MonoBehaviour
 
     [SerializeField] private GameObject PauseMenuUI;
 
+    public GameObject player;
+
 
     public void Resume()
     {
         PauseMenuUI.SetActive(false);
         Time.timeScale = 1;
-
     }
 
     public void Pause()
@@ -34,6 +35,12 @@ public class PauseMenu : MonoBehaviour
     {
         Time.timeScale = 1;
         SceneManager.LoadScene("ChooseLaunchMode");
+    }
+
+    public void ResetCheckPoint()
+    {
+        player.GetComponent<S_PlayerMain>().Respawn();
+        Resume();
     }
 }
     

@@ -89,4 +89,10 @@ public class S_PlayerMain : MonoBehaviour, IPlayerMain
     }
     public void Boost(SpeedBoostScriptableObject speedBoostData) { m_Movement.Boost(speedBoostData); }
     #endregion
+
+    public void Respawn()
+    {
+        m_General.OnRespawn.Invoke();
+        //
+    }
 }

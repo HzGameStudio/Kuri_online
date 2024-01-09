@@ -85,6 +85,7 @@ public abstract class PlayerGeneralBase
     protected PlayerGeneralBase()
     {
         localData = new KuraData(false, -1, -1, 0, 0, 0, KuraState.None, KuraGameMode.ClasicMode, 100, 100, -1, new (Vector3.zero, Vector3.zero, 1, 2, 1) );
+        OnRespawn += Respawn;
     }
 
     public void ConnectComponents(PlayerMovementBase movementBase)
@@ -154,7 +155,7 @@ public abstract class PlayerGeneralBase
         CheckHealth();
     }
 
-    private void CheckHealth()
+    protected void CheckHealth()
     {
         if (localData.health <= 0)
         {
@@ -164,12 +165,10 @@ public abstract class PlayerGeneralBase
             AudioManager.Instance.PlaySFX("Death", 10f);
 
             OnRespawn.Invoke();
-
-            Respawn();
         }
     }
 
-    private void Respawn()
+    protected void Respawn()
     {
         localData.health = localData.startHealth;
         localData.perfectRunTime = localData.lastCPRunTime;

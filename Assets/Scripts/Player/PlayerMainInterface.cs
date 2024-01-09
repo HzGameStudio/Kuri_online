@@ -6,7 +6,6 @@ using UnityEngine;
 public interface IPlayerMain
 {
     public void Finish();
-
     public void Damage(float damage);
     public bool SetCheckPoint(KuraTransfromData spawnData);
     public bool SetCheckPoint();

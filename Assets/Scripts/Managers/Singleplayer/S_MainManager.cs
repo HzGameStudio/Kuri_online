@@ -47,7 +47,9 @@ public class S_MainManager : Singleton<S_MainManager>
 
         Shuffle<Vector3>(m_CurGameSpawnPosTransformList);
 
-        Instantiate(m_PlayerPrefab, GetSpawnPosition(), Quaternion.identity);
+        GameObject player = Instantiate(m_PlayerPrefab, GetSpawnPosition(), Quaternion.identity);
+
+        gameObject.GetComponent<PauseMenu>().player = player;
     }
 
     
