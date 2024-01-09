@@ -1,6 +1,8 @@
 using UnityEngine;
 using Unity.Netcode;
 using System;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public enum KuraGameMode
 {
@@ -107,12 +109,38 @@ public abstract class PlayerGeneralBase
         if (localData.finishedGame)
             return false;
 
-        if ((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0))
+        if (((Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began) || Input.GetMouseButtonDown(0)) && !MouseIsOverUI())
         {
             return true;
         }
 
         return false;
+    }
+
+    private bool MouseIsOverUI()
+    {
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+
+        pointerEventData.position = Input.mousePosition;
+
+        List<RaycastResult> raycastResultList = new List<RaycastResult>();
+
+        EventSystem.current.RaycastAll(pointerEventData, raycastResultList);
+
+        for(int i=0; i <raycastResultList.Count; i++)
+        {
+            if (raycastResultList[i].gameObject.GetComponent<MouseUIClickThrouhg>() != null)
+            {
+                raycastResultList.RemoveAt(i);
+                i--;
+            }
+
+            
+        }
+        return raycastResultList.Count > 0;
+  
+
+
     }
 
     public void Finish()
