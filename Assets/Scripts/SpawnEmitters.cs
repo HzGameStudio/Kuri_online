@@ -12,7 +12,7 @@ public class SpawnEmitters : MonoBehaviour
     void Start()
     {
         for(int i = 0; i < NumberOfEmitters; i++)
-            Instantiate(SnowEmitter, new Vector3(SpawnerTransform.position.x + i * DeltaX, SpawnerTransform.position.y, 0), Quaternion.identity);
+            Instantiate(SnowEmitter, new Vector3(SpawnerTransform.position.x + i * DeltaX, SpawnerTransform.position.y, 0), Quaternion.identity, transform.parent);
     }
 
 }

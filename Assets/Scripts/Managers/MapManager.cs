@@ -4,6 +4,13 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using JetBrains.Annotations;
+using System.Net.NetworkInformation;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using Unity.VisualScripting;
+
+
+
 
 
 #if UNITY_EDITOR
@@ -20,7 +27,11 @@ public class EditorMapManager : Editor
         MapManager mapManager = (MapManager)target;
 
         if (GUILayout.Button("SaveMapToJSON"))
-            mapManager.SaveMapToJSON();
+            mapManager.MSaveMap();
+        if (GUILayout.Button("UnloadMap"))
+            mapManager.UnloadMap();
+        if (GUILayout.Button("LoadMap"))
+            mapManager.MLoadMap();
     }
 }
 
@@ -44,7 +55,7 @@ public struct MapObject
 [Serializable]
 public class Map
 {
-    public List<MapObject> Objects = new ();
+    public List<MapObject> Objects = new();
 }
 
 public class MapManager : Singleton<MapManager>
@@ -52,15 +63,18 @@ public class MapManager : Singleton<MapManager>
     [SerializeField]
     private string m_MapName;
 
-    public void SaveMapToJSON()
+    [SerializeField]
+    private AssetLabelReference m_ObjectLabel;
+
+    public void SaveMap(string map_name)
     {
-        if (m_MapName == "")
+        if (map_name == "")
         {
             Debug.Log("Empty map name");
             return;
         }
 
-        Map map = new ();
+        Map map = new();
 
         foreach (Transform ob in transform)
         {
@@ -72,13 +86,65 @@ public class MapManager : Singleton<MapManager>
                 name = ob.name[..index];
 
             Debug.Log("Adding " + name);
-            map.Objects.Add(new MapObject( name, ob.position, ob.rotation ));
+            map.Objects.Add(new MapObject(name, ob.position, ob.rotation));
         }
 
         string json = JsonUtility.ToJson(map, true);
 
-        Debug.Log(Application.persistentDataPath + Path.DirectorySeparatorChar + "Maps" + Path.DirectorySeparatorChar + m_MapName + ".json");
+        Debug.Log(Application.persistentDataPath + Path.DirectorySeparatorChar + "Maps" + Path.DirectorySeparatorChar + map_name + ".map");
 
-        File.WriteAllText(Application.persistentDataPath + Path.DirectorySeparatorChar + "Maps" + Path.DirectorySeparatorChar + m_MapName + ".json", json);
+        File.WriteAllText(Application.persistentDataPath + Path.DirectorySeparatorChar + "Maps" + Path.DirectorySeparatorChar + map_name + ".map", json);
+    }
+
+    public void MSaveMap()
+    {
+        SaveMap(m_MapName);
+    }
+
+    public void UnloadMap()
+    {
+        foreach(Transform ob in transform)
+        {
+            Debug.Log("Destroying " + ob.name);
+            Destroy(ob.gameObject);
+        }
+    }
+
+    public void LoadMap(string map_name)
+    {
+        string json;
+
+        try
+        {
+            json = File.ReadAllText(Application.persistentDataPath + Path.DirectorySeparatorChar + "Maps" + Path.DirectorySeparatorChar + map_name + ".map");
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+            return;
+        }
+
+        Map map = JsonUtility.FromJson<Map>(json);
+
+        Dictionary<string, GameObject> mapObjects = new ();
+
+        Addressables.LoadAssetsAsync<GameObject>(m_ObjectLabel, (sprite) => { }).Completed += (asyncOperationHandle) =>
+        {
+            foreach(GameObject ob in asyncOperationHandle.Result)
+            {
+                Debug.Log("Adding to loaded " + ob.name);
+                mapObjects.Add(ob.name, ob);
+            }
+
+            foreach (MapObject ob in map.Objects)
+            {
+                Instantiate(mapObjects[ob.type], ob.position, ob.rotation, transform);
+            }
+        };
+    }
+
+    public void MLoadMap()
+    {
+        LoadMap(m_MapName);
     }
 }
