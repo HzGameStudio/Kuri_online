@@ -26,6 +26,7 @@ public class PauseMenu : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1;
+        MapManager.Instance.UnloadMap();
         SceneManager.LoadScene("S_GameMenu");
     }
 

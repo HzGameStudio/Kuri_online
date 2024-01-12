@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -31,28 +32,29 @@ public class S_MainManager : Singleton<S_MainManager>
     // Currently available positions to spawn, position is removed when player spawns there
     private List<Vector3> m_CurGameSpawnPosTransformList;
 
-    public new void Awake()
+    private new void Awake()
     {
         base.Awake();
 
-        // Get list of all spawn position on map
-        GameObject[] SpawnPointList = GameObject.FindGameObjectsWithTag("spawnPoint");
-
-        for (int i = 0; i < SpawnPointList.Length; i++)
+        MapManager.Instance.LoadMap(MapManager.Instance.SelectedMapName).Completed += (a) =>
         {
-            m_SpawnPosTransformList.Add(SpawnPointList[i].transform.position);
-        }
+            // Get list of all spawn position on map
+            GameObject[] SpawnPointList = GameObject.FindGameObjectsWithTag("spawnPoint");
 
-        m_CurGameSpawnPosTransformList = new List<Vector3>(m_SpawnPosTransformList);
+            for (int i = 0; i < SpawnPointList.Length; i++)
+            {
+                m_SpawnPosTransformList.Add(SpawnPointList[i].transform.position);
+            }
 
-        Shuffle<Vector3>(m_CurGameSpawnPosTransformList);
+            m_CurGameSpawnPosTransformList = new List<Vector3>(m_SpawnPosTransformList);
 
-        GameObject player = Instantiate(m_PlayerPrefab, GetSpawnPosition(), Quaternion.identity);
+            Shuffle<Vector3>(m_CurGameSpawnPosTransformList);
 
-        gameObject.GetComponent<PauseMenu>().player = player;
+            GameObject player = Instantiate(m_PlayerPrefab, GetSpawnPosition(), Quaternion.identity);
+
+            gameObject.GetComponent<PauseMenu>().player = player;
+        };
     }
-
-    
 
     public Vector3 GetSpawnPosition()
     {

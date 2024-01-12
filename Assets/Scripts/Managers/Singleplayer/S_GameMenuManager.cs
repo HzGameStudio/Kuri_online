@@ -5,6 +5,11 @@ using UnityEngine.SceneManagement;
 
 public class S_GameMenuManager : MonoBehaviour
 {
+    private void Start()
+    {
+        MapManager.Instance.FillMapPanel(MapManager.Instance.ScanForMaps());
+    }
+
     public void Back()
     {
         SceneManager.LoadScene("ChooseLaunchMode");
@@ -12,6 +17,7 @@ public class S_GameMenuManager : MonoBehaviour
 
     public void StartGame()
     {
+        MapManager.Instance.StartGame();
         SceneManager.LoadScene("S_MainGame");
     }
 }

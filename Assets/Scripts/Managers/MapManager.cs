@@ -3,15 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using JetBrains.Annotations;
-using System.Net.NetworkInformation;
 using UnityEngine.AddressableAssets;
+using UnityEngine.UI;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using Unity.VisualScripting;
-
-
-
-
 
 #if UNITY_EDITOR
 
@@ -43,12 +37,14 @@ public struct MapObject
     public string type;
     public Vector3 position;
     public Quaternion rotation;
+    public Vector3 scale;
 
-    public MapObject(string itype, Vector3 iposition, Quaternion irotation)
+    public MapObject(string itype, Vector3 iposition, Quaternion irotation, Vector3 iscale)
     {
         type = itype;
         position = iposition;
         rotation = irotation;
+        scale = iscale;
     }
 }
 
@@ -58,13 +54,23 @@ public class Map
     public List<MapObject> Objects = new();
 }
 
-public class MapManager : Singleton<MapManager>
+public class MapManager : SingletonPersistent<MapManager>
 {
     [SerializeField]
     private string m_MapName;
 
     [SerializeField]
     private AssetLabelReference m_ObjectLabel;
+
+    [SerializeField]
+    GameObject mapFieldPrefab;
+
+    List<GameObject> mapFields = new();
+
+    private int m_SelectedMapIndex = -1;
+
+    [HideInInspector]
+    public string SelectedMapName = "";
 
     public void SaveMap(string map_name)
     {
@@ -86,7 +92,7 @@ public class MapManager : Singleton<MapManager>
                 name = ob.name[..index];
 
             Debug.Log("Adding " + name);
-            map.Objects.Add(new MapObject(name, ob.position, ob.rotation));
+            map.Objects.Add(new MapObject(name, ob.position, ob.rotation, ob.localScale));
         }
 
         string json = JsonUtility.ToJson(map, true);
@@ -110,7 +116,7 @@ public class MapManager : Singleton<MapManager>
         }
     }
 
-    public void LoadMap(string map_name)
+    public AsyncOperationHandle<IList<GameObject>> LoadMap(string map_name)
     {
         string json;
 
@@ -121,14 +127,16 @@ public class MapManager : Singleton<MapManager>
         catch (Exception e)
         {
             Debug.Log(e);
-            return;
+            return new ();
         }
 
         Map map = JsonUtility.FromJson<Map>(json);
 
         Dictionary<string, GameObject> mapObjects = new ();
 
-        Addressables.LoadAssetsAsync<GameObject>(m_ObjectLabel, (sprite) => { }).Completed += (asyncOperationHandle) =>
+        AsyncOperationHandle<IList<GameObject>> operation = Addressables.LoadAssetsAsync<GameObject>(m_ObjectLabel, (sprite) => { });
+            
+        operation.Completed += (asyncOperationHandle) =>
         {
             foreach(GameObject ob in asyncOperationHandle.Result)
             {
@@ -138,13 +146,81 @@ public class MapManager : Singleton<MapManager>
 
             foreach (MapObject ob in map.Objects)
             {
-                Instantiate(mapObjects[ob.type], ob.position, ob.rotation, transform);
+                GameObject gob = Instantiate(mapObjects[ob.type], ob.position, ob.rotation, transform);
+                gob.transform.localScale = ob.scale;
             }
         };
+
+        return operation;
     }
 
     public void MLoadMap()
     {
         LoadMap(m_MapName);
+    }
+
+    public List<string> ScanForMaps()
+    {
+        Debug.Log("Scanning for maps");
+
+        DirectoryInfo info = new (Application.persistentDataPath + Path.DirectorySeparatorChar + "Maps");
+        FileInfo[] fileInfo = info.GetFiles();
+
+        List<string> list = new ();
+
+        foreach (var file in fileInfo)
+        {
+            Debug.Log(file.Extension);
+            if (file.Extension != ".map")
+                continue;
+
+            list.Add(file.Name[..file.Name.IndexOf('.')]);
+        }
+
+        return list;
+    }
+
+    public void FillMapPanel(List<string> names)
+    {
+        GameObject mapPanel = GameObject.FindGameObjectWithTag("ChooseMapPanel");
+        Debug.Log(mapPanel);
+
+        foreach (string name in names)
+        {
+            // Add map toggle field to panel 
+            GameObject mapField = Instantiate(mapFieldPrefab, mapPanel.transform);
+            mapField.GetComponentInChildren<Text>().text = name;
+            mapField.GetComponent<Toggle>().onValueChanged.AddListener(DisableAllOtherTogles);
+
+            mapFields.Add(mapField);
+        }
+    }
+
+    public void StartGame()
+    {
+        mapFields.Clear();
+    }
+
+    private void DisableAllOtherTogles(bool newValue)
+    {
+        if (newValue == false)
+        {
+            m_SelectedMapIndex = -1;
+            SelectedMapName = "";
+            return;
+        }
+
+        if (m_SelectedMapIndex != -1)
+            mapFields[m_SelectedMapIndex].GetComponent<Toggle>().isOn = false;
+
+        for (int i = 0; i < mapFields.Count; i++)
+        {
+            if (mapFields[i].GetComponent<Toggle>().isOn)
+            {
+                m_SelectedMapIndex = i;
+                SelectedMapName = mapFields[i].GetComponentInChildren<Text>().text;
+                break;
+            }
+        }
     }
 }

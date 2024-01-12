@@ -5,7 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class FinishScript : NetworkBehaviour
+public class FinishScript : MonoBehaviour
 {
     private void OnTriggerEnter2D(Collider2D collision)
     {
